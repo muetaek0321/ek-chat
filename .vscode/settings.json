@@ -7,4 +7,5 @@
         },
         "editor.defaultFormatter": "charliermarsh.ruff"
     },
+    "python.defaultInterpreterPath": "${workspaceFolder}\\backend\\.venv\\Scripts\\python.exe"
 }
