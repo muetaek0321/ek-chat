@@ -1,0 +1,9 @@
+# 共通
+.env
+
+# backend
+.venv/
+__pycache__/
+
+# frontend
+
