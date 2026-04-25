@@ -33,11 +33,10 @@ def root() -> RedirectResponse:
 
 @app.post("/chat", response_model=ChatMessage)
 def generate_chat_response(
-    payload: ChatMessage, logger: Annotated[logging.Logger, Depends(get_endpoint_logger)]
+    chat_message: ChatMessage, logger: Annotated[logging.Logger, Depends(get_endpoint_logger)]
 ) -> ChatMessage:
     """userの入力に対してassistantの応答を返す"""
-    chat_message = payload.model_dump()
-    logger.debug(chat_message)
+    logger.debug(chat_message.model_dump())
 
     # 返答を生成
     response = chat.generate(user_message=chat_message)
