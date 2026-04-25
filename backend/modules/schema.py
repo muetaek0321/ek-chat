@@ -25,16 +25,3 @@ class ChatHistory(RootModel[list[ChatMessage]]):
     """チャット履歴のモデル"""
 
     root: list[ChatMessage] = Field(..., description="チャットメッセージのリスト")
-
-
-class ChatRequest(EndpointModel):
-    """チャットのリクエストモデル"""
-
-    input_content: ChatMessage = Field(..., description="ユーザーからの入力内容")
-    history: list[ChatMessage] = Field(..., description="チャット履歴")
-
-
-class ChatResponse(EndpointModel):
-    """チャットのレスポンスモデル"""
-
-    response_content: ChatMessage = Field(..., description="アシスタントからの応答内容")

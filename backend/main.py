@@ -1,9 +1,21 @@
+import logging
+import os
+from typing import Annotated
+
 import uvicorn
-from fastapi import FastAPI
+from dotenv import load_dotenv
+from fastapi import Depends, FastAPI
 from fastapi.responses import RedirectResponse
 
+from modules.logger import get_endpoint_logger, logging_config
 from modules.response_generator import ChatManager
 from modules.schema import ChatMessage
+
+# .envファイルから環境変数を読み込む
+load_dotenv()
+
+# ロガーのインスタンスを取得
+logging_config(debug=(os.getenv("ENVIRON", "prod") == "dev"))
 
 # FastAPIアプリケーションのインスタンスを作成
 app = FastAPI()
@@ -20,9 +32,12 @@ def root() -> RedirectResponse:
 
 
 @app.post("/chat", response_model=ChatMessage)
-def generate_chat_response(payload: ChatMessage) -> ChatMessage:
+def generate_chat_response(
+    payload: ChatMessage, logger: Annotated[logging.Logger, Depends(get_endpoint_logger)]
+) -> ChatMessage:
     """userの入力に対してassistantの応答を返す"""
     chat_message = payload.model_dump()
+    logger.debug(chat_message)
 
     # 返答を生成
     response = chat.generate(user_message=chat_message)
