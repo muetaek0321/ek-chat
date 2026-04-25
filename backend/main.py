@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 from fastapi import Depends, FastAPI
 from fastapi.responses import RedirectResponse
 
+from modules.chat_manager import ChatManager
 from modules.logger import get_endpoint_logger, logging_config
-from modules.response_generator import ChatManager
 from modules.schema import ChatMessage
 
 # .envファイルから環境変数を読み込む
