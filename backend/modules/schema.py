@@ -25,3 +25,9 @@ class ChatHistory(RootModel[list[ChatMessage]]):
     """チャット履歴のモデル"""
 
     root: list[ChatMessage] = Field(..., description="チャットメッセージのリスト")
+
+
+class ChatId(EndpointModel):
+    """チャットIDのモデル"""
+
+    chat_id: str | None = Field(None, description="チャットIDの指定")
