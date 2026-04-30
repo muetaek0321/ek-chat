@@ -2,10 +2,12 @@
 .env
 develop/
 
-# backend
+### backend
 .venv/
 __pycache__/
 .ruff_cache/
 
-# frontend
-
+### frontend
+node_modules/
+.next/
+next-env.d.ts
