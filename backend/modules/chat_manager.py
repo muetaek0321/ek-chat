@@ -17,7 +17,7 @@ class ChatManager:
     """チャット履歴の管理と返答生成を行うクラス"""
 
     def __init__(self):
-        self.data_dir = Path(os.getenv("DATA_DIR", "develop"))
+        self.data_dir = Path(os.getenv("DATA_DIR", "./develop"))
 
         self.chat_ids = []
         self.current_chat_id = None
