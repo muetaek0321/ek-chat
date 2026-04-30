@@ -1,5 +1,15 @@
+from enum import StrEnum
+
 from pydantic import BaseModel, ConfigDict, Field, RootModel
 from pydantic.alias_generators import to_camel
+
+
+class Role(StrEnum):
+    """チャットメッセージのroleを定義するEnum"""
+
+    USER = "user"
+    ASSISTANT = "assistant"
+    System = "system"
 
 
 class EndpointModel(BaseModel):
@@ -17,7 +27,7 @@ class EndpointModel(BaseModel):
 class ChatMessage(EndpointModel):
     """チャットメッセージのモデル"""
 
-    role: str = Field(..., description="メッセージのrole（例: user, assistant）")
+    role: Role = Field(..., description="メッセージのrole（例: user, assistant）")
     content: str = Field(..., description="メッセージの内容")
 
 
