@@ -17,13 +17,26 @@ export interface UserInputProps {
 export default function UserInput({ setChatHistory }: UserInputProps) {
   const [inputText, setInputText] = useState<string>("")
 
+  // 入力内容の送信時の処理
+  const handleSendUserInput = () => {
+    setChatHistory((prev) => 
+      [...prev, { role: "user", content: inputText }, { role: "assistant", content: "なにかしらのAIの返答" }]
+    )
+  }
+
+
   return (
     <Stack direction="row" spacing={1} sx={{ p: 0.5, height: "100%" }}>
       <TextField 
         variant="outlined" size="small" fullWidth rows={2}
         value={inputText} onChange={(e) => setInputText(e.target.value)}
       />
-      <IconButton sx={{ height: "100%" }} onClick={() => alert(inputText)}>
+      <IconButton 
+        color="primary"
+        sx={{ height: "100%" }} 
+        onClick={handleSendUserInput} 
+        disabled={inputText === ""}
+      >
         <SendIcon fontSize="large"/>
       </IconButton>
     </Stack>

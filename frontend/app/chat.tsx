@@ -4,6 +4,8 @@ import { useState } from "react"
 import Stack from "@mui/material/Stack"
 import Box from "@mui/material/Box"
 
+import ChatContentUser from "@components/ChatContentUser"
+import ChatContentAssistant from "@/app/components/ChatContentAssistant"
 import UserInput from "@components/UserInput"
 import { ChatMessage } from "@types"
 
@@ -23,8 +25,16 @@ export default function Chat() {
 
       {/* チャット */}
       <Box sx={{ width: `calc(100vw - ${chatListWidth}px)`}}>
-        <Box sx={{ height: `calc(100vh - ${userInputHeight}px)`, overflowY: "auto" }}>
-
+        <Box sx={{ height: `calc(100vh - ${userInputHeight}px)`, width: "100%" , overflowY: "auto", p: 1 }}>
+          {chatHistory.map((message, index) => (
+            <Box key={index} sx={{ width: "100%" }}>
+              {message.role === "user" ? 
+                <ChatContentUser message={message}/>
+                :
+                <ChatContentAssistant message={message}/>
+              }
+            </Box>
+          ))}
         </Box>
         <Box sx={{ height: userInputHeight, borderTop: 1, borderColor: "divider" }}>
           <UserInput setChatHistory={setChatHistory}/>
