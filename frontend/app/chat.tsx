@@ -5,7 +5,7 @@ import Stack from "@mui/material/Stack"
 import Box from "@mui/material/Box"
 
 import ChatContentUser from "@components/ChatContentUser"
-import ChatContentAssistant from "@/app/components/ChatContentAssistant"
+import ChatContentAssistant from "@components/ChatContentAssistant"
 import UserInput from "@components/UserInput"
 import { getRequest } from "@modules/fetchData"
 import { ChatInfo, ChatMessage } from "@types"
