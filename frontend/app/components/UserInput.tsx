@@ -28,6 +28,7 @@ export default function UserInput({ setChatHistory }: UserInputProps) {
       .then((res) => {
         if (res.success) {
           setChatHistory((prev) => [...prev, userInput, res.data])
+          setInputText("")
         } else {
           alert("返答の生成に失敗しました。")
           console.log("Error:", res.error)
