@@ -22,6 +22,7 @@
       "@/*": ["./*"],
       "@types": ["./app/types.ts"],
       "@components/*": ["./app/components/*"],
+      "@modules/*": ["./app/modules/*"],
     }
   },
   "include": [
