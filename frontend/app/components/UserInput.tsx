@@ -36,17 +36,26 @@ export default function UserInput({ setChatHistory }: UserInputProps) {
       .catch((err) => console.log("Error:", err))
   }
 
+  // Enterキーで送信
+  const handleEnterKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      if (inputText.trim() !== "") handleSendUserInput()
+    }
+  }
+  
   return (
     <Stack direction="row" spacing={1} sx={{ p: 0.5, height: "100%" }}>
       <TextField 
-        variant="outlined" size="small" fullWidth rows={2}
-        value={inputText} onChange={(e) => setInputText(e.target.value)}
+        variant="outlined" size="small" fullWidth rows={2} value={inputText} 
+        onChange={(e) => setInputText(e.target.value)}
+        onKeyDown={handleEnterKeyPress}
       />
       <IconButton 
         color="primary"
         sx={{ height: "100%" }} 
         onClick={handleSendUserInput} 
-        disabled={inputText === ""}
+        disabled={inputText.trim() === ""}
       >
         <SendIcon fontSize="large"/>
       </IconButton>
