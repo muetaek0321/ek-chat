@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,9 +23,15 @@
       }
     ],
     "paths": {
-      "@types": ["./app/types.ts"],
-      "@components/*": ["./app/components/*"],
-      "@modules/*": ["./app/modules/*"],
+      "@types": [
+        "./app/types.ts"
+      ],
+      "@components/*": [
+        "./app/components/*"
+      ],
+      "@modules/*": [
+        "./app/modules/*"
+      ]
     }
   },
   "include": [
@@ -29,6 +39,11 @@
     "app",
     "components",
     "modules",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", ".next"]
+  "exclude": [
+    "node_modules",
+    ".next"
+  ]
 }
