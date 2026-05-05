@@ -20,18 +20,25 @@ export default function Chat() {
 
   // チャット履歴の取得
   const getChatHistory = async () => {
-    const submitData = new URLSearchParams({
+    const query = new URLSearchParams({
       chatId: currentChatId
     }).toString()
-    await getRequest(`/history?${submitData}`)
-      .then((res) => setChatHistory(res.data))
-      .catch((res) => console.error(res.error))
+    await getRequest(`/history?${query}`)
+      .then((res) => {
+        if (res.success) {
+          setChatHistory(res.data)
+        } else {
+          alert("チャット履歴の取得に失敗しました。")
+          console.log("Error:", res.error)
+        }
+      })
+      .catch((err) => console.log("Error:", err))
   }
 
   // 立ち上げ時にチャット一覧の初期化
   useEffect(() => {
     // TODO: 一時的に固定のチャットIDをセット
-    setCurrentChatId("20260430162336_0db9cc6d-10d2-413f-aedb-08316ad515f8")
+    setCurrentChatId("20260505173536_18d1874a-bc13-4481-8eea-908ebbde75e7")
   }, [])
 
   // チャットIDがセットされるたびに対応するチャット履歴を取得

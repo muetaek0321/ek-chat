@@ -20,7 +20,7 @@ export default function ChatContentUser({ message }: ChatContentUserProps) {
           {message.content}
         </Box>
         <Box>
-          <Image src="/user.png" alt="user_icon"  width={50} height={50} />
+          <Image src="/user.png" alt="user_icon" width={50} height={50} />
         </Box>
       </Stack>
     </Stack>
