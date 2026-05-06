@@ -6,7 +6,7 @@ import TextField from "@mui/material/TextField"
 import IconButton from "@mui/material/IconButton"
 import SendIcon from '@mui/icons-material/Send'
 
-import { postRequest } from "@modules/fetchData"
+import { ApiResponse, postRequest } from "@modules/fetchData"
 import { ChatMessage } from "@types"
 
 
@@ -25,7 +25,7 @@ export default function UserInput({ setChatHistory }: UserInputProps) {
       content: inputText
     }
     await postRequest("/chat", userInput)
-      .then((res) => {
+      .then((res: ApiResponse) => {
         if (res.success) {
           setChatHistory((prev) => [...prev, userInput, res.data])
           setInputText("")
