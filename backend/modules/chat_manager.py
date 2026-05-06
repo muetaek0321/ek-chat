@@ -7,7 +7,7 @@ from uuid import uuid4
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from modules.schema import ChatHistory, ChatMessage
+from modules.schema import ChatHistory, ChatInfo, ChatInfoList, ChatMessage
 
 # .envファイルから環境変数を読み込む
 load_dotenv()
@@ -19,7 +19,7 @@ class ChatManager:
     def __init__(self):
         self.data_dir = Path(os.getenv("DATA_DIR", "./develop"))
 
-        self.chat_ids = []
+        self.chat_info_list = []
         self.current_chat_id = None
         self.chat_history = []
 
@@ -29,20 +29,25 @@ class ChatManager:
         # LLMの初期化
         self.llm = ChatGoogleGenerativeAI(model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"))
 
-    def load_chat_list(self) -> None:
+    def load_chat_list(self) -> ChatInfoList:
         """保存済みのチャット一覧の情報を読み込み"""
+        self.chat_info_list = []
         chat_history_dir = self.data_dir.joinpath("chat_history")
 
         # 保存先フォルダ内のチャット履歴ファイルを確認し、IDのリストを作成
-        self.chat_ids = [f.stem for f in chat_history_dir.glob("*.json")]
-        if len(self.chat_ids) == 0:
+        chat_ids = [f.stem for f in chat_history_dir.glob("*.json")]
+        if len(chat_ids) == 0:
             # チャット履歴が存在しない場合は新規チャットを作成
             self.new_chat()
         else:
-            self.current_chat_id = self.chat_ids[-1]
+            # チャット履歴の読み込んでチャット情報のリストを作成
+            for chat_id in chat_ids:
+                chat_history = self.load_chat_history(chat_id=chat_id)
+                # 最初のユーザ入力の内容をタイトルにする
+                title = chat_history.root[0].content[:15]
+                self.chat_info_list.append(ChatInfo(chat_id=chat_id, title=title))
 
-        # チャット履歴の読み込み
-        self.load_chat_history(chat_id=self.current_chat_id)
+        return ChatInfoList(self.chat_info_list)
 
     def new_chat(self) -> str:
         """新規チャットの作成"""
@@ -50,7 +55,7 @@ class ChatManager:
         new_chat_id = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{uuid4()}"
 
         # チャットIDを管理リストに追加
-        self.chat_ids.append(new_chat_id)
+        self.chat_info_list.append(ChatInfo(chat_id=new_chat_id, title="新規チャット"))
         self.current_chat_id = new_chat_id
         # チャット履歴を初期化
         self.chat_history = []

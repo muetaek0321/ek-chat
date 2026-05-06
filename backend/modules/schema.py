@@ -24,6 +24,19 @@ class EndpointModel(BaseModel):
     )
 
 
+class ChatInfo(EndpointModel):
+    """チャットの情報を表すモデル"""
+
+    chat_id: str = Field(..., description="チャットID")
+    title: str = Field(..., description="チャットのタイトル")
+
+
+class ChatInfoList(RootModel[list[ChatInfo]]):
+    """チャット一覧データのモデル"""
+
+    root: list[ChatInfo] = Field(..., description="保存済みのチャット情報のリスト")
+
+
 class ChatMessage(EndpointModel):
     """チャットメッセージのモデル"""
 

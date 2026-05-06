@@ -9,7 +9,7 @@ from fastapi.responses import RedirectResponse
 
 from modules.chat_manager import ChatManager
 from modules.logger import get_endpoint_logger, logging_config
-from modules.schema import ChatHistory, ChatId, ChatMessage
+from modules.schema import ChatHistory, ChatId, ChatInfoList, ChatMessage
 
 # .envファイルから環境変数を読み込む
 load_dotenv()
@@ -29,6 +29,19 @@ def root() -> RedirectResponse:
     """ルートエンドポイント: SwaggerUIにRedirectする"""
 
     return RedirectResponse(url="/docs")
+
+
+@app.get("/init", response_model=ChatInfoList)
+async def init_app(
+    logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
+) -> ChatInfoList:
+    """チャットボットアプリの初期データを取得"""
+    logger.debug("アプリの初期データを取得します")
+
+    # 保存済みのチャット一覧を取得
+    chat_info_list = chat.load_chat_list()
+
+    return chat_info_list
 
 
 @app.put("/new", response_model=ChatId)
