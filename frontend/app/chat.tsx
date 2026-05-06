@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Stack from "@mui/material/Stack"
 import Box from "@mui/material/Box"
 
+import ChatList from "@components/ChatList"
 import ChatContentUser from "@components/ChatContentUser"
 import ChatContentAssistant from "@components/ChatContentAssistant"
 import UserInput from "@components/UserInput"
@@ -65,14 +66,14 @@ export default function Chat() {
 
       {/* チャット一覧 */}
       <Box sx={{ width: chatListWidth, borderRight: 1, borderColor: "divider" }}>
-
+        <ChatList chatInfoList={chatInfoList} />
       </Box>
 
       {/* 入力とチャット履歴 */}
       <Box sx={{ width: `calc(100vw - ${chatListWidth}px)`}}>
         <Box sx={{ height: `calc(100vh - ${userInputHeight}px)`, width: "100%" , overflowY: "auto", p: 1 }}>
-          {chatHistory.map((message, index) => (
-            <Box key={index} sx={{ width: "100%" }}>
+          {chatHistory.map((message, i) => (
+            <Box key={i} sx={{ width: "100%" }}>
               {message.role === "user" ? 
                 <ChatContentUser message={message}/>
                 :
