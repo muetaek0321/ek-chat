@@ -49,13 +49,14 @@ class ChatManager:
 
         return ChatInfoList(self.chat_info_list)
 
-    def new_chat(self) -> str:
+    def new_chat(self) -> ChatInfo:
         """新規チャットの作成"""
         # チャットIDを生成
         new_chat_id = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{uuid4()}"
 
         # チャットIDを管理リストに追加
-        self.chat_info_list.append(ChatInfo(chat_id=new_chat_id, title="新規チャット"))
+        new_chat_info = ChatInfo(chat_id=new_chat_id, title="新規チャット")
+        self.chat_info_list.append(new_chat_info)
         self.current_chat_id = new_chat_id
         # チャット履歴を初期化
         self.chat_history = []
@@ -63,7 +64,7 @@ class ChatManager:
         # チャット履歴ファイルの新規作成
         self.save_chat_history(chat_id=new_chat_id)
 
-        return new_chat_id
+        return new_chat_info
 
     def load_chat_history(self, chat_id: str | None = None) -> ChatHistory:
         """チャット履歴の読み込み
