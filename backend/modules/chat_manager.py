@@ -44,7 +44,10 @@ class ChatManager:
             for chat_id in chat_ids:
                 chat_history = self.load_chat_history(chat_id=chat_id)
                 # 最初のユーザ入力の内容をタイトルにする
-                title = chat_history.root[0].content[:15]
+                if len(chat_history.root) > 0:
+                    title = chat_history.root[0].content[:15]
+                else:
+                    title = "（新規チャット）"
                 self.chat_info_list.append(ChatInfo(chat_id=chat_id, title=title))
 
         return ChatInfoList(self.chat_info_list)
@@ -55,7 +58,7 @@ class ChatManager:
         new_chat_id = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{uuid4()}"
 
         # チャットIDを管理リストに追加
-        new_chat_info = ChatInfo(chat_id=new_chat_id, title="新規チャット")
+        new_chat_info = ChatInfo(chat_id=new_chat_id, title="（新規チャット）")
         self.chat_info_list.append(new_chat_info)
         self.current_chat_id = new_chat_id
         # チャット履歴を初期化
