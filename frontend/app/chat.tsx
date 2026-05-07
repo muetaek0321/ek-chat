@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Stack from "@mui/material/Stack"
 import Box from "@mui/material/Box"
 
+import NewChatButton from "@components/NewChatButton"
 import ChatList from "@components/ChatList"
 import ChatContentUser from "@components/ChatContentUser"
 import ChatContentAssistant from "@components/ChatContentAssistant"
@@ -32,6 +33,7 @@ export default function Chat() {
           console.log("Error:", res.error)
         }
       })
+      .catch((err) => console.log("Error:", err))
   }
 
   // チャット履歴の取得
@@ -65,9 +67,17 @@ export default function Chat() {
     <Stack direction="row" sx={{ height: "100vh" }}>
 
       {/* チャット一覧 */}
-      <Box sx={{ width: chatListWidth, borderRight: 1, borderColor: "divider" }}>
-        <ChatList chatInfoList={chatInfoList} setCurrentChatId={setCurrentChatId} />
-      </Box>
+      <Stack spacing={1} sx={{ width: chatListWidth, borderRight: 1, borderColor: "divider" }}>
+        <NewChatButton 
+          chatInfoList={chatInfoList} 
+          setChatInfoList={setChatInfoList} 
+          setCurrentChatId={setCurrentChatId} 
+        />
+        <ChatList 
+          chatInfoList={chatInfoList} 
+          setCurrentChatId={setCurrentChatId} 
+        />
+      </Stack>
 
       {/* 入力とチャット履歴 */}
       <Box sx={{ width: `calc(100vw - ${chatListWidth}px)`}}>

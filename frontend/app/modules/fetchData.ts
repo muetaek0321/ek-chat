@@ -65,7 +65,7 @@ export const getRequest = async <T = any>(
 // POST リクエスト
 export const postRequest = async <T = any>(
   apiUrl: string,
-  body: Record<string, any>
+  body: Record<string, any> = {}
 ): Promise<ApiResponse<T>> => {
   return request<T>("POST", apiUrl, body)
 }
@@ -73,7 +73,7 @@ export const postRequest = async <T = any>(
 // PUT リクエスト
 export const putRequest = async <T = any>(
   apiUrl: string,
-  body: Record<string, any>
+  body: Record<string, any> = {}
 ): Promise<ApiResponse<T>> => {
   return request<T>("PUT", apiUrl, body)
 }
@@ -88,7 +88,7 @@ export const deleteRequest = async <T = any>(
 // PATCH リクエスト
 export const patchRequest = async <T = any>(
   apiUrl: string,
-  body: Record<string, any>
+  body: Record<string, any> = {}
 ): Promise<ApiResponse<T>> => {
   return request<T>("PATCH", apiUrl, body)
 }
