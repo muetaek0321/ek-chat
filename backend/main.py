@@ -45,7 +45,7 @@ async def init_app(
 
 
 @app.put("/new", response_model=ChatId)
-def create_new_chat(
+async def create_new_chat(
     logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> ChatId:
     """新しいチャットを作成"""
@@ -58,7 +58,7 @@ def create_new_chat(
 
 
 @app.get("/history", response_model=ChatHistory)
-def get_chat_history(
+async def get_chat_history(
     query: Annotated[ChatId, Depends()],
     logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> ChatHistory:
@@ -73,7 +73,7 @@ def get_chat_history(
 
 
 @app.post("/chat", response_model=ChatMessage)
-def generate_chat_response(
+async def generate_chat_response(
     chat_message: ChatMessage, logger: Annotated[logging.Logger, Depends(get_endpoint_logger)]
 ) -> ChatMessage:
     """userの入力に対してassistantの応答を返す"""
