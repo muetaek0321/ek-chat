@@ -7,7 +7,7 @@ from uuid import uuid4
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from modules.schema import ChatHistory, ChatInfo, ChatInfoList, ChatMessage
+from modules.schema import ChatHistory, ChatInfo, ChatInfoList, ChatMessage, GenerateChatResponse
 
 # .envファイルから環境変数を読み込む
 load_dotenv()
@@ -19,8 +19,7 @@ class ChatManager:
     def __init__(self):
         self.data_dir = Path(os.getenv("DATA_DIR", "./develop"))
 
-        self.chat_info_list = []
-        self.current_chat_id = None
+        self.current_chat_id = ""
         self.chat_history = []
 
         # 保存済みのチャット履歴の読み込み
@@ -31,84 +30,89 @@ class ChatManager:
 
     def load_chat_list(self) -> ChatInfoList:
         """保存済みのチャット一覧の情報を読み込み"""
-        self.chat_info_list = []
+        chat_info_list = []
         chat_history_dir = self.data_dir.joinpath("chat_history")
 
         # 保存先フォルダ内のチャット履歴ファイルを確認し、IDのリストを作成
         chat_ids = [f.stem for f in chat_history_dir.glob("*.json")]
-        if len(chat_ids) == 0:
-            # チャット履歴が存在しない場合は新規チャットを作成
-            self.new_chat()
-        else:
-            # チャット履歴の読み込んでチャット情報のリストを作成
-            for chat_id in chat_ids:
-                chat_history = self.load_chat_history(chat_id=chat_id)
-                # 最初のユーザ入力の内容をタイトルにする
-                if len(chat_history.root) > 0:
-                    title = chat_history.root[0].content[:15]
-                else:
-                    title = "（新規チャット）"
-                self.chat_info_list.append(ChatInfo(chat_id=chat_id, title=title))
+        # チャット履歴の読み込んでチャット情報のリストを作成
+        for chat_id in chat_ids:
+            chat_history = self.load_chat_history(chat_id=chat_id)
+            # 最初のユーザ入力の内容をタイトルにする
+            title = chat_history.root[0].content[:15]
+            chat_info_list.append(ChatInfo(chat_id=chat_id, title=title))
 
-        return ChatInfoList(self.chat_info_list)
+        return ChatInfoList(chat_info_list)
 
     def new_chat(self) -> ChatInfo:
         """新規チャットの作成"""
-        # チャットIDを生成
-        new_chat_id = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{uuid4()}"
+        # 未設定のチャットID
+        new_chat_id = "new"
 
-        # チャットIDを管理リストに追加
+        # 新しいチャットを作成するためのデータを設定
         new_chat_info = ChatInfo(chat_id=new_chat_id, title="（新規チャット）")
-        self.chat_info_list.append(new_chat_info)
         self.current_chat_id = new_chat_id
-        # チャット履歴を初期化
         self.chat_history = []
-
-        # チャット履歴ファイルの新規作成
-        self.save_chat_history(chat_id=new_chat_id)
 
         return new_chat_info
 
-    def load_chat_history(self, chat_id: str | None = None) -> ChatHistory:
+    def load_chat_history(self, chat_id: str) -> ChatHistory:
         """チャット履歴の読み込み
 
         Args:
-            chat_id (str | None): 読み込むチャットのID。Noneの場合は選択中のチャットIDを使用
+            chat_id (str): 読み込むチャットのID
         """
-        # チャットIDが指定されていない場合はリストの選択中のチャットIDを使用
-        if chat_id is None:
-            chat_id = self.current_chat_id
-
-        history_path = self.data_dir.joinpath("chat_history", f"{chat_id}.json")
-        if history_path.exists():
-            with open(history_path, mode="r", encoding="utf-8") as f:
-                self.chat_history = json.load(f)
+        # 新規チャットの指定の場合
+        if chat_id == "new":
+            self.chat_history = []
         else:
-            raise FileNotFoundError(f"指定のIDのチャット履歴が見つかりません: {chat_id}")
+            history_path = self.data_dir.joinpath("chat_history", f"{chat_id}.json")
+            if history_path.exists():
+                with open(history_path, mode="r", encoding="utf-8") as f:
+                    self.chat_history = json.load(f)
+            else:
+                raise FileNotFoundError(f"指定のIDのチャット履歴が見つかりません: {chat_id}")
 
         # 指定のチャットIDを選択中のチャットIDに設定
         self.current_chat_id = chat_id
 
         return ChatHistory(self.chat_history)
 
-    def save_chat_history(self, chat_id: str) -> None:
+    def save_chat_history(self, chat_id: str) -> ChatInfo | None:
         """チャット履歴の保存
 
         Args:
             chat_id (str): 保存するチャットのID
+
+        Returns:
+            ChatInfo | None: 新しいチャットが作成された場合はそのチャット情報、既存のチャットの保存の場合はNone
         """
+        # 新しいチャットからの作成の場合
+        if chat_id == "new":
+            # チャットIDが未設定の場合は新しいIDを生成
+            chat_id = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{uuid4()}"
+            # タイトルの作成
+            title = ChatHistory(self.chat_history).root[0].content[:15]
+            # 新しいチャットのチャット情報の作成
+            new_chat_info = ChatInfo(chat_id=chat_id, title=title)
+        else:
+            new_chat_info = None
+
+        # チャット履歴をjsonファイルで保存
         history_path = self.data_dir.joinpath("chat_history", f"{chat_id}.json")
         with open(history_path, mode="w", encoding="utf-8") as f:
             json.dump(self.chat_history, f, ensure_ascii=False, indent=4)
 
-    def generate(self, user_message: ChatMessage) -> ChatMessage:
+        return new_chat_info
+
+    def generate(self, user_message: ChatMessage) -> GenerateChatResponse:
         """ユーザーからの入力に対してアシスタントの応答を生成する
 
         Args:
             user_message (ChatMessage): ユーザーからの入力メッセージ
 
         Returns:
-            ChatMessage: アシスタントからの応答メッセージ
+            GenerateChatResponse: アシスタントからの応答メッセージと新しいチャット情報
         """
         self.chat_history.append(user_message.model_dump())
 
@@ -120,6 +124,8 @@ class ChatManager:
         self.chat_history.append(assistant_message.model_dump())
 
         # チャット履歴を保存
-        self.save_chat_history(chat_id=self.current_chat_id)
+        new_chat_info = self.save_chat_history(chat_id=self.current_chat_id)
 
-        return assistant_message
+        return GenerateChatResponse(
+            assistant_message=assistant_message, new_chat_info=new_chat_info
+        )

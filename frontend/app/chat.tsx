@@ -9,7 +9,7 @@ import ChatList from "@components/ChatList"
 import ChatContentUser from "@components/ChatContentUser"
 import ChatContentAssistant from "@components/ChatContentAssistant"
 import UserInput from "@components/UserInput"
-import { ApiResponse, getRequest } from "@modules/fetchData"
+import { ApiResponse, getRequest, putRequest } from "@modules/fetchData"
 import { ChatInfo, ChatMessage } from "@types"
 
 export default function Chat() {
@@ -26,14 +26,38 @@ export default function Chat() {
       .then((res: ApiResponse) => {
         if (res.success) {
           const chatInfoList: ChatInfo[] = res.data 
-          setChatInfoList(chatInfoList)
-          setCurrentChatId(chatInfoList[0].chatId)
+          if (chatInfoList.length === 0) {
+            createNewChat()
+          } else {
+            setChatInfoList(chatInfoList)
+            setCurrentChatId(chatInfoList[0].chatId)
+          }
         } else {
           alert("チャット情報の取得に失敗しました。")
           console.log("Error:", res.error)
         }
       })
       .catch((err) => console.log("Error:", err))
+  }
+
+  // 新しいチャットの作成
+  const createNewChat = async () => {
+    // 新しいチャットの作成APIを呼び出し
+    await putRequest("/new")
+      .then((res: ApiResponse) => {
+        if (res.success) {
+          const newChatInfo: ChatInfo = res.data
+          setCurrentChatId(newChatInfo.chatId)
+          // 既に空のチャットが存在しない場合のみからのチャットを追加
+          if (!chatInfoList.some(chat => chat.chatId === "new")) {
+            setChatInfoList((prev) => [...prev, newChatInfo])
+          }
+        } else {
+          alert("新しいチャットの作成に失敗しました。")
+          console.log("Error:", res.error)
+        }
+      })
+      .catch((err) => console.log("Error:", err)) 
   }
 
   // チャット履歴の取得
@@ -69,9 +93,7 @@ export default function Chat() {
       {/* チャット一覧 */}
       <Stack spacing={1} sx={{ width: chatListWidth, borderRight: 1, borderColor: "divider" }}>
         <NewChatButton 
-          chatInfoList={chatInfoList} 
-          setChatInfoList={setChatInfoList} 
-          setCurrentChatId={setCurrentChatId} 
+          createNewChat={createNewChat}
         />
         <ChatList 
           chatInfoList={chatInfoList} 
@@ -93,7 +115,7 @@ export default function Chat() {
           ))}
         </Box>
         <Box sx={{ height: userInputHeight, borderTop: 1, borderColor: "divider" }}>
-          <UserInput setChatHistory={setChatHistory}/>
+          <UserInput setChatHistory={setChatHistory} setChatInfoList={setChatInfoList}/>
         </Box>
 
       </Box>

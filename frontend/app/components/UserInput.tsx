@@ -7,15 +7,16 @@ import IconButton from "@mui/material/IconButton"
 import SendIcon from '@mui/icons-material/Send'
 
 import { ApiResponse, postRequest } from "@modules/fetchData"
-import { ChatMessage } from "@types"
+import { ChatMessage, ChatInfo } from "@types"
 
 
 export interface UserInputProps {
   setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>
+  setChatInfoList: React.Dispatch<React.SetStateAction<ChatInfo[]>>
 }
 
 
-export default function UserInput({ setChatHistory }: UserInputProps) {
+export default function UserInput({ setChatHistory, setChatInfoList }: UserInputProps) {
   const [inputText, setInputText] = useState<string>("")
 
   // 入力内容の送信時の処理
@@ -27,7 +28,16 @@ export default function UserInput({ setChatHistory }: UserInputProps) {
     await postRequest("/chat", userInput)
       .then((res: ApiResponse) => {
         if (res.success) {
-          setChatHistory((prev) => [...prev, userInput, res.data])
+          // チャット履歴に追加
+          setChatHistory((prev) => [...prev, userInput, res.data.assistantMessage])
+          // 新しいチャットからの実行の場合はチャット情報も更新
+          if (res.data.newChatInfo) {
+            setChatInfoList((prev) => prev.length === 0 
+              ? [res.data.newChatInfo] 
+              : prev.map((e) => e.chatId === "new" ? res.data.newChatInfo : e)
+            )
+          }
+          // 入力欄をクリア
           setInputText("")
         } else {
           alert("返答の生成に失敗しました。")

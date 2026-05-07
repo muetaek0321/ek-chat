@@ -9,7 +9,14 @@ from fastapi.responses import RedirectResponse
 
 from modules.chat_manager import ChatManager
 from modules.logger import get_endpoint_logger, logging_config
-from modules.schema import ChatHistory, ChatId, ChatInfo, ChatInfoList, ChatMessage
+from modules.schema import (
+    ChatHistory,
+    ChatId,
+    ChatInfo,
+    ChatInfoList,
+    ChatMessage,
+    GenerateChatResponse,
+)
 
 # .envファイルから環境変数を読み込む
 load_dotenv()
@@ -72,10 +79,10 @@ async def get_chat_history(
     return chat_history
 
 
-@app.post("/chat", response_model=ChatMessage)
+@app.post("/chat", response_model=GenerateChatResponse)
 async def generate_chat_response(
     chat_message: ChatMessage, logger: Annotated[logging.Logger, Depends(get_endpoint_logger)]
-) -> ChatMessage:
+) -> GenerateChatResponse:
     """userの入力に対してassistantの応答を返す"""
     logger.debug(chat_message.model_dump())
 

@@ -54,3 +54,13 @@ class ChatId(EndpointModel):
     """チャットIDのモデル"""
 
     chat_id: str | None = Field(None, description="チャットIDの指定")
+
+
+class GenerateChatResponse(EndpointModel):
+    """assistantの応答生成のレスポンスモデル"""
+
+    assistant_message: ChatMessage = Field(..., description="生成されたassistantのメッセージ")
+    new_chat_info: ChatInfo | None = Field(
+        None,
+        description="新しいチャットが作成された場合のチャット情報。既存のチャットの保存の場合はNone",
+    )
