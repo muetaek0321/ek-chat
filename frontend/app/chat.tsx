@@ -66,7 +66,7 @@ export default function Chat() {
 
       {/* チャット一覧 */}
       <Box sx={{ width: chatListWidth, borderRight: 1, borderColor: "divider" }}>
-        <ChatList chatInfoList={chatInfoList} />
+        <ChatList chatInfoList={chatInfoList} setCurrentChatId={setCurrentChatId} />
       </Box>
 
       {/* 入力とチャット履歴 */}
