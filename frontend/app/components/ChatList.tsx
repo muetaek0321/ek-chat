@@ -2,7 +2,6 @@
 
 import Box from "@mui/material/Box"
 
-import { ApiResponse, getRequest } from "@modules/fetchData"
 import { ChatInfo } from "@types"
 
 
