@@ -9,7 +9,7 @@ from fastapi.responses import RedirectResponse
 
 from modules.chat_manager import ChatManager
 from modules.logger import get_endpoint_logger, logging_config
-from modules.schema import ChatHistory, ChatId, ChatInfoList, ChatMessage
+from modules.schema import ChatHistory, ChatId, ChatInfo, ChatInfoList, ChatMessage
 
 # .envファイルから環境変数を読み込む
 load_dotenv()
@@ -44,17 +44,17 @@ async def init_app(
     return chat_info_list
 
 
-@app.put("/new", response_model=ChatId)
+@app.put("/new", response_model=ChatInfo)
 async def create_new_chat(
     logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
-) -> ChatId:
+) -> ChatInfo:
     """新しいチャットを作成"""
     logger.debug("新しいチャットを作成します")
 
     # 新しいチャットを作成
-    chat_id = chat.new_chat()
+    new_chat_info = chat.new_chat()
 
-    return ChatId(chat_id=chat_id)
+    return new_chat_info
 
 
 @app.get("/history", response_model=ChatHistory)
