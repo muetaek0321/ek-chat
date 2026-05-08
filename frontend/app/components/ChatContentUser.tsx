@@ -6,6 +6,7 @@ import Stack from "@mui/material/Stack"
 import Box from "@mui/material/Box"
 
 import { ChatMessage } from "@types"
+import { BorderColor } from "@mui/icons-material"
 
 
 export interface ChatContentUserProps {
@@ -14,10 +15,47 @@ export interface ChatContentUserProps {
 
 
 export default function ChatContentUser({ message }: ChatContentUserProps) {
+
+const chatBubbleStyle = {
+    position: "relative",
+    border: 1.5,
+    borderRadius: 1,
+    borderColor: "#505050",
+    p: 1,
+    bgcolor: "background.paper",
+
+    "&::before": {
+      content: '""',
+      position: "absolute",
+      top: 12,
+      right: -8,
+      width: 0,
+      height: 0,
+      borderTop: "8px solid transparent",
+      borderBottom: "8px solid transparent",
+      borderLeft: (theme: any) =>
+        `8px solid ${theme.palette.background.paper}`,
+    },
+
+    "&::after": {
+      content: '""',
+      position: "absolute",
+      top: 11,
+      right: -10,
+      width: 0,
+      height: 0,
+      borderTop: "9px solid transparent",
+      borderBottom: "9px solid transparent",
+      borderLeft: "9px solid",
+      borderLeftColor: "#505050",
+      zIndex: -1,
+    },
+  }
+
   return (
     <Stack direction="row" sx={{ width: "100%", justifyContent: "flex-end" }}>
       <Stack direction="row" spacing={1} sx={{ p: 0.5 }}>
-        <Box sx={{ border: 1, borderRadius: 1, p: 1 }}>
+        <Box sx={chatBubbleStyle}>
           <ReactMarkdown>{message.content}</ReactMarkdown>
         </Box>
         <Box>
