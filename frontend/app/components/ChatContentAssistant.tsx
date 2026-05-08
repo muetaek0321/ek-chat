@@ -1,5 +1,6 @@
 "use client"
 
+import ReactMarkdown from "react-markdown"
 import Image from "next/image"
 import Stack from "@mui/material/Stack"
 import Box from "@mui/material/Box"
@@ -20,7 +21,7 @@ export default function ChatContentAssistant({ message }: ChatContentAssistantPr
           <Image src="/assistant.png" alt="assistant_icon" width={50} height={50} />
         </Box>
         <Box sx={{ border: 1, borderRadius: 1, p: 1 }}>
-          {message.content}
+          <ReactMarkdown>{message.content}</ReactMarkdown>
         </Box>
       </Stack>
     </Stack>

@@ -1,5 +1,6 @@
 "use client"
 
+import ReactMarkdown from "react-markdown"
 import Image from "next/image"
 import Stack from "@mui/material/Stack"
 import Box from "@mui/material/Box"
@@ -17,7 +18,7 @@ export default function ChatContentUser({ message }: ChatContentUserProps) {
     <Stack direction="row" sx={{ width: "100%", justifyContent: "flex-end" }}>
       <Stack direction="row" spacing={1} sx={{ p: 0.5 }}>
         <Box sx={{ border: 1, borderRadius: 1, p: 1 }}>
-          {message.content}
+          <ReactMarkdown>{message.content}</ReactMarkdown>
         </Box>
         <Box>
           <Image src="/user.png" alt="user_icon" width={50} height={50} />
