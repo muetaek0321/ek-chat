@@ -7,10 +7,14 @@ from uuid import uuid4
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+from modules.logger import get_logger
 from modules.schema import ChatHistory, ChatInfo, ChatInfoList, ChatMessage, GenerateChatResponse
 
 # .envファイルから環境変数を読み込む
 load_dotenv()
+
+# ロガーのインスタンスを取得
+logger = get_logger(__name__)
 
 
 class ChatManager:
@@ -24,6 +28,9 @@ class ChatManager:
 
         # 保存済みのチャット履歴の読み込み
         self.load_chat_list()
+
+        # SystemPromptの読み込み
+        self.load_system_prompt()
 
         # LLMの初期化
         self.llm = ChatGoogleGenerativeAI(model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"))
@@ -105,6 +112,18 @@ class ChatManager:
 
         return new_chat_info
 
+    def load_system_prompt(self) -> None:
+        """SystemPromptの読み込み"""
+        system_prompt_path = self.data_dir.joinpath("system_prompt.md")
+
+        if system_prompt_path.exists():
+            with open(system_prompt_path, mode="r", encoding="utf-8") as f:
+                self.system_prompt = ChatMessage(role="system", content=f.read())
+                logger.info("SystemPromptを読み込みました。")
+        else:
+            self.system_prompt = None
+            logger.warning("SystemPromptのファイルが見つかりません。")
+
     def generate(self, user_message: ChatMessage) -> GenerateChatResponse:
         """ユーザーからの入力に対してアシスタントの応答を生成する
 
@@ -115,9 +134,15 @@ class ChatManager:
             GenerateChatResponse: アシスタントからの応答メッセージと新しいチャット情報
         """
         self.chat_history.append(user_message.model_dump())
+        input_messages = self.chat_history.copy()
+
+        # SystemPromptが設定されている場合はチャット履歴の先頭にSystemPromptを追加
+        if self.system_prompt:
+            logger.debug("SystemPromptを利用します。")
+            input_messages.insert(0, self.system_prompt.model_dump())
 
         # LLMを使用して応答を生成
-        response = self.llm.invoke(self.chat_history)
+        response = self.llm.invoke(input_messages)
 
         # 生成された応答をChatMessage形式で返す
         assistant_message = ChatMessage(role="assistant", content=response.content)
