@@ -17,7 +17,6 @@ export default function Chat() {
   const userInputHeight = 50
 
   const [chatInfoList, setChatInfoList] = useState<ChatInfo[]>([])
-  const [currentChatId, setCurrentChatId] = useState<string>("")
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([])
 
   // アプリ立ち上げ時に保存済みチャットの情報の取得
@@ -30,7 +29,7 @@ export default function Chat() {
             createNewChat()
           } else {
             setChatInfoList(chatInfoList)
-            setCurrentChatId(chatInfoList[0].chatId)
+            getChatHistory(chatInfoList[0].chatId)
           }
         } else {
           alert("チャット情報の取得に失敗しました。")
@@ -47,7 +46,7 @@ export default function Chat() {
       .then((res: ApiResponse) => {
         if (res.success) {
           const newChatInfo: ChatInfo = res.data
-          setCurrentChatId(newChatInfo.chatId)
+          getChatHistory(newChatInfo.chatId)
           // 既に空のチャットが存在しない場合のみからのチャットを追加
           if (!chatInfoList.some(chat => chat.chatId === "new")) {
             setChatInfoList((prev) => [...prev, newChatInfo])
@@ -61,9 +60,9 @@ export default function Chat() {
   }
 
   // チャット履歴の取得
-  const getChatHistory = async () => {
+  const getChatHistory = async (chatId: string) => {
     const query = new URLSearchParams({
-      chatId: currentChatId
+      chatId: chatId
     }).toString()
     await getRequest(`/history?${query}`)
       .then((res: ApiResponse) => {
@@ -82,11 +81,6 @@ export default function Chat() {
     if (chatInfoList.length === 0) getChatInfoList()
   }, [])
 
-  // チャットIDがセットされるたびに対応するチャット履歴を取得
-  useEffect(() => {
-    if (currentChatId !== "") getChatHistory()
-  }, [currentChatId])
-
   return (
     <Stack direction="row" sx={{ height: "100vh" }}>
 
@@ -97,7 +91,7 @@ export default function Chat() {
         />
         <ChatList 
           chatInfoList={chatInfoList} 
-          setCurrentChatId={setCurrentChatId} 
+          getChatHistory={getChatHistory} 
         />
       </Stack>
 
