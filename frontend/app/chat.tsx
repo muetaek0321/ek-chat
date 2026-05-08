@@ -16,6 +16,8 @@ export default function Chat() {
   const chatListWidth = 250
   const userInputHeight = 50
 
+  const [isRunning, setIsRunning] = useState<boolean>(false)
+
   const [chatInfoList, setChatInfoList] = useState<ChatInfo[]>([])
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([])
 
@@ -85,13 +87,15 @@ export default function Chat() {
     <Stack direction="row" sx={{ height: "100vh" }}>
 
       {/* チャット一覧 */}
-      <Stack spacing={1} sx={{ width: chatListWidth, borderRight: 1, borderColor: "divider" }}>
+      <Stack spacing={1} sx={{ width: chatListWidth, borderRight: 1, borderColor: "divider" }} >
         <NewChatButton 
           createNewChat={createNewChat}
+          isRunning={isRunning}
         />
         <ChatList 
           chatInfoList={chatInfoList} 
           getChatHistory={getChatHistory} 
+          isRunning={isRunning}
         />
       </Stack>
 
@@ -109,7 +113,12 @@ export default function Chat() {
           ))}
         </Box>
         <Box sx={{ height: userInputHeight, borderTop: 1, borderColor: "divider" }}>
-          <UserInput setChatHistory={setChatHistory} setChatInfoList={setChatInfoList}/>
+          <UserInput 
+            setChatHistory={setChatHistory} 
+            setChatInfoList={setChatInfoList}
+            isRunning={isRunning}
+            setIsRunning={setIsRunning}
+          />
         </Box>
 
       </Box>

@@ -13,14 +13,22 @@ import { ChatMessage, ChatInfo } from "@types"
 export interface UserInputProps {
   setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>
   setChatInfoList: React.Dispatch<React.SetStateAction<ChatInfo[]>>
+  isRunning: boolean
+  setIsRunning: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 
-export default function UserInput({ setChatHistory, setChatInfoList }: UserInputProps) {
+export default function UserInput({ 
+  setChatHistory, setChatInfoList, isRunning, setIsRunning 
+}: UserInputProps) {
   const [inputText, setInputText] = useState<string>("")
 
   // 入力内容の送信時の処理
   const handleSendUserInput = async () => {
+    // 生成中は各種機能を無効化する 
+    setIsRunning(true)
+
+    // backendと通信して返答生成
     const userInput = {
       role: "user", 
       content: inputText
@@ -39,6 +47,8 @@ export default function UserInput({ setChatHistory, setChatInfoList }: UserInput
           }
           // 入力欄をクリア
           setInputText("")
+          // 各種機能の有効化
+          setIsRunning(false)
         } else {
           alert("返答の生成に失敗しました。")
           console.log("Error:", res.error)
@@ -61,12 +71,13 @@ export default function UserInput({ setChatHistory, setChatInfoList }: UserInput
         variant="outlined" size="small" fullWidth rows={2} value={inputText} 
         onChange={(e) => setInputText(e.target.value)}
         onKeyDown={handleEnterKeyPress}
+        disabled={isRunning}
       />
       <IconButton 
         color="primary"
         sx={{ height: "100%" }} 
         onClick={handleSendUserInput} 
-        disabled={inputText.trim() === ""}
+        disabled={inputText.trim() === "" || isRunning}
       >
         <SendIcon fontSize="large"/>
       </IconButton>
