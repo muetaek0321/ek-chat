@@ -5,11 +5,12 @@ import ChatIcon from '@mui/icons-material/Chat';
 
 
 export interface NewChatButtonProps {
-  createNewChat: () => Promise<void>
+  createNewChat: () => void
+  isRunning: boolean
 }
 
 
-export default function NewChatButton({ createNewChat }: NewChatButtonProps) {
+export default function NewChatButton({ createNewChat, isRunning }: NewChatButtonProps) {
   return (
     <Button 
       variant="contained" 
@@ -17,6 +18,7 @@ export default function NewChatButton({ createNewChat }: NewChatButtonProps) {
       startIcon={<ChatIcon fontSize="small"/>}
       fullWidth
       onClick={createNewChat}
+      disabled={isRunning}
     >
       新しいチャット
     </Button>
