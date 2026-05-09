@@ -33,7 +33,11 @@ chat = ChatManager()
 
 @app.get("/", response_class=RedirectResponse)
 def root() -> RedirectResponse:
-    """ルートエンドポイント: SwaggerUIにRedirectする"""
+    """ルートエンドポイント: SwaggerUIにRedirectする
+
+    Returns:
+        RedirectResponse: SwaggerUIへのリダイレクトレスポンス
+    """
 
     return RedirectResponse(url="/docs")
 
@@ -42,7 +46,14 @@ def root() -> RedirectResponse:
 async def init_app(
     logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> ChatInfoList:
-    """チャットボットアプリの初期データを取得"""
+    """チャットボットアプリの初期データを取得
+
+    Args:
+        logger (logging.Logger): エンドポイント用のロガー
+
+    Returns:
+        ChatInfoList: チャット一覧のデータ
+    """
     logger.debug("アプリの初期データを取得します")
 
     # 保存済みのチャット一覧を取得
@@ -55,7 +66,14 @@ async def init_app(
 async def create_new_chat(
     logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> ChatInfo:
-    """新しいチャットを作成"""
+    """新しいチャットを作成
+
+    Args:
+        logger (logging.Logger): エンドポイント用のロガー
+
+    Returns:
+        ChatInfo: 作成された新しいチャットの情報
+    """
     logger.debug("新しいチャットを作成します")
 
     # 新しいチャットを作成
@@ -69,7 +87,15 @@ async def get_chat_history(
     query: Annotated[ChatId, Depends()],
     logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> ChatHistory:
-    """チャットの履歴を返す"""
+    """チャットの履歴を返す
+
+    Args:
+        query (ChatId): クエリパラメータ（チャットID）
+        logger (logging.Logger): エンドポイント用のロガー
+
+    Returns:
+        ChatHistory: 指定されたチャットIDのチャット履歴データ
+    """
     chat_id = query.chat_id
     logger.debug(f"チャットID: {chat_id}")
 
@@ -83,7 +109,15 @@ async def get_chat_history(
 async def generate_chat_response(
     chat_message: ChatMessage, logger: Annotated[logging.Logger, Depends(get_endpoint_logger)]
 ) -> GenerateChatResponse:
-    """userの入力に対してassistantの応答を返す"""
+    """userの入力に対してassistantの応答を返す
+
+    Args:
+        chat_message (ChatMessage): リクエストボディ（ユーザが入力したメッセージ）
+        logger (logging.Logger): エンドポイント用のロガー
+
+    Returns:
+        GenerateChatResponse: 生成した返答文のデータとチャット情報
+    """
     logger.debug(chat_message.model_dump())
 
     # 返答を生成

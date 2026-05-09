@@ -36,7 +36,11 @@ class ChatManager:
         self.llm = ChatGoogleGenerativeAI(model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"))
 
     def load_chat_list(self) -> ChatInfoList:
-        """保存済みのチャット一覧の情報を読み込み"""
+        """保存済みのチャット一覧の情報を読み込み
+
+        Returns:
+            ChatInfoList: 保存済みチャット一覧のデータ
+        """
         chat_info_list = []
         chat_history_dir = self.data_dir.joinpath("chat_history")
 
@@ -52,7 +56,11 @@ class ChatManager:
         return ChatInfoList(chat_info_list)
 
     def new_chat(self) -> ChatInfo:
-        """新規チャットの作成"""
+        """新規チャットの作成
+
+        Returns:
+            ChatInfo: 新しいチャットの情報データ
+        """
         # 未設定のチャットID
         new_chat_id = "new"
 
@@ -68,6 +76,9 @@ class ChatManager:
 
         Args:
             chat_id (str): 読み込むチャットのID
+
+        Returns:
+            ChatHistory: 読み込んだチャット履歴データ
         """
         # 新規チャットの指定の場合
         if chat_id == "new":
