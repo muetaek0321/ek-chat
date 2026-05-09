@@ -31,9 +31,14 @@ app = FastAPI()
 chat = ChatManager()
 
 
-@app.get("/", response_class=RedirectResponse)
+@app.get(
+    "/",
+    response_class=RedirectResponse,
+    summary="SwaggerUIにRedirect",
+    description="ルートエンドポイント: SwaggerUIにRedirectする",
+)
 def root() -> RedirectResponse:
-    """ルートエンドポイント: SwaggerUIにRedirectする
+    """ルートエンドポイント: SwaggerUIにRedirect
 
     Returns:
         RedirectResponse: SwaggerUIへのリダイレクトレスポンス
@@ -42,7 +47,12 @@ def root() -> RedirectResponse:
     return RedirectResponse(url="/docs")
 
 
-@app.get("/init", response_model=ChatInfoList)
+@app.get(
+    "/init",
+    response_model=ChatInfoList,
+    summary="アプリの初期データを取得",
+    description="チャットボットアプリの初期データを取得するエンドポイント",
+)
 async def init_app(
     logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> ChatInfoList:
@@ -62,7 +72,12 @@ async def init_app(
     return chat_info_list
 
 
-@app.put("/new", response_model=ChatInfo)
+@app.put(
+    "/new",
+    response_model=ChatInfo,
+    summary="新しいチャットを作成",
+    description="新しいチャットを作成するエンドポイント",
+)
 async def create_new_chat(
     logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> ChatInfo:
@@ -82,12 +97,17 @@ async def create_new_chat(
     return new_chat_info
 
 
-@app.get("/history", response_model=ChatHistory)
+@app.get(
+    "/history",
+    response_model=ChatHistory,
+    summary="チャットの履歴を取得",
+    description="チャットIDを指定して対応するチャットの履歴を取得するエンドポイント",
+)
 async def get_chat_history(
     query: Annotated[ChatId, Depends()],
     logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> ChatHistory:
-    """チャットの履歴を返す
+    """チャットの履歴を取得
 
     Args:
         query (ChatId): クエリパラメータ（チャットID）
@@ -105,11 +125,16 @@ async def get_chat_history(
     return chat_history
 
 
-@app.post("/chat", response_model=GenerateChatResponse)
+@app.post(
+    "/chat",
+    response_model=GenerateChatResponse,
+    summary="userの入力に対してassistantの応答を生成",
+    description="アプリでのuserの入力に対してassistant（生成AI）の応答を生成するエンドポイント",
+)
 async def generate_chat_response(
     chat_message: ChatMessage, logger: Annotated[logging.Logger, Depends(get_endpoint_logger)]
 ) -> GenerateChatResponse:
-    """userの入力に対してassistantの応答を返す
+    """userの入力に対してassistantの生成
 
     Args:
         chat_message (ChatMessage): リクエストボディ（ユーザが入力したメッセージ）
