@@ -1,4 +1,4 @@
-"use server"
+'use server'
 
 const BACKEND_URL = process.env.BACKEND_URL
 
@@ -14,14 +14,14 @@ export interface ApiResponse<T = any> {
 const request = async <T = any>(
   method: string,
   apiUrl: string,
-  body?: Record<string, any>
+  body?: Record<string, any>,
 ): Promise<ApiResponse<T>> => {
   try {
     const url = `${BACKEND_URL}${apiUrl}`
     const options: RequestInit = {
       method,
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     }
 
@@ -46,7 +46,7 @@ const request = async <T = any>(
       status: response.status,
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error"
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     console.error(`Error in ${method} request:`, error)
     return {
       success: false,
@@ -56,41 +56,37 @@ const request = async <T = any>(
 }
 
 // GET リクエスト
-export const getRequest = async <T = any>(
-  apiUrl: string
-): Promise<ApiResponse<T>> => {
-  return request<T>("GET", apiUrl)
+export const getRequest = async <T = any>(apiUrl: string): Promise<ApiResponse<T>> => {
+  return request<T>('GET', apiUrl)
 }
 
 // POST リクエスト
 export const postRequest = async <T = any>(
   apiUrl: string,
-  body: Record<string, any> = {}
+  body: Record<string, any> = {},
 ): Promise<ApiResponse<T>> => {
-  return request<T>("POST", apiUrl, body)
+  return request<T>('POST', apiUrl, body)
 }
 
 // PUT リクエスト
 export const putRequest = async <T = any>(
   apiUrl: string,
-  body: Record<string, any> = {}
+  body: Record<string, any> = {},
 ): Promise<ApiResponse<T>> => {
-  return request<T>("PUT", apiUrl, body)
+  return request<T>('PUT', apiUrl, body)
 }
 
 // DELETE リクエスト
-export const deleteRequest = async <T = any>(
-  apiUrl: string
-): Promise<ApiResponse<T>> => {
-  return request<T>("DELETE", apiUrl)
+export const deleteRequest = async <T = any>(apiUrl: string): Promise<ApiResponse<T>> => {
+  return request<T>('DELETE', apiUrl)
 }
 
 // PATCH リクエスト
 export const patchRequest = async <T = any>(
   apiUrl: string,
-  body: Record<string, any> = {}
+  body: Record<string, any> = {},
 ): Promise<ApiResponse<T>> => {
-  return request<T>("PATCH", apiUrl, body)
+  return request<T>('PATCH', apiUrl, body)
 }
 
 // 汎用fetchData（後方互換性のため）
