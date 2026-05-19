@@ -4,7 +4,7 @@ from typing import Annotated
 
 import uvicorn
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, status
 from fastapi.responses import RedirectResponse
 
 from modules.chat_manager import ChatManager
@@ -95,6 +95,29 @@ async def create_new_chat(
     new_chat_info = chat.new_chat()
 
     return new_chat_info
+
+
+@app.delete(
+    "/delete",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="チャットを削除",
+    description="指定したIDのチャットを削除",
+)
+async def delete_chat(
+    query: Annotated[ChatId, Depends()],
+    logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
+) -> None:
+    """チャットを削除
+
+    Args:
+        query (ChatId): クエリパラメータ（チャットID）
+        logger (logging.Logger): エンドポイント用のロガー
+    """
+    chat_id = query.chat_id
+    logger.debug(f"チャットを削除します: {chat_id}")
+
+    # チャットの削除
+    chat.delete_chat(chat_id)
 
 
 @app.get(

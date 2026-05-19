@@ -71,6 +71,16 @@ class ChatManager:
 
         return new_chat_info
 
+    def delete_chat(self, chat_id: str) -> None:
+        """チャットの削除
+
+        Args:
+            chat_id (str): 削除するチャットのID
+        """
+        # 指定IDのチャットを削除
+        history_path = self.data_dir.joinpath("chat_history", f"{chat_id}.json")
+        history_path.unlink()
+
     def load_chat_history(self, chat_id: str) -> ChatHistory:
         """チャット履歴の読み込み
 
