@@ -26,9 +26,6 @@ class ChatManager:
         self.current_chat_id = ""
         self.chat_history = []
 
-        # 保存済みのチャット履歴の読み込み
-        self.load_chat_list()
-
         # SystemPromptの読み込み
         self.load_system_prompt()
 
@@ -77,9 +74,13 @@ class ChatManager:
         Args:
             chat_id (str): 削除するチャットのID
         """
-        # 指定IDのチャットを削除
-        history_path = self.data_dir.joinpath("chat_history", f"{chat_id}.json")
-        history_path.unlink()
+        if chat_id == "new":
+            # NOTE: 新規チャットの時点では履歴ファイルが存在しないため
+            logger.info("新規チャットの削除のためスキップ")
+        else:
+            # 指定IDのチャット履歴ファイルを削除
+            history_path = self.data_dir.joinpath("chat_history", f"{chat_id}.json")
+            history_path.unlink()
 
     def load_chat_history(self, chat_id: str) -> ChatHistory:
         """チャット履歴の読み込み
