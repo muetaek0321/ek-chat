@@ -90,7 +90,9 @@ export default function Chat() {
         <NewChatButton createNewChat={createNewChat} isRunning={isRunning} />
         <ChatList
           chatInfoList={chatInfoList}
+          setChatInfoList={setChatInfoList}
           getChatHistory={getChatHistory}
+          createNewChat={createNewChat}
           isRunning={isRunning}
         />
       </Stack>
