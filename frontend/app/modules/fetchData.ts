@@ -30,7 +30,15 @@ const request = async <T = any>(
     }
 
     const response = await fetch(url, options)
-    const data = await response.json()
+
+    let data
+    if (response.status === 204) {
+      // レスポンスデータが無いので空
+      data = {}
+    } else {
+      // レスポンスデータの取得
+      data = await response.json()
+    }
 
     if (!response.ok) {
       return {
