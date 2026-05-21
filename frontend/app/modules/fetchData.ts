@@ -3,7 +3,7 @@
 const BACKEND_URL = process.env.BACKEND_URL
 
 // APIレスポンスの型定義
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T> {
   success: boolean
   data?: T
   error?: string
@@ -11,11 +11,11 @@ export interface ApiResponse<T = any> {
 }
 
 // 共通のリクエスト処理
-const request = async <T = any>(
+const request = async <TResponse = unknown, TBody = unknown>(
   method: string,
   apiUrl: string,
-  body?: Record<string, any>,
-): Promise<ApiResponse<T>> => {
+  body?: TBody,
+): Promise<ApiResponse<TResponse>> => {
   try {
     const url = `${BACKEND_URL}${apiUrl}`
     const options: RequestInit = {
@@ -64,40 +64,39 @@ const request = async <T = any>(
 }
 
 // GET リクエスト
-export const getRequest = async <T = any>(apiUrl: string): Promise<ApiResponse<T>> => {
-  return request<T>('GET', apiUrl)
+export const getRequest = async <TResponse = unknown>(
+  apiUrl: string,
+): Promise<ApiResponse<TResponse>> => {
+  return request<TResponse>('GET', apiUrl)
 }
 
 // POST リクエスト
-export const postRequest = async <T = any>(
+export const postRequest = async <TResponse = unknown, TBody = unknown>(
   apiUrl: string,
-  body: Record<string, any> = {},
-): Promise<ApiResponse<T>> => {
-  return request<T>('POST', apiUrl, body)
+  body?: TBody,
+): Promise<ApiResponse<TResponse>> => {
+  return request<TResponse>('POST', apiUrl, body)
 }
 
 // PUT リクエスト
-export const putRequest = async <T = any>(
+export const putRequest = async <TResponse = unknown, TBody = unknown>(
   apiUrl: string,
-  body: Record<string, any> = {},
-): Promise<ApiResponse<T>> => {
-  return request<T>('PUT', apiUrl, body)
+  body?: TBody,
+): Promise<ApiResponse<TResponse>> => {
+  return request<TResponse>('PUT', apiUrl, body)
 }
 
 // DELETE リクエスト
-export const deleteRequest = async <T = any>(apiUrl: string): Promise<ApiResponse<T>> => {
-  return request<T>('DELETE', apiUrl)
+export const deleteRequest = async <TResponse = unknown>(
+  apiUrl: string,
+): Promise<ApiResponse<TResponse>> => {
+  return request<TResponse>('DELETE', apiUrl)
 }
 
 // PATCH リクエスト
-export const patchRequest = async <T = any>(
+export const patchRequest = async <TResponse = unknown, TBody = unknown>(
   apiUrl: string,
-  body: Record<string, any> = {},
-): Promise<ApiResponse<T>> => {
-  return request<T>('PATCH', apiUrl, body)
-}
-
-// 汎用fetchData（後方互換性のため）
-export const fetchData = async (apiUrl: string) => {
-  return getRequest(apiUrl)
+  body?: TBody,
+): Promise<ApiResponse<TResponse>> => {
+  return request<TResponse>('PATCH', apiUrl, body)
 }
