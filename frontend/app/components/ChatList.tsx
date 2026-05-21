@@ -40,8 +40,8 @@ export default function ChatList({
     const query = new URLSearchParams({
       chatId: chatId,
     }).toString()
-    await deleteRequest(`/delete?${query}`)
-      .then((res: ApiResponse) => {
+    await deleteRequest<undefined>(`/delete?${query}`)
+      .then((res: ApiResponse<undefined>) => {
         if (res.success) {
           // チャットリストから削除
           const deletedChatInfoList = chatInfoList.filter((e) => e.chatId !== chatId)

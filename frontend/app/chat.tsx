@@ -23,10 +23,10 @@ export default function Chat() {
 
   // アプリ立ち上げ時に保存済みチャットの情報の取得
   const getChatInfoList = async () => {
-    await getRequest('/init')
-      .then((res: ApiResponse) => {
-        if (res.success) {
-          const chatInfoList: ChatInfo[] = res.data
+    await getRequest<ChatInfo[]>('/init')
+      .then((res: ApiResponse<ChatInfo[]>) => {
+        if (res.success && res.data !== undefined) {
+          const chatInfoList = res.data
           if (chatInfoList.length === 0) {
             createNewChat()
           } else {
@@ -44,10 +44,10 @@ export default function Chat() {
   // 新しいチャットの作成
   const createNewChat = async () => {
     // 新しいチャットの作成APIを呼び出し
-    await putRequest('/new')
-      .then((res: ApiResponse) => {
-        if (res.success) {
-          const newChatInfo: ChatInfo = res.data
+    await putRequest<ChatInfo>('/new')
+      .then((res: ApiResponse<ChatInfo>) => {
+        if (res.success && res.data !== undefined) {
+          const newChatInfo = res.data
           getChatHistory(newChatInfo.chatId)
           // 既に空のチャットが存在しない場合のみからのチャットを追加
           if (!chatInfoList.some((chat) => chat.chatId === 'new')) {
@@ -66,9 +66,9 @@ export default function Chat() {
     const query = new URLSearchParams({
       chatId: chatId,
     }).toString()
-    await getRequest(`/history?${query}`)
-      .then((res: ApiResponse) => {
-        if (res.success) {
+    await getRequest<ChatMessage[]>(`/history?${query}`)
+      .then((res: ApiResponse<ChatMessage[]>) => {
+        if (res.success && res.data !== undefined) {
           setChatHistory(res.data)
         } else {
           alert('チャット履歴の取得に失敗しました。')

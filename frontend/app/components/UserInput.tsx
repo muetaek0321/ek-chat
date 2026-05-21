@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton'
 import SendIcon from '@mui/icons-material/Send'
 
 import { ApiResponse, postRequest } from '@modules/fetchData'
-import { ChatMessage, ChatInfo } from '@types'
+import { ChatMessage, ChatInfo, GeneratedChatMessage } from '@types'
 
 export interface UserInputProps {
   setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>
@@ -30,21 +30,23 @@ export default function UserInput({
     setIsRunning(true)
 
     // backendと通信して返答生成
-    const userInput = {
+    const userInput: ChatMessage = {
       role: 'user',
       content: inputText,
     }
-    await postRequest('/chat', userInput)
-      .then((res: ApiResponse) => {
-        if (res.success) {
+    await postRequest<GeneratedChatMessage>('/chat', userInput)
+      .then((res: ApiResponse<GeneratedChatMessage>) => {
+        if (res.success && res.data !== undefined) {
+          const response = res.data
           // チャット履歴に追加
-          setChatHistory((prev) => [...prev, userInput, res.data.assistantMessage])
+          setChatHistory((prev) => [...prev, userInput, response.assistantMessage])
           // 新しいチャットからの実行の場合はチャット情報も更新
-          if (res.data.newChatInfo) {
+          if (response.newChatInfo !== undefined) {
+            const newChatInfo = response.newChatInfo
             setChatInfoList((prev) =>
               prev.length === 0
-                ? [res.data.newChatInfo]
-                : prev.map((e) => (e.chatId === 'new' ? res.data.newChatInfo : e)),
+                ? [newChatInfo]
+                : prev.map((e) => (e.chatId === 'new' ? newChatInfo : e)),
             )
           }
           // 入力欄をクリア

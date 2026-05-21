@@ -9,3 +9,9 @@ export interface ChatMessage {
   role: 'user' | 'assistant'
   content: string
 }
+
+// チャット生成のレスポンスデータ
+export interface GeneratedChatMessage {
+  assistantMessage: ChatMessage
+  newChatInfo?: ChatInfo
+}
