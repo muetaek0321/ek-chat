@@ -16,6 +16,7 @@ from modules.schema import (
     ChatInfoList,
     ChatMessage,
     GenerateChatResponse,
+    SystemPromptText,
 )
 
 # .envファイルから環境変数を読み込む
@@ -146,6 +147,42 @@ async def get_chat_history(
     chat_history = chat.load_chat_history(chat_id=chat_id)
 
     return chat_history
+
+
+@app.get(
+    "/system_prompt",
+    response_model=SystemPromptText,
+    summary="SystemPromptのテキストを取得",
+    description="保存されたSystemPromptのテキストを取得するエンドポイント",
+)
+async def get_system_prompt(
+    logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
+) -> SystemPromptText:
+    """SystemPromptを取得"""
+    logger.debug("SystemPromptを取得します")
+
+    # 登録されたSystemPromptを取得
+    system_prompt = chat.get_system_prompt()
+
+    return system_prompt
+
+
+@app.patch(
+    "/system_prompt",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="SystemPromptのテキストを作成/更新",
+    description="SystemPromptのテキストを作成または更新するエンドポイント",
+)
+async def update_system_prompt(
+    system_prompt: SystemPromptText,
+    logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
+) -> None:
+    """SystemPromptを作成/更新"""
+    system_prompt_text = system_prompt.text
+    logger.debug(f"SystemPrompt: {system_prompt_text[:10]}...")
+
+    # SystemPromptを作成/更新し登録
+    chat.update_system_prompt(system_prompt_text)
 
 
 @app.post(

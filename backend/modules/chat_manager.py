@@ -8,7 +8,14 @@ from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from modules.logger import get_logger
-from modules.schema import ChatHistory, ChatInfo, ChatInfoList, ChatMessage, GenerateChatResponse
+from modules.schema import (
+    ChatHistory,
+    ChatInfo,
+    ChatInfoList,
+    ChatMessage,
+    GenerateChatResponse,
+    SystemPromptText,
+)
 
 # .envファイルから環境変数を読み込む
 load_dotenv()
@@ -145,6 +152,25 @@ class ChatManager:
         else:
             self.system_prompt = None
             logger.warning("SystemPromptのファイルが見つかりません。")
+
+    def get_system_prompt(self) -> SystemPromptText:
+        """SystemPromptを取得"""
+        system_prompt_text = self.system_prompt.content if self.system_prompt is not None else ""
+        return SystemPromptText(text=system_prompt_text)
+
+    def update_system_prompt(self, system_prompt_text: str) -> None:
+        """SystemPromptを作成/更新し登録
+
+        Args:
+            system_prompt_text: SystemPromptのテキスト
+        """
+        # ファイルを作成/更新
+        system_prompt_path = self.data_dir.joinpath("system_prompt.md")
+        with open(system_prompt_path, mode="w", encoding="utf-8") as f:
+            f.write(system_prompt_text)
+
+        # 登録中のSystemPromptの更新
+        self.system_prompt = ChatMessage(role="system", content=system_prompt_text)
 
     def generate(self, user_message: ChatMessage) -> GenerateChatResponse:
         """ユーザーからの入力に対してアシスタントの応答を生成する

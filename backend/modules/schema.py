@@ -37,6 +37,12 @@ class ChatInfoList(RootModel[list[ChatInfo]]):
     root: list[ChatInfo] = Field(..., description="保存済みのチャット情報のリスト")
 
 
+class SystemPromptText(EndpointModel):
+    """SystemPromptのモデル"""
+
+    text: str = Field(..., description="SystemPromptのテキスト")
+
+
 class ChatMessage(EndpointModel):
     """チャットメッセージのモデル"""
 
