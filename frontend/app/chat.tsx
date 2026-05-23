@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 
 import NewChatButton from '@components/NewChatButton'
+import SettingButton from '@components/SettingButton'
 import ChatList from '@components/ChatList'
 import ChatContentUser from '@components/ChatContentUser'
 import ChatContentAssistant from '@components/ChatContentAssistant'
@@ -88,6 +89,7 @@ export default function Chat() {
       {/* チャット一覧 */}
       <Stack spacing={1} sx={{ width: chatListWidth, borderRight: 1, borderColor: 'divider' }}>
         <NewChatButton createNewChat={createNewChat} isRunning={isRunning} />
+        <SettingButton isRunning={isRunning} />
         <ChatList
           chatInfoList={chatInfoList}
           setChatInfoList={setChatInfoList}
