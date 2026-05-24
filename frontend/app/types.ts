@@ -15,3 +15,8 @@ export interface GeneratedChatMessage {
   assistantMessage: ChatMessage
   newChatInfo?: ChatInfo
 }
+
+// SystemPrompt
+export interface SystemPrompt {
+  text: string
+}
