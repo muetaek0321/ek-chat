@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from modules.logger import get_logger
+from modules.response_generator.gemma4 import Gemma4ResponseGenerator
 from modules.schema import (
     ChatHistory,
     ChatInfo,
@@ -38,6 +39,8 @@ class ChatManager:
 
         # LLMの初期化
         self.llm = ChatGoogleGenerativeAI(model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"))
+        self.generator = Gemma4ResponseGenerator()
+        self.generator.setup()
 
     def load_chat_list(self) -> ChatInfoList:
         """保存済みのチャット一覧の情報を読み込み
@@ -190,10 +193,11 @@ class ChatManager:
             input_messages.insert(0, self.system_prompt.model_dump())
 
         # LLMを使用して応答を生成
-        response = self.llm.invoke(input_messages)
+        # response = self.llm.invoke(input_messages)
+        response = self.generator(input_messages)
 
         # 生成された応答をChatMessage形式で返す
-        assistant_message = ChatMessage(role="assistant", content=response.content)
+        assistant_message = ChatMessage(role="assistant", content=response)
         self.chat_history.append(assistant_message.model_dump())
 
         # チャット履歴を保存

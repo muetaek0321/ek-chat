@@ -9,12 +9,26 @@ dependencies = [
     "langchain-google-genai>=4.2.2",
     "python-dotenv>=1.2.2",
     "uvicorn>=0.46.0",
+    "torch>=2.11.0",
+    "torchvision>=0.26.0",
+    "transformers>=5.9.0",
+    "accelerate>=1.13.0",
 ]
 
 [dependency-groups]
 dev = [
     "ruff>=0.15.11",
 ]
+
+[tool.uv.sources]
+torch = [
+    { index = "torch-cu128" },
+]
+
+[[tool.uv.index]]
+name = "torch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
 
 [tool.ruff]
 line-length = 100
