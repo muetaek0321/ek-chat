@@ -1,13 +1,12 @@
 {
     "[python]": {
-        "editor.formatOnSave": true, 
+        "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
-            "source.fixAll": "explicit", 
-            "source.organizeImports": "explicit" 
+            "source.fixAll": "explicit",
+            "source.organizeImports": "explicit"
         },
         "editor.defaultFormatter": "charliermarsh.ruff"
     },
-    "python.defaultInterpreterPath": "${workspaceFolder}\\backend\\.venv\\Scripts\\python.exe",
 
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
