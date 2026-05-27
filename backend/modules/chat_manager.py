@@ -4,14 +4,19 @@ from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
 
+import torch
+
 from modules.logger import get_logger
 from modules.response_generator.gemini_api import GeminiResponseGenerator
+from modules.response_generator.gemma4 import Gemma4ResponseGenerator
 from modules.schema import (
     ChatHistory,
     ChatInfo,
     ChatInfoList,
     ChatMessage,
+    ChatModel,
     GenerateChatResponse,
+    Role,
     SystemPromptText,
 )
 
@@ -31,10 +36,16 @@ class ChatManager:
         # SystemPromptの読み込み
         self.load_system_prompt()
 
-        # LLMの初期化
-        # self.generator = Gemma4ResponseGenerator()
-        self.generator = GeminiResponseGenerator()
-        self.generator.setup()
+        # 使用可能なモデル一覧（GPUが使用可能かどうかで動的に変更）
+        gpu_available = torch.cuda.is_available()
+        self.chat_models = {
+            ChatModel.GEMINI: GeminiResponseGenerator(),
+            ChatModel.GEMMA4: Gemma4ResponseGenerator() if gpu_available else None,
+        }
+
+        # 使用するモデルの初期化
+        self.chat_model = self.chat_models[os.getenv("CHAT_MODEL", ChatModel.GEMINI)]
+        self.chat_model.setup()
 
     def load_chat_list(self) -> ChatInfoList:
         """保存済みのチャット一覧の情報を読み込み
@@ -167,7 +178,7 @@ class ChatManager:
             f.write(system_prompt_text)
 
         # 登録中のSystemPromptの更新
-        self.system_prompt = ChatMessage(role="system", content=system_prompt_text)
+        self.system_prompt = ChatMessage(role=Role.SYSTEM, content=system_prompt_text)
 
     def generate(self, user_message: ChatMessage) -> GenerateChatResponse:
         """ユーザーからの入力に対してアシスタントの応答を生成する
@@ -187,10 +198,10 @@ class ChatManager:
             input_messages.insert(0, self.system_prompt.model_dump())
 
         # LLMを使用して応答を生成
-        response = self.generator(input_messages)
+        response = self.chat_model(input_messages)
 
         # 生成された応答をChatMessage形式で返す
-        assistant_message = ChatMessage(role="assistant", content=response)
+        assistant_message = ChatMessage(role=Role.ASSISTANT, content=response)
         self.chat_history.append(assistant_message.model_dump())
 
         # チャット履歴を保存

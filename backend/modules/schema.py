@@ -9,7 +9,14 @@ class Role(StrEnum):
 
     USER = "user"
     ASSISTANT = "assistant"
-    System = "system"
+    SYSTEM = "system"
+
+
+class ChatModel(StrEnum):
+    """使用するモデル"""
+
+    GEMINI = "Gemini(API)"
+    GEMMA4 = "Gemma4"
 
 
 class EndpointModel(BaseModel):
