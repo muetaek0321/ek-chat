@@ -4,11 +4,8 @@ from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
 
-from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
-
 from modules.logger import get_logger
-from modules.response_generator.gemma4 import Gemma4ResponseGenerator
+from modules.response_generator.gemini_api import GeminiResponseGenerator
 from modules.schema import (
     ChatHistory,
     ChatInfo,
@@ -17,9 +14,6 @@ from modules.schema import (
     GenerateChatResponse,
     SystemPromptText,
 )
-
-# .envファイルから環境変数を読み込む
-load_dotenv()
 
 # ロガーのインスタンスを取得
 logger = get_logger(__name__)
@@ -38,8 +32,8 @@ class ChatManager:
         self.load_system_prompt()
 
         # LLMの初期化
-        self.llm = ChatGoogleGenerativeAI(model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"))
-        self.generator = Gemma4ResponseGenerator()
+        # self.generator = Gemma4ResponseGenerator()
+        self.generator = GeminiResponseGenerator()
         self.generator.setup()
 
     def load_chat_list(self) -> ChatInfoList:
@@ -193,7 +187,6 @@ class ChatManager:
             input_messages.insert(0, self.system_prompt.model_dump())
 
         # LLMを使用して応答を生成
-        # response = self.llm.invoke(input_messages)
         response = self.generator(input_messages)
 
         # 生成された応答をChatMessage形式で返す
