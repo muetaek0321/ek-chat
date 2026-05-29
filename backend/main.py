@@ -16,6 +16,7 @@ from modules.schema import (
     ChatInfoList,
     ChatMessage,
     GenerateChatResponse,
+    SelectedChatModel,
     SystemPromptText,
 )
 
@@ -183,6 +184,24 @@ async def update_system_prompt(
 
     # SystemPromptを作成/更新し登録
     chat.update_system_prompt(system_prompt_text)
+
+
+@app.patch(
+    "/model",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="選択されたモデルに変更し設定を適用",
+    description="選択されたモデルに変更し設定を適用するエンドポイント",
+)
+async def select_chat_model(
+    chat_model: SelectedChatModel,
+    logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
+) -> None:
+    """選択されたモデルに変更し設定を適用"""
+    selected_chat_model = chat_model.model
+    logger.debug(f"モデル: {selected_chat_model.value}")
+
+    # 選択されたモデルに変更し設定を適用
+    chat.change_chat_model(selected_chat_model)
 
 
 @app.post(

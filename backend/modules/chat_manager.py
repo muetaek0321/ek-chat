@@ -180,6 +180,16 @@ class ChatManager:
         # 登録中のSystemPromptの更新
         self.system_prompt = ChatMessage(role=Role.SYSTEM, content=system_prompt_text)
 
+    def change_chat_model(self, chat_model_name: ChatModel) -> None:
+        """選択されたチャットモデルに変更し設定を適用
+
+        Args:
+            chat_model_name (ChatModel): 変更するチャットモデル
+        """
+        # 使用するモデルを変更して初期化
+        self.chat_model = self.chat_models[chat_model_name.value]
+        self.chat_model.setup()
+
     def generate(self, user_message: ChatMessage) -> GenerateChatResponse:
         """ユーザーからの入力に対してアシスタントの応答を生成する
 

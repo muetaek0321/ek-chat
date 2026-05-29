@@ -50,6 +50,12 @@ class SystemPromptText(EndpointModel):
     text: str = Field(..., description="SystemPromptのテキスト")
 
 
+class SelectedChatModel(EndpointModel):
+    """選択したチャットモデル情報のモデル"""
+
+    model: ChatModel = Field(..., description="選択したチャットモデル")
+
+
 class ChatMessage(EndpointModel):
     """チャットメッセージのモデル"""
 
