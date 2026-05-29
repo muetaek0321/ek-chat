@@ -9,7 +9,14 @@ class Role(StrEnum):
 
     USER = "user"
     ASSISTANT = "assistant"
-    System = "system"
+    SYSTEM = "system"
+
+
+class ChatModel(StrEnum):
+    """使用するモデル"""
+
+    GEMINI = "Gemini(API)"
+    GEMMA4 = "Gemma4"
 
 
 class EndpointModel(BaseModel):
@@ -41,6 +48,12 @@ class SystemPromptText(EndpointModel):
     """SystemPromptのモデル"""
 
     text: str = Field(..., description="SystemPromptのテキスト")
+
+
+class SelectedChatModel(EndpointModel):
+    """選択したチャットモデル情報のモデル"""
+
+    model: ChatModel = Field(..., description="選択したチャットモデル")
 
 
 class ChatMessage(EndpointModel):
