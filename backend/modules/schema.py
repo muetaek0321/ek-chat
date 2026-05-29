@@ -13,7 +13,7 @@ class Role(StrEnum):
 
 
 class ChatModel(StrEnum):
-    """使用するモデル"""
+    """使用するチャットモデルの名称を定義するEnum"""
 
     GEMINI = "Gemini(API)"
     GEMMA4 = "Gemma4"
@@ -32,51 +32,51 @@ class EndpointModel(BaseModel):
 
 
 class ChatInfo(EndpointModel):
-    """チャットの情報を表すモデル"""
+    """チャットの情報を表すBaseModel"""
 
     chat_id: str = Field(..., description="チャットID")
     title: str = Field(..., description="チャットのタイトル")
 
 
 class ChatInfoList(RootModel[list[ChatInfo]]):
-    """チャット一覧データのモデル"""
+    """チャット一覧データのBaseModel"""
 
     root: list[ChatInfo] = Field(..., description="保存済みのチャット情報のリスト")
 
 
 class SystemPromptText(EndpointModel):
-    """SystemPromptのモデル"""
+    """SystemPromptのBaseModel"""
 
     text: str = Field(..., description="SystemPromptのテキスト")
 
 
 class SelectedChatModel(EndpointModel):
-    """選択したチャットモデル情報のモデル"""
+    """選択したチャットモデル情報のBaseModel"""
 
     model: ChatModel = Field(..., description="選択したチャットモデル")
 
 
 class ChatMessage(EndpointModel):
-    """チャットメッセージのモデル"""
+    """チャットメッセージのBaseModel"""
 
     role: Role = Field(..., description="メッセージのrole（例: user, assistant）")
     content: str = Field(..., description="メッセージの内容")
 
 
 class ChatHistory(RootModel[list[ChatMessage]]):
-    """チャット履歴のモデル"""
+    """チャット履歴のBaseModel"""
 
     root: list[ChatMessage] = Field(..., description="チャットメッセージのリスト")
 
 
 class ChatId(EndpointModel):
-    """チャットIDのモデル"""
+    """チャットIDのBaseModel"""
 
     chat_id: str | None = Field(None, description="チャットIDの指定")
 
 
 class GenerateChatResponse(EndpointModel):
-    """assistantの応答生成のレスポンスモデル"""
+    """assistantの応答生成のResponseModel"""
 
     assistant_message: ChatMessage = Field(..., description="生成されたassistantのメッセージ")
     new_chat_info: ChatInfo | None = Field(
