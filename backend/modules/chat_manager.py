@@ -15,6 +15,7 @@ from modules.schema import (
     ChatInfoList,
     ChatMessage,
     ChatModel,
+    ChatModelInfo,
     GenerateChatResponse,
     Role,
     SystemPromptText,
@@ -179,6 +180,22 @@ class ChatManager:
 
         # 登録中のSystemPromptの更新
         self.system_prompt = ChatMessage(role=Role.SYSTEM, content=system_prompt_text)
+
+    def get_chat_model_info(self) -> list[ChatModelInfo]:
+        """チャットモデル一覧の情報を取得"""
+        chat_model_info_list = []
+
+        # チャットモデルの情報を取得
+        for model_name, model in self.chat_models.items():
+            chat_model_info_list.append(
+                ChatModelInfo(
+                    model_name=model_name,
+                    is_use=model is not None,
+                    is_selected=model_name == self.chat_model.name,
+                )
+            )
+
+        return chat_model_info_list
 
     def change_chat_model(self, chat_model_name: ChatModel) -> None:
         """選択されたチャットモデルに変更し設定を適用

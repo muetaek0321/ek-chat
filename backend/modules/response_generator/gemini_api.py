@@ -4,7 +4,7 @@ import time
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from modules.logger import get_logger
-from modules.schema import ChatMessage
+from modules.schema import ChatMessage, ChatModel
 
 
 class GeminiResponseGenerator:
@@ -13,6 +13,7 @@ class GeminiResponseGenerator:
     def __init__(self) -> None:
         """初期化"""
         self.logger = get_logger(__name__)
+        self.name = ChatModel.GEMINI
 
         self.model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 

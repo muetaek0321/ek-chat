@@ -56,6 +56,21 @@ class SelectedChatModel(EndpointModel):
     model: ChatModel = Field(..., description="選択したチャットモデル")
 
 
+class ChatModelInfo(EndpointModel):
+    """チャットモデルの情報をまとめたBaseModel"""
+
+    model_name: ChatModel = Field(..., description="チャットモデルの名称")
+    is_use: bool = Field(..., description="チャットモデルが使用可能かどうか")
+    is_selected: bool = Field(..., description="チャットモデルが選択されているかどうか")
+
+
+class SettingsResponse(EndpointModel):
+    """設定項目のResponseModel"""
+
+    system_prompt: SystemPromptText = Field(..., description="SystemPrompt")
+    chat_model_info_list: list[ChatModelInfo] = Field(..., description="チャットモデルの情報リスト")
+
+
 class ChatMessage(EndpointModel):
     """チャットメッセージのBaseModel"""
 

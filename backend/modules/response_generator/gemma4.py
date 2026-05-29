@@ -5,7 +5,7 @@ from pathlib import Path
 from transformers import AutoModelForCausalLM, AutoProcessor
 
 from modules.logger import get_logger
-from modules.schema import ChatMessage
+from modules.schema import ChatMessage, ChatModel
 
 
 class Gemma4ResponseGenerator:
@@ -15,6 +15,7 @@ class Gemma4ResponseGenerator:
         """初期化"""
         self.data_dir = Path(os.getenv("DATA_DIR", "./develop"))
         self.logger = get_logger(__name__)
+        self.name = ChatModel.GEMMA4
 
         self.target_model_id = self.data_dir.joinpath("models", "gemma-4-E2B-it")
         self.assistant_model_id = self.data_dir.joinpath("models", "gemma-4-E2B-it-assistant")
