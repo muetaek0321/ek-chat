@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import MenuIcon from '@mui/icons-material/Menu'
 
 import NewChatButton from '@components/NewChatButton'
 import SettingButton from '@components/SettingButton'
@@ -15,12 +18,22 @@ import { ChatInfo, ChatMessage } from '@types'
 
 export default function Chat() {
   const chatListWidth = 250
+  const collapsedWidth = 48
   const userInputHeight = 50
 
   const [isRunning, setIsRunning] = useState<boolean>(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true)
 
   const [chatInfoList, setChatInfoList] = useState<ChatInfo[]>([])
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([])
+
+  // サイドバーの開閉切り替え
+  const toggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev)
+  }
+
+  // 現在のサイドバー幅
+  const currentSidebarWidth = isSidebarOpen ? chatListWidth : collapsedWidth
 
   // アプリ立ち上げ時に保存済みチャットの情報の取得
   const getChatInfoList = async () => {
@@ -86,21 +99,64 @@ export default function Chat() {
 
   return (
     <Stack direction="row" sx={{ height: '100vh' }}>
-      {/* チャット一覧 */}
-      <Stack spacing={1} sx={{ width: chatListWidth, borderRight: 1, borderColor: 'divider' }}>
-        <NewChatButton createNewChat={createNewChat} isRunning={isRunning} />
-        <SettingButton isRunning={isRunning} />
-        <ChatList
-          chatInfoList={chatInfoList}
-          setChatInfoList={setChatInfoList}
-          getChatHistory={getChatHistory}
-          createNewChat={createNewChat}
-          isRunning={isRunning}
-        />
-      </Stack>
+      {/* サイドバー（新規作成、設定、チャット一覧） */}
+      <Box
+        sx={{
+          width: currentSidebarWidth,
+          minWidth: currentSidebarWidth,
+          borderRight: 1,
+          borderColor: 'divider',
+          transition: 'width 0.3s ease, min-width 0.3s ease',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {/* サイドバー閉じる/開くボタン */}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: isSidebarOpen ? 'flex-end' : 'center',
+            p: 0.5,
+          }}
+        >
+          <IconButton onClick={toggleSidebar} size="small">
+            {isSidebarOpen ? <ChevronLeftIcon /> : <MenuIcon />}
+          </IconButton>
+        </Box>
 
-      {/* 入力とチャット履歴 */}
-      <Box sx={{ width: `calc(100vw - ${chatListWidth}px)` }}>
+        {/* サイドバーのコンテンツ（開いているときのみ表示） */}
+        <Box
+          sx={{
+            opacity: isSidebarOpen ? 1 : 0,
+            visibility: isSidebarOpen ? 'visible' : 'hidden',
+            transition: 'opacity 0.2s ease, visibility 0.2s ease',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+            flex: 1,
+            overflow: 'hidden',
+          }}
+        >
+          <NewChatButton createNewChat={createNewChat} isRunning={isRunning} />
+          <SettingButton isRunning={isRunning} />
+          <ChatList
+            chatInfoList={chatInfoList}
+            setChatInfoList={setChatInfoList}
+            getChatHistory={getChatHistory}
+            createNewChat={createNewChat}
+            isRunning={isRunning}
+          />
+        </Box>
+      </Box>
+
+      {/* チャット内容（チャット履歴、入力欄） */}
+      <Box
+        sx={{
+          width: `calc(100vw - ${currentSidebarWidth}px)`,
+          transition: 'width 0.3s ease',
+        }}
+      >
         <Box
           sx={{
             height: `calc(100vh - ${userInputHeight}px)`,
