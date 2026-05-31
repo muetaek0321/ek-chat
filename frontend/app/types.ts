@@ -20,3 +20,16 @@ export interface GeneratedChatMessage {
 export interface SystemPrompt {
   text: string
 }
+
+// チャットモデル情報
+export interface ChatModelInfo {
+  modelName: string
+  isUse: boolean
+  isSelected: boolean
+}
+
+// 設定項目
+export interface Settings {
+  systemPrompt: SystemPrompt
+  chatModelInfoList: ChatModelInfo[]
+}

@@ -17,6 +17,7 @@ from modules.schema import (
     ChatMessage,
     GenerateChatResponse,
     SelectedChatModel,
+    SettingsResponse,
     SystemPromptText,
 )
 
@@ -151,21 +152,28 @@ async def get_chat_history(
 
 
 @app.get(
-    "/system_prompt",
-    response_model=SystemPromptText,
-    summary="SystemPromptのテキストを取得",
-    description="保存されたSystemPromptのテキストを取得するエンドポイント",
+    "/settings",
+    response_model=SettingsResponse,
+    summary="設定項目のデータを取得",
+    description="SystemPromptと設定されたモデルのデータを取得するエンドポイント",
 )
-async def get_system_prompt(
+async def get_settings(
     logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
-) -> SystemPromptText:
-    """SystemPromptを取得"""
-    logger.debug("SystemPromptを取得します")
+) -> SettingsResponse:
+    """設定項目のデータを取得"""
+    logger.debug("設定項目のデータを取得します")
 
-    # 登録されたSystemPromptを取得
+    # 設定を取得
     system_prompt = chat.get_system_prompt()
+    chat_model_info_list = chat.get_chat_model_info()
 
-    return system_prompt
+    # レスポンスデータを作成
+    response = SettingsResponse(
+        system_prompt=system_prompt,
+        chat_model_info_list=chat_model_info_list,
+    )
+
+    return response
 
 
 @app.patch(
