@@ -7,11 +7,16 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import Tabs from '@mui/material/Tabs'
+import Tab from '@mui/material/Tab'
 import SettingsIcon from '@mui/icons-material/Settings'
 import CloseIcon from '@mui/icons-material/Close'
 
+import { CustomTabPanel, a11yProps } from './TabPanel'
 import { ApiResponse, getRequest, patchRequest } from '@modules/fetchData'
-import { SystemPrompt } from '@types'
+import { SystemPrompt, ChatModelInfo, Settings } from '@types'
 import { sidebarButtonStyle, commonModalStyle } from './commonStyles'
 
 export interface SettingButtonProps {
@@ -20,19 +25,29 @@ export interface SettingButtonProps {
 
 export default function SettingButton({ isRunning }: SettingButtonProps) {
   const modalWidth = '50vw'
-  const modalHeight = '400px'
+  const modalHeight = '480px'
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false)
+  const [tabNumber, setTabNumber] = useState<number>(0)
+  const tabContentHeight = '290px'
 
   const [systemPromptText, setSystemPromptText] = useState<string>('')
+  const [chatModelList, setChatModelList] = useState<ChatModelInfo[]>([])
+  const [selectedChatModel, setSelectedChatModel] = useState<string>('')
 
   // SystemPromptの取得
   const getSystemPrompt = async () => {
-    await getRequest<SystemPrompt>('/system_prompt')
-      .then((res: ApiResponse<SystemPrompt>) => {
+    await getRequest<Settings>('/settings')
+      .then((res: ApiResponse<Settings>) => {
         if (res.success && res.data !== undefined) {
-          setSystemPromptText(res.data.text)
+          // システムプロンプトを取得
+          setSystemPromptText(res.data.systemPrompt.text)
+          // チャットモデルの情報を取得
+          setChatModelList(res.data.chatModelInfoList)
+          setSelectedChatModel(
+            res.data.chatModelInfoList.find((model) => model.isSelected)?.modelName || '',
+          )
         } else {
-          alert('システムプロンプトの取得に失敗しました。')
+          alert('設定項目の取得に失敗しました。')
           console.log('Error:', res.error)
         }
       })
@@ -57,6 +72,24 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
       .catch((err) => console.log('Error:', err))
   }
 
+  // チャットモデル情報の登録
+  const registerChatModel = async () => {
+    const chatModelSetting = {
+      model: selectedChatModel,
+    }
+    await patchRequest<undefined>('/model', chatModelSetting)
+      .then((res: ApiResponse<undefined>) => {
+        if (res.success) {
+          // 登録後にモーダルを閉じる
+          setModalIsOpen(false)
+        } else {
+          alert('チャットモデルの登録に失敗しました。')
+          console.log('Error:', res.error)
+        }
+      })
+      .catch((err) => console.log('Error:', err))
+  }
+
   // モーダルウィンドウを開いたときの処理
   const openModal = () => {
     setModalIsOpen(true)
@@ -68,13 +101,25 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
     setSystemPromptText(event.target.value)
   }
 
-  // SystemPromptの登録ボタンの処理
-  const handleRegisterSystemPromptButton = () => {
-    // 未入力状態の場合はアラート表示
-    if (systemPromptText === '') {
-      alert('未入力のため登録できません。')
+  // チャットモデル選択プルダウンの処理
+  const handleSelectChatModel = (event: SelectChangeEvent<string>) => {
+    setSelectedChatModel(event.target.value)
+  }
+
+  // 登録ボタンの処理
+  const handleRegisterButton = () => {
+    if (tabNumber === 0) {
+      // SystemPromptが未入力状態の場合はアラート表示
+      if (systemPromptText === '') {
+        alert('未入力のため登録できません。')
+      } else {
+        registerSystemPrompt()
+      }
+    } else if (tabNumber === 1) {
+      // チャットモデルの登録
+      registerChatModel()
     } else {
-      registerSystemPrompt()
+      alert('Error: このタブの登録機能が設定されていません。')
     }
   }
 
@@ -118,20 +163,54 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
             </Button>
           </Stack>
 
-          <Stack direction="row" sx={{ justifyContent: 'center', px: 2.5 }}>
-            <TextField
-              value={systemPromptText}
-              onChange={handleEditSystemPrompt}
-              multiline
-              rows={10}
-              maxRows={10}
-              fullWidth
-              sx={{ bgcolor: '#ffffff' }}
-            />
-          </Stack>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs
+              value={tabNumber}
+              onChange={(event: React.SyntheticEvent, number: number) => setTabNumber(number)}
+              variant="fullWidth"
+            >
+              <Tab label="システムプロンプトの編集" {...a11yProps(0)} />
+              <Tab label="チャットモデルの設定" {...a11yProps(1)} />
+            </Tabs>
+          </Box>
+
+          {/* システムプロンプトの編集タブ */}
+          <CustomTabPanel value={tabNumber} index={0} sx={{ height: tabContentHeight }}>
+            <Stack direction="row" sx={{ justifyContent: 'center', px: 2.5 }}>
+              <TextField
+                value={systemPromptText}
+                onChange={handleEditSystemPrompt}
+                multiline
+                rows={10}
+                maxRows={10}
+                fullWidth
+                sx={{ bgcolor: '#ffffff' }}
+              />
+            </Stack>
+          </CustomTabPanel>
+
+          {/* チャットモデルの設定タブ */}
+          <CustomTabPanel value={tabNumber} index={1} sx={{ height: tabContentHeight }}>
+            <Stack direction="row" sx={{ justifyContent: 'center', px: 2.5 }}>
+              <Box sx={{ px: 1, py: 2 }}>
+                <Typography variant="body1">チャットモデル選択:</Typography>
+              </Box>
+              <Select
+                value={selectedChatModel}
+                onChange={handleSelectChatModel}
+                sx={{ width: `calc(${modalWidth} - 280px)`, bgcolor: '#ffffff' }}
+              >
+                {chatModelList.map((model) => (
+                  <MenuItem key={model.modelName} value={model.modelName} disabled={!model.isUse}>
+                    {model.modelName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Stack>
+          </CustomTabPanel>
 
           <Stack direction="row-reverse" sx={{ p: 2 }}>
-            <Button variant="contained" color="inherit" onClick={handleRegisterSystemPromptButton}>
+            <Button variant="contained" color="inherit" onClick={handleRegisterButton}>
               登録
             </Button>
           </Stack>
