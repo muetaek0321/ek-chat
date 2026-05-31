@@ -14,6 +14,7 @@ import Tab from '@mui/material/Tab'
 import SettingsIcon from '@mui/icons-material/Settings'
 import CloseIcon from '@mui/icons-material/Close'
 
+import LoadingDialog from './LoadingDialog'
 import { CustomTabPanel, a11yProps } from './TabPanel'
 import { ApiResponse, getRequest, patchRequest } from '@modules/fetchData'
 import { SystemPrompt, ChatModelInfo, Settings } from '@types'
@@ -33,6 +34,7 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
   const [systemPromptText, setSystemPromptText] = useState<string>('')
   const [chatModelList, setChatModelList] = useState<ChatModelInfo[]>([])
   const [selectedChatModel, setSelectedChatModel] = useState<string>('')
+  const [loadingDialogIsOpen, setLoadingDialogIsOpen] = useState<boolean>(false)
 
   // SystemPromptの取得
   const getSystemPrompt = async () => {
@@ -74,6 +76,9 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
 
   // チャットモデル情報の登録
   const registerChatModel = async () => {
+    // 処理中にダイアログを表示
+    setLoadingDialogIsOpen(true)
+
     const chatModelSetting = {
       model: selectedChatModel,
     }
@@ -83,11 +88,18 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
           // 登録後にモーダルを閉じる
           setModalIsOpen(false)
         } else {
+          // エラー表示
           alert('チャットモデルの登録に失敗しました。')
           console.log('Error:', res.error)
         }
+        // 読み込み中ダイアログを閉じる
+        setLoadingDialogIsOpen(false)
       })
-      .catch((err) => console.log('Error:', err))
+      .catch((err) => {
+        console.log('Error:', err)
+        // 読み込み中ダイアログを閉じる
+        setLoadingDialogIsOpen(false)
+      })
   }
 
   // モーダルウィンドウを開いたときの処理
@@ -216,6 +228,8 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
           </Stack>
         </Box>
       </Modal>
+
+      <LoadingDialog open={loadingDialogIsOpen} message="モデルの情報を登録しています..." />
     </Box>
   )
 }
