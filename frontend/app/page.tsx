@@ -1,7 +1,7 @@
 'use server'
 
-import Chat from './chat'
+import { redirect } from 'next/navigation'
 
 export default async function Home() {
-  return <Chat />
+  redirect('/chat')
 }

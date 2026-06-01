@@ -6,7 +6,7 @@ import TextField from '@mui/material/TextField'
 import IconButton from '@mui/material/IconButton'
 import SendIcon from '@mui/icons-material/Send'
 
-import { ApiResponse, postRequest } from '@modules/fetchData'
+import { ApiResponse, postRequest } from '@lib/fetchData'
 import { ChatMessage, ChatInfo, GeneratedChatMessage } from '@types'
 
 export interface UserInputProps {

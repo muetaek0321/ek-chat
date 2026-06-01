@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton'
 import BackspaceIcon from '@mui/icons-material/Backspace'
 import type { MouseEvent } from 'react'
 
-import { ApiResponse, deleteRequest } from '@modules/fetchData'
+import { ApiResponse, deleteRequest } from '@lib/fetchData'
 import { ChatInfo } from '@types'
 
 export interface ChatListProps {
