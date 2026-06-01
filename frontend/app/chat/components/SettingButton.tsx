@@ -14,11 +14,11 @@ import Tab from '@mui/material/Tab'
 import SettingsIcon from '@mui/icons-material/Settings'
 import CloseIcon from '@mui/icons-material/Close'
 
-import LoadingDialog from './LoadingDialog'
-import { CustomTabPanel, a11yProps } from './TabPanel'
-import { ApiResponse, getRequest, patchRequest } from '@modules/fetchData'
+import LoadingDialog from '@components/LoadingDialog'
+import { CustomTabPanel, a11yProps } from '@components/TabPanel'
+import { ApiResponse, getRequest, patchRequest } from '@lib/fetchData'
 import { SystemPrompt, ChatModelInfo, Settings } from '@types'
-import { sidebarButtonStyle, commonModalStyle } from './commonStyles'
+import { sidebarButtonStyle, commonModalStyle } from '@styles'
 
 export interface SettingButtonProps {
   isRunning: boolean

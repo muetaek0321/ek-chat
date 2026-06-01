@@ -3,7 +3,7 @@
 import Button from '@mui/material/Button'
 import ChatIcon from '@mui/icons-material/Chat'
 
-import { sidebarButtonStyle } from './commonStyles'
+import { sidebarButtonStyle } from '@styles'
 
 export interface NewChatButtonProps {
   createNewChat: () => void

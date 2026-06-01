@@ -26,11 +26,14 @@
       "@types": [
         "./app/types.ts"
       ],
+      "@styles": [
+        "./app/styles.ts"
+      ],
       "@components/*": [
         "./app/components/*"
       ],
-      "@modules/*": [
-        "./app/modules/*"
+      "@lib/*": [
+        "./app/lib/*"
       ]
     }
   },
