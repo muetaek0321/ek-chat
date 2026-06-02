@@ -6,7 +6,7 @@ import torch
 from transformers import AutoModelForCausalLM, AutoProcessor
 
 from modules.logger import get_logger
-from modules.schema import ChatMessage, ChatModel
+from modules.schema import ChatMessage, ChatModel, ChatModelParameter
 
 
 class Gemma4ResponseGenerator:
@@ -45,6 +45,26 @@ class Gemma4ResponseGenerator:
         )
 
         self.logger.info("モデルのセットアップが完了しました。")
+
+    def get_parameters(self) -> ChatModelParameter | None:
+        """モデルのパラメータを取得する
+
+        Returns:
+            ChatModelParameter: モデルのパラメータのChatModelParameterオブジェクト
+        """
+        # モデルが使用可能な場合のみパラメータを返す
+        if self.is_use:
+            return None  # TODO: Gemma4のパラメータを調査してから設定
+        else:
+            return None
+
+    def update_parameters(self, parameters: ChatModelParameter) -> None:
+        """モデルのパラメータを更新する
+
+        Args:
+            parameters (ChatModelParameter): 更新するパラメータを含むChatModelParameterオブジェクト
+        """
+        raise NotImplementedError("Gemma4のパラメータ更新は未実装です。")
 
     def __call__(self, input_messages: list[ChatMessage]) -> str:
         """モデルの返答を生成する

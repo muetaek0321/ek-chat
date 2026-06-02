@@ -189,6 +189,7 @@ class ChatManager:
                     model_name=model_name,
                     is_use=model.is_use,
                     is_selected=model_name == self.chat_model.name,
+                    parameters=model.get_parameters(),
                 )
             )
 
