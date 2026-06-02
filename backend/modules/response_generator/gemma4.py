@@ -2,6 +2,7 @@ import os
 import time
 from pathlib import Path
 
+import torch
 from transformers import AutoModelForCausalLM, AutoProcessor
 
 from modules.logger import get_logger
@@ -16,6 +17,7 @@ class Gemma4ResponseGenerator:
         self.data_dir = Path(os.getenv("DATA_DIR", "./develop"))
         self.logger = get_logger(__name__)
         self.name = ChatModel.GEMMA4
+        self.is_use = torch.cuda.is_available()  # GPUが使用可能な場合のみ使用可能
 
         self.target_model_id = self.data_dir.joinpath("models", "gemma-4-E2B-it")
         self.assistant_model_id = self.data_dir.joinpath("models", "gemma-4-E2B-it-assistant")

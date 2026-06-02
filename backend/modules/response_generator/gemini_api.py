@@ -14,6 +14,7 @@ class GeminiResponseGenerator:
         """初期化"""
         self.logger = get_logger(__name__)
         self.name = ChatModel.GEMINI
+        self.is_use = True
 
         self.model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
