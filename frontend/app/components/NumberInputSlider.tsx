@@ -34,9 +34,9 @@ export default function NumberInputSlider({
           value={value}
           onChange={(event) => setValue(Number(event.target.value))}
           type="number"
-          min={min}
-          max={max}
-          step={step}
+          slotProps={{
+            htmlInput: { min: min, max: max, step: step },
+          }}
           size="small"
           sx={{ width: 80, bgcolor: '#ffffff' }}
         />
