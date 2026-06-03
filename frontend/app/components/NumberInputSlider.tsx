@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -32,7 +32,9 @@ export default function NumberInputSlider({
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center', px: 2, py: 0.5 }}>
         <TextField
           value={value}
-          onChange={(event) => setValue(Number(event.target.value))}
+          onChange={(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement, Element>) =>
+            setValue(Number(event.target.value))
+          }
           type="number"
           slotProps={{
             htmlInput: { min: min, max: max, step: step },
@@ -42,7 +44,7 @@ export default function NumberInputSlider({
         />
         <Slider
           value={value}
-          onChange={(event, newValue) => setValue(newValue as number)}
+          onChange={(event: Event, newValue) => setValue(newValue as number)}
           min={min}
           max={max}
           step={step}
