@@ -27,6 +27,9 @@ class Gemma4ResponseGenerator:
         self.target_model = None
         self.assistant_model = None
 
+        # モデルのパラメータ
+        self.temperature = 0.1
+
     def setup(self) -> None:
         """モデルのセットアップ"""
         # 対象モデル
@@ -54,7 +57,7 @@ class Gemma4ResponseGenerator:
         """
         # モデルが使用可能な場合のみパラメータを返す
         if self.is_use:
-            return None  # TODO: Gemma4のパラメータを調査してから設定
+            return ChatModelParameter(temperature=self.temperature, thinking=None)
         else:
             return None
 
@@ -64,7 +67,7 @@ class Gemma4ResponseGenerator:
         Args:
             parameters (ChatModelParameter): 更新するパラメータを含むChatModelParameterオブジェクト
         """
-        raise NotImplementedError("Gemma4のパラメータ更新は未実装です。")
+        self.temperature = parameters.temperature
 
     def __call__(self, input_messages: list[ChatMessage]) -> str:
         """モデルの返答を生成する
@@ -92,6 +95,8 @@ class Gemma4ResponseGenerator:
             **inputs,
             assistant_model=self.assistant_model,
             max_new_tokens=self.max_new_tokens,
+            temperature=self.temperature,
+            do_sample=True,
         )
         generate_time = time.perf_counter() - start_time
         self.logger.debug(f"返答の生成時間: {generate_time:.2f}s")

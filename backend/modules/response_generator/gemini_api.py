@@ -21,7 +21,7 @@ class GeminiResponseGenerator:
         self.llm = None
 
         # モデルのパラメータ
-        self.temperature = 0.0
+        self.temperature = 0.1
         self.thinking = "medium"
         self.thinking_budget_dict = {"low": 0, "medium": 1024, "high": 4096}
 
