@@ -14,6 +14,7 @@ from modules.schema import (
     ChatMessage,
     ChatModel,
     ChatModelInfo,
+    ChatModelParameter,
     GenerateChatResponse,
     Role,
     SystemPromptText,
@@ -195,14 +196,18 @@ class ChatManager:
 
         return chat_model_info_list
 
-    def change_chat_model(self, chat_model_name: ChatModel) -> None:
+    def change_chat_model(self, chat_model_name: ChatModel, parameters: ChatModelParameter) -> None:
         """選択されたチャットモデルに変更し設定を適用
 
         Args:
             chat_model_name (ChatModel): 変更するチャットモデル
+            parameters (ChatModelParameter): チャットモデルのパラメータ
         """
-        # 使用するモデルを変更して初期化
+        # 使用するモデルを変更
         self.chat_model = self.chat_models[chat_model_name.value]
+        # モデルのパラメータを更新
+        self.chat_model.update_parameters(parameters)
+        # モデルの初期化
         self.chat_model.setup()
 
     def generate(self, user_message: ChatMessage) -> GenerateChatResponse:

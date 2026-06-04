@@ -58,19 +58,22 @@ class SystemPromptText(EndpointModel):
     text: str = Field(..., description="SystemPromptのテキスト")
 
 
+class ChatModelParameter(EndpointModel):
+    """チャットモデルのパラメータのBaseModel"""
+
+    temperature: float | None = Field(
+        ..., description="生成するテキストの多様性を制御するパラメータ"
+    )
+    thinking: Thinking | None = Field(
+        ..., description="思考時間の長さを表すパラメータ（例: low, medium, high）"
+    )
+
+
 class SelectedChatModel(EndpointModel):
     """選択したチャットモデル情報のBaseModel"""
 
     model: ChatModel = Field(..., description="選択したチャットモデル")
-
-
-class ChatModelParameter(EndpointModel):
-    """チャットモデルのパラメータのBaseModel"""
-
-    temperature: float = Field(..., description="生成するテキストの多様性を制御するパラメータ")
-    thinking: Thinking = Field(
-        ..., description="思考時間の長さを表すパラメータ（例: low, medium, high）"
-    )
+    parameters: ChatModelParameter = Field(..., description="選択したチャットモデルのパラメータ")
 
 
 class ChatModelInfo(EndpointModel):
