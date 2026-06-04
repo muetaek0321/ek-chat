@@ -4,8 +4,6 @@ from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
 
-import torch
-
 from modules.logger import get_logger
 from modules.response_generator.gemini_api import GeminiResponseGenerator
 from modules.response_generator.gemma4 import Gemma4ResponseGenerator
@@ -16,6 +14,7 @@ from modules.schema import (
     ChatMessage,
     ChatModel,
     ChatModelInfo,
+    ChatModelParameter,
     GenerateChatResponse,
     Role,
     SystemPromptText,
@@ -38,10 +37,9 @@ class ChatManager:
         self.load_system_prompt()
 
         # 使用可能なモデル一覧（GPUが使用可能かどうかで動的に変更）
-        gpu_available = torch.cuda.is_available()
         self.chat_models = {
             ChatModel.GEMINI: GeminiResponseGenerator(),
-            ChatModel.GEMMA4: Gemma4ResponseGenerator() if gpu_available else None,
+            ChatModel.GEMMA4: Gemma4ResponseGenerator(),
         }
 
         # 使用するモデルの初期化
@@ -190,21 +188,26 @@ class ChatManager:
             chat_model_info_list.append(
                 ChatModelInfo(
                     model_name=model_name,
-                    is_use=model is not None,
+                    is_use=model.is_use,
                     is_selected=model_name == self.chat_model.name,
+                    parameters=model.get_parameters(),
                 )
             )
 
         return chat_model_info_list
 
-    def change_chat_model(self, chat_model_name: ChatModel) -> None:
+    def change_chat_model(self, chat_model_name: ChatModel, parameters: ChatModelParameter) -> None:
         """選択されたチャットモデルに変更し設定を適用
 
         Args:
             chat_model_name (ChatModel): 変更するチャットモデル
+            parameters (ChatModelParameter): チャットモデルのパラメータ
         """
-        # 使用するモデルを変更して初期化
+        # 使用するモデルを変更
         self.chat_model = self.chat_models[chat_model_name.value]
+        # モデルのパラメータを更新
+        self.chat_model.update_parameters(parameters)
+        # モデルの初期化
         self.chat_model.setup()
 
     def generate(self, user_message: ChatMessage) -> GenerateChatResponse:

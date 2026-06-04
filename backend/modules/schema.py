@@ -19,6 +19,14 @@ class ChatModel(StrEnum):
     GEMMA4 = "Gemma4"
 
 
+class Thinking(StrEnum):
+    """思考時間の長さ設定名を定義Enum"""
+
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+
+
 class EndpointModel(BaseModel):
     """
     APIエンドポイントで使用する継承用BaseModel
@@ -50,10 +58,22 @@ class SystemPromptText(EndpointModel):
     text: str = Field(..., description="SystemPromptのテキスト")
 
 
+class ChatModelParameter(EndpointModel):
+    """チャットモデルのパラメータのBaseModel"""
+
+    temperature: float | None = Field(
+        ..., description="生成するテキストの多様性を制御するパラメータ"
+    )
+    thinking: Thinking | None = Field(
+        ..., description="思考時間の長さを表すパラメータ（例: low, medium, high）"
+    )
+
+
 class SelectedChatModel(EndpointModel):
     """選択したチャットモデル情報のBaseModel"""
 
     model: ChatModel = Field(..., description="選択したチャットモデル")
+    parameters: ChatModelParameter = Field(..., description="選択したチャットモデルのパラメータ")
 
 
 class ChatModelInfo(EndpointModel):
@@ -62,6 +82,9 @@ class ChatModelInfo(EndpointModel):
     model_name: ChatModel = Field(..., description="チャットモデルの名称")
     is_use: bool = Field(..., description="チャットモデルが使用可能かどうか")
     is_selected: bool = Field(..., description="チャットモデルが選択されているかどうか")
+    parameters: ChatModelParameter | None = Field(
+        None, description="チャットモデルのパラメータ。モデルによってはNoneの可能性あり"
+    )
 
 
 class SettingsResponse(EndpointModel):

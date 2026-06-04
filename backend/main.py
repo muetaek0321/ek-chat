@@ -206,10 +206,11 @@ async def select_chat_model(
 ) -> None:
     """選択されたモデルに変更し設定を適用"""
     selected_chat_model = chat_model.model
-    logger.debug(f"モデル: {selected_chat_model.value}")
+    parameters = chat_model.parameters
+    logger.debug(f"モデル: {selected_chat_model.value} パラメータ: {parameters.model_dump()}")
 
     # 選択されたモデルに変更し設定を適用
-    chat.change_chat_model(selected_chat_model)
+    chat.change_chat_model(selected_chat_model, parameters)
 
 
 @app.post(

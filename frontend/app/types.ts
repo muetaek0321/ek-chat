@@ -21,11 +21,18 @@ export interface SystemPrompt {
   text: string
 }
 
+// チャットモデルのパラメータ
+export interface ChatModelParameter {
+  temperature?: number
+  thinking?: string
+}
+
 // チャットモデル情報
 export interface ChatModelInfo {
   modelName: string
   isUse: boolean
   isSelected: boolean
+  parameters?: ChatModelParameter
 }
 
 // 設定項目
