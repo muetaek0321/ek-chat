@@ -9,7 +9,7 @@ import TextField from '@mui/material/TextField'
 
 export interface NumberInputSliderProps {
   value: number
-  setValue: React.Dispatch<React.SetStateAction<number | undefined>>
+  setValue: React.Dispatch<React.SetStateAction<number | null>>
   min: number
   max: number
   step: number

@@ -36,8 +36,8 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
   const [systemPromptText, setSystemPromptText] = useState<string>('')
   const [chatModelList, setChatModelList] = useState<ChatModelInfo[]>([])
   const [selectedChatModel, setSelectedChatModel] = useState<string>('')
-  const [temprature, setTemperature] = useState<number | undefined>()
-  const [thinking, setThinking] = useState<string | undefined>()
+  const [temprature, setTemperature] = useState<number | null>(null)
+  const [thinking, setThinking] = useState<string | null>(null)
   const [loadingDialogIsOpen, setLoadingDialogIsOpen] = useState<boolean>(false)
 
   // SystemPromptの取得
@@ -52,8 +52,8 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
           // 選択中のチャットモデルの情報を取得
           const selectedModelInfo = res.data.chatModelInfoList.find((model) => model.isSelected)
           setSelectedChatModel(selectedModelInfo?.modelName || '')
-          setTemperature(selectedModelInfo?.parameters?.temperature)
-          setThinking(selectedModelInfo?.parameters?.thinking)
+          setTemperature(selectedModelInfo?.parameters?.temperature ?? null)
+          setThinking(selectedModelInfo?.parameters?.thinking ?? null)
         } else {
           alert('設定項目の取得に失敗しました。')
           console.log('Error:', res.error)
@@ -88,8 +88,8 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
     const chatModelSetting = {
       model: selectedChatModel,
       parameters: {
-        temperature: temprature !== undefined ? temprature : null,
-        thinking: thinking !== undefined ? thinking : null,
+        temperature: temprature,
+        thinking: thinking,
       },
     }
     await patchRequest<undefined>('/model', chatModelSetting)
@@ -128,8 +128,8 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
     // 選択されたチャットモデルの情報を取得して状態を更新
     const selectedModelInfo = chatModelList.find((model) => model.modelName === event.target.value)
     setSelectedChatModel(selectedModelInfo?.modelName || '')
-    setTemperature(selectedModelInfo?.parameters?.temperature)
-    setThinking(selectedModelInfo?.parameters?.thinking)
+    setTemperature(selectedModelInfo?.parameters?.temperature ?? null)
+    setThinking(selectedModelInfo?.parameters?.thinking ?? null)
   }
 
   // 登録ボタンの処理
@@ -233,7 +233,7 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
                 ))}
               </Select>
             </Stack>
-            {temprature !== undefined && (
+            {temprature != null && (
               <NumberInputSlider
                 value={temprature}
                 setValue={setTemperature}
@@ -244,7 +244,7 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
                 marks
               />
             )}
-            {thinking !== undefined && (
+            {thinking != null && (
               <SelectToggleButton
                 value={thinking}
                 setValue={setThinking}

@@ -8,7 +8,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 
 export interface SelectToggleButtonProps {
   value: string
-  setValue: React.Dispatch<React.SetStateAction<string | undefined>>
+  setValue: React.Dispatch<React.SetStateAction<string | null>>
   buttonLabels: string[]
   label?: string
 }
