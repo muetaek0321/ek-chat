@@ -14,6 +14,8 @@ import Tab from '@mui/material/Tab'
 import SettingsIcon from '@mui/icons-material/Settings'
 import CloseIcon from '@mui/icons-material/Close'
 
+import NumberInputSlider from '@components/NumberInputSlider'
+import SelectToggleButton from '@components/SelectToggleButton'
 import LoadingDialog from '@components/LoadingDialog'
 import { CustomTabPanel, a11yProps } from '@components/TabPanel'
 import { ApiResponse, getRequest, patchRequest } from '@lib/fetchData'
@@ -34,6 +36,8 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
   const [systemPromptText, setSystemPromptText] = useState<string>('')
   const [chatModelList, setChatModelList] = useState<ChatModelInfo[]>([])
   const [selectedChatModel, setSelectedChatModel] = useState<string>('')
+  const [temprature, setTemperature] = useState<number | undefined>()
+  const [thinking, setThinking] = useState<string | undefined>()
   const [loadingDialogIsOpen, setLoadingDialogIsOpen] = useState<boolean>(false)
 
   // SystemPromptの取得
@@ -45,9 +49,11 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
           setSystemPromptText(res.data.systemPrompt.text)
           // チャットモデルの情報を取得
           setChatModelList(res.data.chatModelInfoList)
-          setSelectedChatModel(
-            res.data.chatModelInfoList.find((model) => model.isSelected)?.modelName || '',
-          )
+          // 選択中のチャットモデルの情報を取得
+          const selectedModelInfo = res.data.chatModelInfoList.find((model) => model.isSelected)
+          setSelectedChatModel(selectedModelInfo?.modelName || '')
+          setTemperature(selectedModelInfo?.parameters?.temperature)
+          setThinking(selectedModelInfo?.parameters?.thinking)
         } else {
           alert('設定項目の取得に失敗しました。')
           console.log('Error:', res.error)
@@ -81,6 +87,10 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
 
     const chatModelSetting = {
       model: selectedChatModel,
+      parameters: {
+        temperature: temprature !== undefined ? temprature : null,
+        thinking: thinking !== undefined ? thinking : null,
+      },
     }
     await patchRequest<undefined>('/model', chatModelSetting)
       .then((res: ApiResponse<undefined>) => {
@@ -115,7 +125,11 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
 
   // チャットモデル選択プルダウンの処理
   const handleSelectChatModel = (event: SelectChangeEvent<string>) => {
-    setSelectedChatModel(event.target.value)
+    // 選択されたチャットモデルの情報を取得して状態を更新
+    const selectedModelInfo = chatModelList.find((model) => model.modelName === event.target.value)
+    setSelectedChatModel(selectedModelInfo?.modelName || '')
+    setTemperature(selectedModelInfo?.parameters?.temperature)
+    setThinking(selectedModelInfo?.parameters?.thinking)
   }
 
   // 登録ボタンの処理
@@ -219,6 +233,25 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
                 ))}
               </Select>
             </Stack>
+            {temprature !== undefined && (
+              <NumberInputSlider
+                value={temprature}
+                setValue={setTemperature}
+                min={0.0}
+                max={1.0}
+                step={0.1}
+                label="・回答の創造性（Temperature）"
+                marks
+              />
+            )}
+            {thinking !== undefined && (
+              <SelectToggleButton
+                value={thinking}
+                setValue={setThinking}
+                buttonLabels={['low', 'medium', 'high']}
+                label="・思考の深さ（Thinking）"
+              />
+            )}
           </CustomTabPanel>
 
           <Stack direction="row-reverse" sx={{ p: 2 }}>
