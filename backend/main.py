@@ -207,7 +207,11 @@ async def get_chat_history(
 async def get_settings(
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> SettingsResponse:
-    """設定項目のデータを取得"""
+    """設定項目のデータを取得
+
+    Args:
+        api_logger (logging.Logger): エンドポイント用のロガー
+    """
     api_logger.debug("設定項目のデータを取得します")
 
     # 設定を取得
@@ -233,7 +237,12 @@ async def update_system_prompt(
     system_prompt: SystemPromptText,
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> None:
-    """SystemPromptを作成/更新"""
+    """SystemPromptを作成/更新
+
+    Args:
+        system_prompt (SystemPromptText): リクエストボディ（SystemPromptのテキスト）
+        api_logger (logging.Logger): エンドポイント用のロガー
+    """
     system_prompt_text = system_prompt.text
     api_logger.debug(f"SystemPrompt: {system_prompt_text[:10]}...")
 
@@ -251,7 +260,12 @@ async def select_chat_model(
     chat_model: SelectedChatModel,
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> None:
-    """選択されたモデルに変更し設定を適用"""
+    """選択されたモデルに変更し設定を適用
+
+    Args:
+        chat_model (SelectedChatModel): リクエストボディ（選択されたモデルとそのパラメータ）
+        api_logger (logging.Logger): エンドポイント用のロガー
+    """
     selected_chat_model = chat_model.model
     parameters = chat_model.parameters
     api_logger.debug(f"モデル: {selected_chat_model.value} パラメータ: {parameters.model_dump()}")
