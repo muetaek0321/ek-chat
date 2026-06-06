@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ek-chat Frontend
 
-## Getting Started
+ek-chat アプリケーションのフロントエンド UI です。Next.js と React を用いて構築されており、バックエンド API と連携してチャットインターフェースを提供します。
 
-First, run the development server:
+## 主な機能
+
+- バックエンド API (`FastAPI`) との通信
+- チャット履歴の表示およびチャット画面の UI 提供
+- モデル切り替えやパラメータ設定のための UI
+- Material UI (MUI) および Tailwind CSS を活用したスタイリング
+
+## セットアップ
+
+### 必要要件
+- Node.js (v20 以上推奨)
+- パッケージマネージャ: Yarn または npm (プロジェクトには `yarn.lock` が存在するため Yarn を推奨)
+
+### 依存関係のインストール
+
+プロジェクトルートから `frontend` ディレクトリへ移動し、依存関係をインストールします。
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd frontend
+yarn install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 環境変数の設定
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`.env.example` をコピーして `.env` ファイルを作成し、バックエンドの URL を指定します。
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Linux/macOS
+cp .env.example .env
 
-## Learn More
+# Windows (PowerShell)
+Copy-Item .env.example .env
+# Windows (Command Prompt)
+copy .env.example .env
+```
 
-To learn more about Next.js, take a look at the following resources:
+| 変数名 | 使用箇所 | 説明 | 既定値 |
+|---|---|---|---|
+| `BACKEND_URL` | frontend | backend API サーバーのベース URL | `http://localhost:8000` |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 起動方法
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+開発用サーバーを起動します。
 
-## Deploy on Vercel
+```bash
+yarn dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+起動後、ブラウザで [http://localhost:3000](http://localhost:3000) にアクセスすることでアプリケーションを利用できます。
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 開発コマンド
+
+`package.json` に定義されているスクリプトです。
+
+- **Dev**: `yarn dev` (開発サーバーの起動)
+- **Build**: `yarn build` (本番環境向けビルドの作成)
+- **Start**: `yarn start` (ビルド済みの本番サーバーの起動)
+- **Lint**: `yarn lint` (ESLint によるコードの静的解析)
+
+---
+*Author: Gemini 3.1 Pro (High)*
