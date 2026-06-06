@@ -1,6 +1,17 @@
 ---
 name: write_readme
-tools: [vscode, execute, read, agent, edit, search, web, browser, 'gitkraken/*', ms-python.python/getPythonEnvironmentInfo, ms-python.python/getPythonExecutableCommand, ms-python.python/installPythonPackage, ms-python.python/configurePythonEnvironment, ms-toolsai.jupyter/configureNotebook, ms-toolsai.jupyter/listNotebookPackages, ms-toolsai.jupyter/installNotebookPackages, todo]
+tools:
+  [
+    "vscode",
+    "execute",
+    "read",
+    "agent",
+    "ms-python.python/getPythonEnvironmentInfo",
+    "ms-python.python/getPythonExecutableCommand",
+    "ms-python.python/installPythonPackage",
+    "ms-python.python/configurePythonEnvironment",
+    "todo",
+  ]
 description: README.md をプロジェクト内容に基づいて作成・更新するプロンプト
 ---
 
@@ -109,13 +120,13 @@ backend と frontend それぞれの開発サーバー起動手順を記載す�
 コードから参照されている環境変数を表形式で整理する。
 例:
 
-| 変数名 | 使用箇所 | 説明 | 既定値 |
-| --- | --- | --- | --- |
-| `BACKEND_URL` | frontend | backend API のベース URL | なし |
-| `DATA_DIR` | backend | チャット履歴・システムプロンプト・モデルの保存先 | `./develop` |
-| `CHAT_MODEL` | backend | 初期選択するチャットモデル | `Gemini(API)` |
-| `GEMINI_MODEL` | backend | Gemini API で使用するモデル名 | `gemini-2.5-flash-lite` |
-| `ENVIRON` | backend | ログ設定の切り替え | `prod` |
+| 変数名         | 使用箇所 | 説明                                             | 既定値                  |
+| -------------- | -------- | ------------------------------------------------ | ----------------------- |
+| `BACKEND_URL`  | frontend | backend API のベース URL                         | なし                    |
+| `DATA_DIR`     | backend  | チャット履歴・システムプロンプト・モデルの保存先 | `./develop`             |
+| `CHAT_MODEL`   | backend  | 初期選択するチャットモデル                       | `Gemini(API)`           |
+| `GEMINI_MODEL` | backend  | Gemini API で使用するモデル名                    | `gemini-2.5-flash-lite` |
+| `ENVIRON`      | backend  | ログ設定の切り替え                               | `prod`                  |
 
 API キーなど、ライブラリが暗黙的に要求する可能性がある環境変数は、コード上で直接確認できない場合は「要確認」として記載する。
 
@@ -170,3 +181,4 @@ FastAPI の主要エンドポイントを表形式で整理する。
 - 長すぎる説明は避け、実際に開発で参照しやすい粒度にする。
 - 外部ドキュメントへのリンクは、必要最小限にする。
 - 現在の実装と異なる一般的なテンプレート文は残さない。
+- 最後にAuthorとして自身のモデル名を記載する。
