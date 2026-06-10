@@ -13,7 +13,8 @@ dependencies = [
     "torchvision>=0.26.0",
     "transformers>=5.10.2",
     "accelerate>=1.13.0",
-    "llama-cpp-python>=0.3.28"
+    "langchain-community>=0.4.2",
+    "llama-cpp-python>=0.3.28",
 ]
 
 [dependency-groups]
@@ -30,10 +31,6 @@ torch = [
 name = "torch-cu128"
 url = "https://download.pytorch.org/whl/cu128"
 explicit = true
-
-[[tool.uv.index]]
-name = "llama-cpp-cuda"
-url = "https://abetlen.github.io/llama-cpp-python/whl/cu128"
 
 [tool.ruff]
 line-length = 100
