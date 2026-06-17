@@ -16,7 +16,8 @@ class ChatModel(StrEnum):
     """使用するチャットモデルの名称を定義するEnum"""
 
     GEMINI = "Gemini(API)"
-    GEMMA4 = "Gemma4"
+    GEMMA4_E2B = "Gemma4:E2B"
+    GEMMA4_12B = "Gemma4:12B"
 
 
 class Thinking(StrEnum):

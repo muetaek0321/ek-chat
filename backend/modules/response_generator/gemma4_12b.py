@@ -1,49 +1,66 @@
 import gc
 import os
 import time
+from pathlib import Path
 
-from langchain_google_genai import ChatGoogleGenerativeAI
+import llama_cpp
+import torch
+from langchain_community.chat_models import ChatLlamaCpp
 
 from modules.logger import get_logger
 from modules.schema import ChatMessage, ChatModel, ChatModelParameter
 
+print(llama_cpp.llama_print_system_info().decode())
 
-class GeminiResponseGenerator:
-    """Gemini APIを使用した返答生成クラス"""
+
+class Gemma4LlmmaCppResponseGenerator:
+    """Gemma4:12Bを使用した返答生成クラス"""
 
     def __init__(self) -> None:
         """初期化"""
+        self.data_dir = Path(os.getenv("DATA_DIR", "./develop"))
         self.logger = get_logger(__name__)
-        self.name = ChatModel.GEMINI
-        self.is_use = True
+        self.name = ChatModel.GEMMA4_12B
+        self.is_use = torch.cuda.is_available()  # GPUが使用可能な場合のみ使用可能
 
-        self.model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")
+        self.target_model_id = self.data_dir.joinpath(
+            "models", "gemma-4-12B-it-qat-q4_0-gguf", "gemma-4-12b-it-qat-q4_0.gguf"
+        )
+        self.max_tokens = 1024
 
-        self.llm = None
+        self.processor = None
+        self.target_model = None
 
         # モデルのパラメータ
         self.temperature = 0.1
-        self.thinking = "medium"
-        self.thinking_budget_dict = {"low": 0, "medium": 1024, "high": 4096}
 
     def setup(self) -> None:
         """モデルのセットアップ"""
-        self.llm = ChatGoogleGenerativeAI(
-            model=self.model_name,
+        self.llm = ChatLlamaCpp(
+            model_path=str(self.target_model_id),
+            max_tokens=self.max_tokens,
             temperature=self.temperature,
-            thinking_budget=self.thinking_budget_dict[self.thinking],
+            n_ctx=8192,
+            n_gpu_layers=-1,
+            n_batch=1024,
+            verbose=True,
         )
 
         self.logger.info("モデルのセットアップが完了しました。")
 
     def cleanup(self) -> None:
         """モデル切り替え時にメモリを開放する"""
-        # モデルオブジェクトを削除して変数を初期化
-        del self.llm
-        self.llm = None
+        # llama.cppの内部リソースを明示的に解放
+        if self.llm is not None:
+            if hasattr(self.llm, "client") and self.llm.client is not None:
+                self.llm.client.close()
+            del self.llm
+            self.llm = None
 
         # ガベージコレクションを実行
         gc.collect()
+        # CUDAキャッシュをクリア
+        torch.cuda.empty_cache()
 
         self.logger.info("モデルのクリーンアップが完了しました。")
 
@@ -55,7 +72,7 @@ class GeminiResponseGenerator:
         """
         # モデルが使用可能な場合のみパラメータを返す
         if self.is_use:
-            return ChatModelParameter(temperature=self.temperature, thinking=self.thinking)
+            return ChatModelParameter(temperature=self.temperature, thinking=None)
         else:
             return None
 
@@ -66,7 +83,6 @@ class GeminiResponseGenerator:
             parameters (ChatModelParameter): 更新するパラメータを含むChatModelParameterオブジェクト
         """
         self.temperature = parameters.temperature
-        self.thinking = parameters.thinking
 
     def __call__(self, input_messages: list[ChatMessage]) -> str:
         """モデルの返答を生成する

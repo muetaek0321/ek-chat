@@ -6,7 +6,8 @@ from uuid import uuid4
 
 from modules.logger import get_logger
 from modules.response_generator.gemini_api import GeminiResponseGenerator
-from modules.response_generator.gemma4 import Gemma4ResponseGenerator
+from modules.response_generator.gemma4_12b import Gemma4LlmmaCppResponseGenerator
+from modules.response_generator.gemma4_e2b import Gemma4HuggingFaceResponseGenerator
 from modules.schema import (
     ChatHistory,
     ChatInfo,
@@ -39,7 +40,8 @@ class ChatManager:
         # 使用可能なモデル一覧（GPUが使用可能かどうかで動的に変更）
         self.chat_models = {
             ChatModel.GEMINI: GeminiResponseGenerator(),
-            ChatModel.GEMMA4: Gemma4ResponseGenerator(),
+            ChatModel.GEMMA4_E2B: Gemma4HuggingFaceResponseGenerator(),
+            ChatModel.GEMMA4_12B: Gemma4LlmmaCppResponseGenerator(),
         }
 
         # 使用するモデルの初期化
@@ -203,10 +205,15 @@ class ChatManager:
             chat_model_name (ChatModel): 変更するチャットモデル
             parameters (ChatModelParameter): チャットモデルのパラメータ
         """
+        # 現在使用中のモデルのGPUメモリを解放
+        if self.chat_model is not None:
+            self.chat_model.cleanup()
+
         # 使用するモデルを変更
         self.chat_model = self.chat_models[chat_model_name.value]
         # モデルのパラメータを更新
         self.chat_model.update_parameters(parameters)
+
         # モデルの初期化
         self.chat_model.setup()
 
