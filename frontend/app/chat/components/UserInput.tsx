@@ -56,9 +56,13 @@ export default function UserInput({
         } else {
           alert('返答の生成に失敗しました。')
           console.log('Error:', res.error)
+          setIsRunning(false)
         }
       })
-      .catch((err) => console.log('Error:', err))
+      .catch((err) => {
+        console.log('Error:', err)
+        setIsRunning(false)
+      })
   }
 
   // Enterキーで送信
