@@ -1,22 +1,24 @@
+import gc
 import os
 import time
 from pathlib import Path
 
 import torch
+from accelerate.hooks import remove_hook_from_module
 from transformers import AutoModelForCausalLM, AutoProcessor
 
 from modules.logger import get_logger
 from modules.schema import ChatMessage, ChatModel, ChatModelParameter
 
 
-class Gemma4ResponseGenerator:
+class Gemma4HuggingFaceResponseGenerator:
     """Gemma4:E2Bを使用した返答生成クラス"""
 
     def __init__(self) -> None:
         """初期化"""
         self.data_dir = Path(os.getenv("DATA_DIR", "./develop"))
         self.logger = get_logger(__name__)
-        self.name = ChatModel.GEMMA4
+        self.name = ChatModel.GEMMA4_E2B
         self.is_use = torch.cuda.is_available()  # GPUが使用可能な場合のみ使用可能
 
         self.target_model_id = self.data_dir.joinpath("models", "gemma-4-E2B-it")
@@ -48,6 +50,32 @@ class Gemma4ResponseGenerator:
         )
 
         self.logger.info("モデルのセットアップが完了しました。")
+
+    def cleanup(self) -> None:
+        """モデル切り替え時にメモリを開放する"""
+        # 1. accelerateのdispatchフックを除去（.to()の横取りを防ぐ）
+        # 2. モデルをCPUに移動（GPUテンソルを解放）
+        # 3. 参照を削除
+        if self.target_model is not None:
+            remove_hook_from_module(self.target_model, recurse=True)
+            self.target_model.to("cpu")
+            del self.target_model
+            self.target_model = None
+        if self.assistant_model is not None:
+            remove_hook_from_module(self.assistant_model, recurse=True)
+            self.assistant_model.to("cpu")
+            del self.assistant_model
+            self.assistant_model = None
+        if self.processor is not None:
+            del self.processor
+            self.processor = None
+
+        # ガベージコレクションを実行
+        gc.collect()
+        # CUDAキャッシュをクリア
+        torch.cuda.empty_cache()
+
+        self.logger.info("モデルのクリーンアップが完了しました。")
 
     def get_parameters(self) -> ChatModelParameter | None:
         """モデルのパラメータを取得する
