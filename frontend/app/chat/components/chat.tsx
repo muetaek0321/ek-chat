@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
@@ -35,28 +35,30 @@ export default function Chat() {
   // 現在のサイドバー幅
   const currentSidebarWidth = isSidebarOpen ? chatListWidth : collapsedWidth
 
-  // アプリ立ち上げ時に保存済みチャットの情報の取得
-  const getChatInfoList = async () => {
-    await getRequest<ChatInfo[]>('/init')
-      .then((res: ApiResponse<ChatInfo[]>) => {
-        if (res.success && res.data !== undefined) {
-          const chatInfoList = res.data
-          if (chatInfoList.length === 0) {
-            createNewChat()
+  const isInitialized = useRef(true)
+
+  // チャット履歴の取得
+  const getChatHistory = useCallback(
+    async (chatId: string) => {
+      const query = new URLSearchParams({
+        chatId: chatId,
+      }).toString()
+      await getRequest<ChatMessage[]>(`/history?${query}`)
+        .then((res: ApiResponse<ChatMessage[]>) => {
+          if (res.success && res.data !== undefined) {
+            setChatHistory(res.data)
           } else {
-            setChatInfoList(chatInfoList)
-            getChatHistory(chatInfoList[0].chatId)
+            alert('チャット履歴の取得に失敗しました。')
+            console.log('Error:', res.error)
           }
-        } else {
-          alert('チャット情報の取得に失敗しました。')
-          console.log('Error:', res.error)
-        }
-      })
-      .catch((err) => console.log('Error:', err))
-  }
+        })
+        .catch((err) => console.log('Error:', err))
+    },
+    [setChatHistory],
+  )
 
   // 新しいチャットの作成
-  const createNewChat = async () => {
+  const createNewChat = useCallback(async () => {
     // 新しいチャットの作成APIを呼び出し
     await putRequest<ChatInfo>('/new')
       .then((res: ApiResponse<ChatInfo>) => {
@@ -73,29 +75,35 @@ export default function Chat() {
         }
       })
       .catch((err) => console.log('Error:', err))
-  }
+  }, [chatInfoList, getChatHistory])
 
-  // チャット履歴の取得
-  const getChatHistory = async (chatId: string) => {
-    const query = new URLSearchParams({
-      chatId: chatId,
-    }).toString()
-    await getRequest<ChatMessage[]>(`/history?${query}`)
-      .then((res: ApiResponse<ChatMessage[]>) => {
+  // アプリ立ち上げ時に保存済みチャットの情報の取得
+  const getChatInfoList = useCallback(async () => {
+    await getRequest<ChatInfo[]>('/init')
+      .then((res: ApiResponse<ChatInfo[]>) => {
         if (res.success && res.data !== undefined) {
-          setChatHistory(res.data)
+          const chatInfoList = res.data
+          if (chatInfoList.length === 0) {
+            createNewChat()
+          } else {
+            setChatInfoList(chatInfoList)
+            getChatHistory(chatInfoList[0].chatId)
+          }
         } else {
-          alert('チャット履歴の取得に失敗しました。')
+          alert('チャット情報の取得に失敗しました。')
           console.log('Error:', res.error)
         }
       })
       .catch((err) => console.log('Error:', err))
-  }
+  }, [createNewChat, getChatHistory])
 
   // 立ち上げ時にチャット一覧の初期化
   useEffect(() => {
-    if (chatInfoList.length === 0) getChatInfoList()
-  }, [])
+    if (isInitialized.current) {
+      isInitialized.current = false
+      getChatInfoList()
+    }
+  }, [getChatInfoList])
 
   return (
     <Stack direction="row" sx={{ height: '100vh' }}>
