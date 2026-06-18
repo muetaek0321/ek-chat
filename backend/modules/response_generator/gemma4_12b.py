@@ -3,25 +3,24 @@ import os
 import time
 from pathlib import Path
 
-import llama_cpp
 import torch
 from langchain_community.chat_models import ChatLlamaCpp
 
 from modules.logger import get_logger
 from modules.schema import ChatMessage, ChatModel, ChatModelParameter
 
-print(llama_cpp.llama_print_system_info().decode())
+from .base import ResponseGenerator
 
 
-class Gemma4LlmmaCppResponseGenerator:
+class Gemma4LlmmaCppResponseGenerator(ResponseGenerator):
     """Gemma4:12Bを使用した返答生成クラス"""
 
     def __init__(self) -> None:
         """初期化"""
+        super().__init__(
+            logger=get_logger(__name__), name=ChatModel.GEMMA4_12B, is_use=torch.cuda.is_available()
+        )
         self.data_dir = Path(os.getenv("DATA_DIR", "./develop"))
-        self.logger = get_logger(__name__)
-        self.name = ChatModel.GEMMA4_12B
-        self.is_use = torch.cuda.is_available()  # GPUが使用可能な場合のみ使用可能
 
         self.target_model_id = self.data_dir.joinpath(
             "models", "gemma-4-12B-it-qat-q4_0-gguf", "gemma-4-12b-it-qat-q4_0.gguf"

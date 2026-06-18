@@ -10,16 +10,18 @@ from transformers import AutoModelForCausalLM, AutoProcessor
 from modules.logger import get_logger
 from modules.schema import ChatMessage, ChatModel, ChatModelParameter
 
+from .base import ResponseGenerator
 
-class Gemma4HuggingFaceResponseGenerator:
+
+class Gemma4HuggingFaceResponseGenerator(ResponseGenerator):
     """Gemma4:E2Bを使用した返答生成クラス"""
 
     def __init__(self) -> None:
         """初期化"""
+        super().__init__(
+            logger=get_logger(__name__), name=ChatModel.GEMMA4_E2B, is_use=torch.cuda.is_available()
+        )
         self.data_dir = Path(os.getenv("DATA_DIR", "./develop"))
-        self.logger = get_logger(__name__)
-        self.name = ChatModel.GEMMA4_E2B
-        self.is_use = torch.cuda.is_available()  # GPUが使用可能な場合のみ使用可能
 
         self.target_model_id = self.data_dir.joinpath("models", "gemma-4-E2B-it")
         self.assistant_model_id = self.data_dir.joinpath("models", "gemma-4-E2B-it-assistant")

@@ -7,18 +7,16 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from modules.logger import get_logger
 from modules.schema import ChatMessage, ChatModel, ChatModelParameter
 
+from .base import ResponseGenerator
 
-class GeminiResponseGenerator:
+
+class GeminiResponseGenerator(ResponseGenerator):
     """Gemini APIを使用した返答生成クラス"""
 
     def __init__(self) -> None:
         """初期化"""
-        self.logger = get_logger(__name__)
-        self.name = ChatModel.GEMINI
-        self.is_use = True
-
+        super().__init__(logger=get_logger(__name__), name=ChatModel.GEMINI, is_use=True)
         self.model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")
-
         self.llm = None
 
         # モデルのパラメータ
