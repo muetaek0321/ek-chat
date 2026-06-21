@@ -20,9 +20,8 @@ class OllamaCloudResponseGenerator(ResponseGenerator):
         self.llm = None
 
         # モデルのパラメータ
-        self.temperature = None  # 0.1
-        self.thinking = None  # "medium"
-        self.thinking_budget_dict = {"low": 0, "medium": 1024, "high": 4096}
+        self.temperature = 0.1
+        self.thinking = "medium"
 
     def setup(self) -> None:
         """モデルのセットアップ"""
@@ -30,6 +29,8 @@ class OllamaCloudResponseGenerator(ResponseGenerator):
             model=self.model_name,
             base_url="https://ollama.com",
             api_key=os.getenv("OLLAMA_API_KEY", None),
+            temperature=self.temperature,
+            reasoning_effort=self.thinking,
         )
 
         self.logger.info("モデルのセットアップが完了しました。")
