@@ -23,15 +23,11 @@ export const useTheme = () => {
 
 interface ThemeProviderProps {
   children: ReactNode
+  initialTheme: ThemeMode
 }
 
-const getInitialTheme = (): ThemeMode => {
-  const defaultTheme = (process.env.NEXT_PUBLIC_DEFAULT_THEME as ThemeMode) || 'light'
-  return defaultTheme
-}
-
-export const AppThemeProvider = ({ children }: ThemeProviderProps) => {
-  const mode = getInitialTheme()
+export const AppThemeProvider = ({ children, initialTheme }: ThemeProviderProps) => {
+  const mode = initialTheme
 
   const theme: Theme = mode === 'light' ? lightTheme : darkTheme
 

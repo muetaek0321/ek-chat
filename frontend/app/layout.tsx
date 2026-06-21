@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   manifest: '/favicon/site.webmanifest',
 }
 
-const defaultTheme = process.env.NEXT_PUBLIC_DEFAULT_THEME === 'dark' ? 'dark' : 'light'
+const defaultTheme = process.env.DEFAULT_THEME === 'dark' ? 'dark' : 'light'
 
 export default function RootLayout({
   children,
@@ -50,7 +50,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <AppRouterCacheProvider>
-          <AppThemeProvider>{children}</AppThemeProvider>
+          <AppThemeProvider initialTheme={defaultTheme}>{children}</AppThemeProvider>
         </AppRouterCacheProvider>
       </body>
     </html>
