@@ -40,7 +40,7 @@ export default function NumberInputSlider({
             htmlInput: { min: min, max: max, step: step },
           }}
           size="small"
-          sx={{ width: 80, bgcolor: '#ffffff' }}
+          sx={(theme) => ({ width: 80, bgcolor: theme.palette.custom.input })}
         />
         <Slider
           value={value}

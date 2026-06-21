@@ -169,11 +169,11 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
         sx={{ justifyContent: 'center' }}
       >
         <Box
-          sx={{
-            ...commonModalStyle,
+          sx={(theme) => ({
+            ...commonModalStyle(theme),
             width: modalWidth,
             height: modalHeight,
-          }}
+          })}
         >
           <Stack direction="row" sx={{ justifyContent: 'space-between', p: 2 }}>
             <Typography variant="h6">
@@ -210,7 +210,7 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
                 rows={10}
                 maxRows={10}
                 fullWidth
-                sx={{ bgcolor: '#ffffff' }}
+                sx={(theme) => ({ bgcolor: theme.palette.custom.input })}
               />
             </Stack>
           </CustomTabPanel>
@@ -224,7 +224,10 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
               <Select
                 value={selectedChatModel}
                 onChange={handleSelectChatModel}
-                sx={{ width: `calc(${modalWidth} - 280px)`, bgcolor: '#ffffff' }}
+                sx={(theme) => ({
+                  width: `calc(${modalWidth} - 280px)`,
+                  bgcolor: theme.palette.custom.input,
+                })}
               >
                 {chatModelList.map((model) => (
                   <MenuItem key={model.modelName} value={model.modelName} disabled={!model.isUse}>

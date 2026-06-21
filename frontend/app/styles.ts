@@ -1,3 +1,16 @@
+import { Theme } from '@mui/material/styles'
+import { CSSObject } from '@emotion/react'
+import { colorTokens } from './theme'
+
+// ===============================
+// カラートークン
+// ===============================
+export const colors = colorTokens
+
+// ===============================
+// 共通スタイル
+// ===============================
+
 // サイドバーに設置するボタンの共通スタイル
 export const sidebarButtonStyle = {
   justifyContent: 'center',
@@ -13,12 +26,143 @@ export const sidebarButtonStyle = {
 }
 
 // モーダルウィンドウの共通スタイル
-export const commonModalStyle = {
+export const commonModalStyle = (theme: Theme): CSSObject => ({
   position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  bgcolor: '#F0F0F0',
-  border: 1,
   borderRadius: 1,
+  border: 1,
+  bgcolor: theme.palette.background.paper,
+  boxShadow: theme.shadows[5],
+})
+
+// ===============================
+// レスポンシブ対応スタイル
+// ===============================
+
+// コンテナのパディング
+export const containerPadding = {
+  xs: '0.5rem',
+  sm: '1rem',
+  md: '1.5rem',
+  lg: '2rem',
+}
+
+// セクションのマージン
+export const sectionMargin = {
+  xs: '0.5rem 0',
+  sm: '1rem 0',
+  md: '1.5rem 0',
+  lg: '2rem 0',
+}
+
+// ===============================
+// テキストスタイル
+// ===============================
+
+export const textVariants = {
+  heading1: {
+    fontSize: '2rem',
+    fontWeight: 700,
+    lineHeight: 1.2,
+  },
+  heading2: {
+    fontSize: '1.5rem',
+    fontWeight: 600,
+    lineHeight: 1.3,
+  },
+  heading3: {
+    fontSize: '1.25rem',
+    fontWeight: 600,
+    lineHeight: 1.4,
+  },
+  body: {
+    fontSize: '1rem',
+    fontWeight: 400,
+    lineHeight: 1.5,
+  },
+  bodySmall: {
+    fontSize: '0.875rem',
+    fontWeight: 400,
+    lineHeight: 1.5,
+  },
+  caption: {
+    fontSize: '0.75rem',
+    fontWeight: 400,
+    lineHeight: 1.4,
+  },
+}
+
+// ===============================
+// ボーダースタイル
+// ===============================
+
+export const borderStyles = {
+  light: {
+    border: `1px solid ${colorTokens.light.border}`,
+    borderRadius: '4px',
+  },
+  dark: {
+    border: `1px solid ${colorTokens.dark.border}`,
+    borderRadius: '4px',
+  },
+}
+
+// ===============================
+// シャドウスタイル
+// ===============================
+
+export const shadowStyles = {
+  subtle: (theme: Theme): CSSObject => ({
+    boxShadow: theme.shadows[1],
+  }),
+  medium: (theme: Theme): CSSObject => ({
+    boxShadow: theme.shadows[3],
+  }),
+  elevated: (theme: Theme): CSSObject => ({
+    boxShadow: theme.shadows[8],
+  }),
+}
+
+// ===============================
+// ホバー/フォーカススタイル
+// ===============================
+
+export const interactionStyles = {
+  buttonHover: (theme: Theme): CSSObject => ({
+    cursor: 'pointer',
+    opacity: 0.8,
+    transition: theme.transitions.create(['opacity', 'box-shadow'], {
+      duration: theme.transitions.duration.short,
+    }),
+    '&:hover': {
+      opacity: 1,
+    },
+  }),
+  focusVisible: (theme: Theme): CSSObject => ({
+    outline: `2px solid ${theme.palette.primary.main}`,
+    outlineOffset: '2px',
+  }),
+}
+
+// ===============================
+// レイアウトスタイル
+// ===============================
+
+export const flexCenter = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+}
+
+export const flexBetween = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+}
+
+export const columnLayout = {
+  display: 'flex',
+  flexDirection: 'column',
 }

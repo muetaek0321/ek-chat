@@ -81,6 +81,7 @@ export default function UserInput({
         fullWidth
         rows={2}
         value={inputText}
+        sx={(theme) => ({ bgcolor: theme.palette.custom.input })}
         onChange={(e) => setInputText(e.target.value)}
         onKeyDown={handleEnterKeyPress}
         disabled={isRunning}

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter'
 import { Geist, Geist_Mono } from 'next/font/google'
+import { AppThemeProvider } from './ThemeProvider'
 import './globals.css'
 
 const geistSans = Geist({
@@ -33,16 +34,25 @@ export const metadata: Metadata = {
   manifest: '/favicon/site.webmanifest',
 }
 
+const defaultTheme = process.env.NEXT_PUBLIC_DEFAULT_THEME === 'dark' ? 'dark' : 'light'
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <AppRouterCacheProvider>
-        <body className="min-h-full flex flex-col">{children}</body>
-      </AppRouterCacheProvider>
+    <html
+      lang="ja"
+      data-theme={defaultTheme}
+      style={{ colorScheme: defaultTheme }}
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">
+        <AppRouterCacheProvider>
+          <AppThemeProvider>{children}</AppThemeProvider>
+        </AppRouterCacheProvider>
+      </body>
     </html>
   )
 }
