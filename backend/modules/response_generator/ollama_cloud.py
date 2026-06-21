@@ -21,7 +21,6 @@ class OllamaCloudResponseGenerator(ResponseGenerator):
 
         # モデルのパラメータ
         self.temperature = 0.1
-        self.thinking = "medium"
 
     def setup(self) -> None:
         """モデルのセットアップ"""
@@ -30,7 +29,6 @@ class OllamaCloudResponseGenerator(ResponseGenerator):
             base_url="https://ollama.com",
             api_key=os.getenv("OLLAMA_API_KEY", None),
             temperature=self.temperature,
-            reasoning_effort=self.thinking,
         )
 
         self.logger.info("モデルのセットアップが完了しました。")
@@ -54,7 +52,7 @@ class OllamaCloudResponseGenerator(ResponseGenerator):
         """
         # モデルが使用可能な場合のみパラメータを返す
         if self.is_use:
-            return ChatModelParameter(temperature=self.temperature, thinking=self.thinking)
+            return ChatModelParameter(temperature=self.temperature, thinking=None)
         else:
             return None
 
@@ -65,7 +63,6 @@ class OllamaCloudResponseGenerator(ResponseGenerator):
             parameters (ChatModelParameter): 更新するパラメータを含むChatModelParameterオブジェクト
         """
         self.temperature = parameters.temperature
-        self.thinking = parameters.thinking
 
     def __call__(self, input_messages: list[ChatMessage]) -> str:
         """モデルの返答を生成する
