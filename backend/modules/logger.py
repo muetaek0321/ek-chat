@@ -14,6 +14,7 @@ def logging_config(debug: bool) -> None:
         level=logging.DEBUG if debug else logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         handlers=[logging.StreamHandler()],
+        force=True,
     )
 
     # ロガーレベルの個別設定
