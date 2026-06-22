@@ -70,16 +70,16 @@ export default function ChatList({
           onClick={() => handleChatSwitch(chatInfo.chatId)}
         >
           <Box
-            sx={{
+            sx={(theme) => ({
               py: 0.5,
               px: 1,
               cursor: 'pointer',
               pointerEvents: isRunning ? 'none' : 'auto',
-              '&:hover': { backgroundColor: '#f0f0f0' },
+              '&:hover': { backgroundColor: theme.palette.custom.hover },
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
-            }}
+            })}
           >
             {chatInfo.title}
             <Stack direction="row" sx={{ justifyContent: 'flex-end' }}>

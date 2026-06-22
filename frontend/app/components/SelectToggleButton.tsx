@@ -28,7 +28,7 @@ export default function SelectToggleButton({
         exclusive
         onChange={(event: MouseEvent<HTMLElement>, newValue: string) => setValue(newValue)}
         fullWidth
-        sx={{ bgcolor: '#ffffff' }}
+        sx={(theme) => ({ bgcolor: theme.palette.custom.input })}
       >
         {buttonLabels.map((buttonLabel) => (
           <ToggleButton key={buttonLabel} value={buttonLabel}>
