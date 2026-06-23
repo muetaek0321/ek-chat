@@ -39,6 +39,7 @@
   },
   "include": [
     "next-env.d.ts",
+    "vitest-env.d.ts",
     "app",
     "components",
     "modules",
