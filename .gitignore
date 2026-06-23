@@ -1,6 +1,7 @@
 # 共通
 .env
 develop/
+.serena/
 
 ### backend
 .venv/
