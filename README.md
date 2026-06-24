@@ -17,8 +17,8 @@ LLMを利用したチャットアプリケーションです。FastAPIを用い�
 
 ## 技術スタック
 
-- **Frontend**: Next.js (16.2), React (19), TypeScript, MUI (Material UI), Tailwind CSS
-- **Backend**: FastAPI, Pydantic, Uvicorn, uv (パッケージマネージャ)
+- **Frontend**: Next.js (16.2), React (19), TypeScript, MUI (Material UI), Tailwind CSS, Vitest, React Testing Library
+- **Backend**: FastAPI, Pydantic, Uvicorn, uv (パッケージマネージャ), Pytest
 - **AI/LLM**: Gemini API (`langchain-google-genai`), PyTorch, Transformers, Accelerate (Gemma等のローカルモデル用)
 - **Tooling**: ESLint, Prettier, Ruff
 
@@ -49,9 +49,26 @@ ek-chat/
 3. **フロントエンドの起動**:
    Node.js と `yarn` を使用し、依存関係のインストール後に開発サーバーを起動します。
 
+## 開発コマンド
+
+各環境における主要な開発コマンドです。
+
+### Backend (`backend/`)
+- **Lint**: `uv run ruff check .`
+- **Format**: `uv run ruff format .`
+- **Test**: `uv run pytest`
+
+### Frontend (`frontend/`)
+- **Lint**: `yarn lint`
+- **Format**: `yarn prettier --write .`
+- **Test**: `yarn test` (Vitest によるテスト)
+- **Build**: `yarn build`
+
 ## 注意点
 
 - ローカルモデル (Gemma等) を利用するには、適切なGPU環境（CUDA）およびローカルへのモデル配置が必要となる場合があります。
 
 ---
-*Author: Gemini 3.1 Pro (High)*
+### Author
+- *[muetaek0321](https://github.com/muetaek0321)*
+- *Gemini 3.1 Pro (High)*

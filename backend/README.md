@@ -81,6 +81,7 @@ uv run python main.py
 
 - **Lint**: `uv run ruff check .`
 - **Format**: `uv run ruff format .`
+- **Test**: `uv run pytest`
 
 ---
 *Author: Gemini 3.1 Pro (High)*

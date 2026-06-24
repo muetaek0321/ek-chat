@@ -60,6 +60,7 @@ yarn dev
 - **Build**: `yarn build` (本番環境向けビルドの作成)
 - **Start**: `yarn start` (ビルド済みの本番サーバーの起動)
 - **Lint**: `yarn lint` (ESLint によるコードの静的解析)
+- **Test**: `yarn test` (Vitest によるテストの実行)
 
 ---
 *Author: Gemini 3.1 Pro (High)*
