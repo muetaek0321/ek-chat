@@ -29,17 +29,20 @@ export default function UserInput({
     // 生成中は各種機能を無効化する
     setIsRunning(true)
 
-    // backendと通信して返答生成
+    // ユーザ入力を先に表示
     const userInput: ChatMessage = {
       role: 'user',
       content: inputText,
     }
+    setChatHistory((prev) => [...prev, userInput])
+
+    // backendと通信して返答生成
     await postRequest<GeneratedChatMessage>('/chat', userInput)
       .then((res: ApiResponse<GeneratedChatMessage>) => {
         if (res.success && res.data !== undefined) {
           const response = res.data
-          // チャット履歴に追加
-          setChatHistory((prev) => [...prev, userInput, response.assistantMessage])
+          // 返答をチャット履歴に追加
+          setChatHistory((prev) => [...prev, response.assistantMessage])
           // 新しいチャットからの実行の場合はチャット情報も更新
           if (response.newChatInfo !== undefined) {
             const newChatInfo = response.newChatInfo
