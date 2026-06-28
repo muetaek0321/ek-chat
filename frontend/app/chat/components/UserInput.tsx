@@ -24,25 +24,31 @@ export default function UserInput({
 }: UserInputProps) {
   const [inputText, setInputText] = useState<string>('')
 
+  // 返答生成中の表示
+  const generating: ChatMessage = {
+    role: 'assistant',
+    content: '*考え中...*',
+  }
+
   // 入力内容の送信時の処理
   const handleSendUserInput = async () => {
     // 生成中は各種機能を無効化する
     setIsRunning(true)
 
-    // ユーザ入力を先に表示
+    // ユーザ入力とAI返答生成中の表示
     const userInput: ChatMessage = {
       role: 'user',
       content: inputText,
     }
-    setChatHistory((prev) => [...prev, userInput])
+    setChatHistory((prev) => [...prev, userInput, generating])
 
     // backendと通信して返答生成
     await postRequest<GeneratedChatMessage>('/chat', userInput)
       .then((res: ApiResponse<GeneratedChatMessage>) => {
         if (res.success && res.data !== undefined) {
           const response = res.data
-          // 返答をチャット履歴に追加
-          setChatHistory((prev) => [...prev, response.assistantMessage])
+          // 返答をチャット履歴に追加（直前の「考え中...」表示を置き換える）
+          setChatHistory((prev) => [...prev.slice(0, -1), response.assistantMessage])
           // 新しいチャットからの実行の場合はチャット情報も更新
           if (response.newChatInfo !== undefined) {
             const newChatInfo = response.newChatInfo
