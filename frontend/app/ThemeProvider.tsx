@@ -3,12 +3,13 @@
 import { createContext, useContext, ReactNode } from 'react'
 import { ThemeProvider as MuiThemeProvider, Theme } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
-import { lightTheme, darkTheme } from './theme'
+import { createAppTheme } from './theme'
 
 type ThemeMode = 'light' | 'dark'
 
 interface ThemeContextType {
   mode: ThemeMode
+  fontSize: number
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
@@ -24,15 +25,21 @@ export const useTheme = () => {
 interface ThemeProviderProps {
   children: ReactNode
   initialTheme: ThemeMode
+  initialFontSize?: number
 }
 
-export const AppThemeProvider = ({ children, initialTheme }: ThemeProviderProps) => {
+export const AppThemeProvider = ({
+  children,
+  initialTheme,
+  initialFontSize = 16,
+}: ThemeProviderProps) => {
   const mode = initialTheme
+  const fontSize = initialFontSize
 
-  const theme: Theme = mode === 'light' ? lightTheme : darkTheme
+  const theme: Theme = createAppTheme(mode, fontSize)
 
   return (
-    <ThemeContext.Provider value={{ mode: mode }}>
+    <ThemeContext.Provider value={{ mode, fontSize }}>
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
         {children}

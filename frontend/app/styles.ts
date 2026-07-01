@@ -61,38 +61,48 @@ export const sectionMargin = {
 // テキストスタイル
 // ===============================
 
-export const textVariants = {
+// フォントサイズに基づくrem値を計算するヘルパー
+const calcFontSizeRem = (basePx: number, remValue: number): string => {
+  const scale = basePx / 14
+  return `${remValue * scale}rem`
+}
+
+// フォントサイズに応じたテキストバリアントを生成する関数
+export const createTextVariants = (fontSize: number = 16) => ({
   heading1: {
-    fontSize: '2rem',
+    fontSize: calcFontSizeRem(fontSize, 2),
     fontWeight: 700,
     lineHeight: 1.2,
   },
   heading2: {
-    fontSize: '1.5rem',
+    fontSize: calcFontSizeRem(fontSize, 1.5),
     fontWeight: 600,
     lineHeight: 1.3,
   },
   heading3: {
-    fontSize: '1.25rem',
+    fontSize: calcFontSizeRem(fontSize, 1.25),
     fontWeight: 600,
     lineHeight: 1.4,
   },
   body: {
-    fontSize: '1rem',
+    fontSize: calcFontSizeRem(fontSize, 1),
     fontWeight: 400,
     lineHeight: 1.5,
   },
   bodySmall: {
-    fontSize: '0.875rem',
+    fontSize: calcFontSizeRem(fontSize, 0.875),
     fontWeight: 400,
     lineHeight: 1.5,
   },
   caption: {
-    fontSize: '0.75rem',
+    fontSize: calcFontSizeRem(fontSize, 0.75),
     fontWeight: 400,
     lineHeight: 1.4,
   },
-}
+})
+
+// デフォルトのテキストバリアント（後方互換性のためにエクスポート）
+export const textVariants = createTextVariants()
 
 // ===============================
 // ボーダースタイル
