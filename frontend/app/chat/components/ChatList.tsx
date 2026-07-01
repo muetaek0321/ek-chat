@@ -6,6 +6,7 @@ import IconButton from '@mui/material/IconButton'
 import BackspaceIcon from '@mui/icons-material/Backspace'
 import type { MouseEvent } from 'react'
 
+import { useTheme } from '../../ThemeProvider'
 import { ApiResponse, deleteRequest } from '@lib/fetchData'
 import { ChatInfo } from '@types'
 
@@ -24,6 +25,7 @@ export default function ChatList({
   createNewChat,
   isRunning,
 }: ChatListProps) {
+  const { fontSize } = useTheme()
   // チャットの切り替え
   const handleChatSwitch = (chatId: string) => {
     // 生成中はチャットの切り替えを無効化する
@@ -79,6 +81,7 @@ export default function ChatList({
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
+              fontSize: `${fontSize}px`,
             })}
           >
             {chatInfo.title}

@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material/styles'
+import { createTheme, Theme } from '@mui/material/styles'
 
 // パレットの型拡張
 declare module '@mui/material/styles' {
@@ -44,113 +44,74 @@ const darkPalette = {
   hover: '#252525',
 }
 
-// ライトテーマ
-export const lightTheme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: lightPalette.primary,
-    },
-    secondary: {
-      main: lightPalette.secondary,
-    },
-    background: {
-      default: lightPalette.background,
-      paper: lightPalette.surface,
-    },
-    text: {
-      primary: lightPalette.text,
-      secondary: lightPalette.textSecondary,
-    },
-    divider: lightPalette.divider,
-    custom: {
-      input: lightPalette.input,
-      hover: lightPalette.hover,
-    },
-  },
-  typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    fontSize: 14,
-    body1: {
-      fontSize: '1rem',
-      color: lightPalette.text,
-    },
-    body2: {
-      fontSize: '0.875rem',
-      color: lightPalette.textSecondary,
-    },
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-        },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundColor: lightPalette.surface,
-        },
-      },
-    },
-  },
-})
+// フォントサイズに基づくrem値を計算するヘルパー
+// MUIのデフォルトベースは14px。スケール比率を計算して適用する。
+const calcFontSizeRem = (basePx: number, remValue: number): string => {
+  const scale = basePx / 14
+  return `${remValue * scale}rem`
+}
 
-// ダークテーマ
-export const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: darkPalette.primary,
+// テーマ生成関数
+export const createAppTheme = (mode: 'light' | 'dark', fontSize: number = 16): Theme => {
+  const palette = mode === 'light' ? lightPalette : darkPalette
+
+  return createTheme({
+    palette: {
+      mode,
+      primary: {
+        main: palette.primary,
+      },
+      secondary: {
+        main: palette.secondary,
+      },
+      background: {
+        default: palette.background,
+        paper: palette.surface,
+      },
+      text: {
+        primary: palette.text,
+        secondary: palette.textSecondary,
+      },
+      divider: palette.divider,
+      custom: {
+        input: palette.input,
+        hover: palette.hover,
+      },
     },
-    secondary: {
-      main: darkPalette.secondary,
+    typography: {
+      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      fontSize,
+      body1: {
+        fontSize: calcFontSizeRem(fontSize, 1),
+        color: palette.text,
+      },
+      body2: {
+        fontSize: calcFontSizeRem(fontSize, 0.875),
+        color: palette.textSecondary,
+      },
     },
-    background: {
-      default: darkPalette.background,
-      paper: darkPalette.surface,
-    },
-    text: {
-      primary: darkPalette.text,
-      secondary: darkPalette.textSecondary,
-    },
-    divider: darkPalette.divider,
-    custom: {
-      input: darkPalette.input,
-      hover: darkPalette.hover,
-    },
-  },
-  typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    fontSize: 14,
-    body1: {
-      fontSize: '1rem',
-      color: darkPalette.text,
-    },
-    body2: {
-      fontSize: '0.875rem',
-      color: darkPalette.textSecondary,
-    },
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            textTransform: 'none',
+          },
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundColor: palette.surface,
+          },
         },
       },
     },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundColor: darkPalette.surface,
-        },
-      },
-    },
-  },
-})
+  })
+}
+
+// デフォルトのテーマ（後方互換性のためにエクスポート）
+export const lightTheme = createAppTheme('light')
+export const darkTheme = createAppTheme('dark')
 
 export const colorTokens = {
   light: lightPalette,

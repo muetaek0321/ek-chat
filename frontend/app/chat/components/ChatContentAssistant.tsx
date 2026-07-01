@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import { Theme } from '@mui/material/styles'
 
+import { useTheme } from '../../ThemeProvider'
 import { ChatMessage } from '@types'
 
 export interface ChatContentAssistantProps {
@@ -13,6 +14,8 @@ export interface ChatContentAssistantProps {
 }
 
 export default function ChatContentAssistant({ message }: ChatContentAssistantProps) {
+  const { fontSize } = useTheme()
+
   const chatBubbleStyle = {
     position: 'relative',
     border: 1.5,
@@ -20,6 +23,7 @@ export default function ChatContentAssistant({ message }: ChatContentAssistantPr
     borderColor: '#505050',
     p: 1,
     bgcolor: 'background.paper',
+    fontSize: `${fontSize}px`,
 
     '&::before': {
       content: '""',

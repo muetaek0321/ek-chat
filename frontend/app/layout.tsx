@@ -35,6 +35,7 @@ export const metadata: Metadata = {
 }
 
 const defaultTheme = process.env.DEFAULT_THEME === 'dark' ? 'dark' : 'light'
+const defaultFontSize = parseInt(process.env.DEFAULT_FONT_SIZE || '14', 10)
 
 export default function RootLayout({
   children,
@@ -50,7 +51,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <AppRouterCacheProvider>
-          <AppThemeProvider initialTheme={defaultTheme}>{children}</AppThemeProvider>
+          <AppThemeProvider initialTheme={defaultTheme} initialFontSize={defaultFontSize}>
+            {children}
+          </AppThemeProvider>
         </AppRouterCacheProvider>
       </body>
     </html>
