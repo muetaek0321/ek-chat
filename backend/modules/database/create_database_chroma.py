@@ -1,43 +1,20 @@
 import os
-import time
+import sys
 from pathlib import Path
+
+# backendフォルダのrootから実行してデータベースを作成するためsys.pathに追加
+sys.path.append("./")
 
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import TextLoader
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_core.embeddings import Embeddings
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from tqdm import tqdm
 
+from modules.database.embedding_models import get_embedding
+from modules.database.json_to_markdown import songs_json_to_markdown_doc
+
 # 環境変数の読み込み
-load_dotenv()
-
-
-def get_embedding(mode: str) -> Embeddings:
-    """Embeddingモデルの読み込み
-
-    Args:
-        mode (str): Embeddingモデルの種類（"huggingface"または"gemini"）
-
-    Returns:
-        Embeddings: 指定されたEmbeddingモデルのインスタンス
-    """
-
-    # Embeddingモデルの読み込み
-    if mode == "huggingface":
-        embedding = HuggingFaceEmbeddings(
-            model_name="",
-            model_kwargs={"device": "cuda", "trust_remote_code": True},
-        )
-    elif mode == "gemini":
-        embedding = GoogleGenerativeAIEmbeddings(
-            model="gemini-embedding-2", output_dimensionality=1536 * 2
-        )
-    else:
-        raise ValueError(f"Invalid EMBEDDING_MODE: {mode}")
-
-    return embedding
+load_dotenv("./.env")
 
 
 def create_database() -> None:
@@ -59,17 +36,29 @@ def create_database() -> None:
     # 楽曲のデータをベクトル化して保存
     song_data_pathlist = list((data_dir / "elephantkashimashi" / "songs").iterdir())
     for song_data_path in tqdm(song_data_pathlist, desc="songs"):
-        # 楽曲のデータをベクトル化して保存
-        docs = TextLoader(song_data_path, encoding="utf-8").load()
+        # 楽曲のjsonデータをmarkdown形式に変換
+        doc = songs_json_to_markdown_doc(song_data_path)
+        # ベクトル化して保存
+        vectorstore.add_documents([doc])
 
+    # その他テキストデータをベクトル化して保存
+    song_data_pathlist = list((data_dir / "elephantkashimashi" / "other").iterdir())
+    for txt_data_path in tqdm(song_data_pathlist, desc="other"):
+        # テキストデータの読み込み
+        docs = TextLoader(str(txt_data_path), encoding="cp932").load()
+        # カテゴリをメタデータに追加
+        for doc in docs:
+            doc.metadata["category"] = "other"
+        # ベクトル化して保存
         vectorstore.add_documents(docs)
-
-        time.sleep(10)  # 10秒待機（API制限回避のため）
 
 
 if __name__ == "__main__":
+    # このプログラムを実行してデータベースを作成する
+    # python .\modules\database\create_database_chroma.py
+
     # データベースの作成
-    # create_database()
+    create_database()
 
     ### test ###
     question = "「今宵の月のように」はどんな曲？"
