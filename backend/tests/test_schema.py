@@ -30,7 +30,8 @@ class TestSchema:
         assert ChatModel.GEMINI == "Gemini(API)"
         assert ChatModel.GEMMA4_E2B == "Gemma4:E2B"
         assert ChatModel.GEMMA4_12B == "Gemma4:12B"
-        assert ChatModel.OLLAMA == "Ollama(cloud)"
+        assert ChatModel.OLLAMA_CLOUD == "Ollama(cloud)"
+        assert ChatModel.MUSE_GLIMMER == "Muse-Glimmer:30B"
 
     def test_thinking_enum(self):
         """Thinking Enumのテスト"""

@@ -1,5 +1,4 @@
 import gc
-import os
 import time
 
 from langchain_ollama import ChatOllama
@@ -10,13 +9,13 @@ from modules.schema import ChatMessage, ChatModel, ChatModelParameter
 from .base import ResponseGenerator
 
 
-class OllamaCloudResponseGenerator(ResponseGenerator):
-    """OllamaCloudを使用した返答生成クラス"""
+class MuseGlimmerResponseGenerator(ResponseGenerator):
+    """Muse-Glimmer(Ollama)を使用した返答生成クラス"""
 
     def __init__(self) -> None:
         """初期化"""
-        super().__init__(logger=get_logger(__name__), name=ChatModel.OLLAMA_CLOUD, is_use=True)
-        self.model_name = os.getenv("OLLAMA_CLOUD_MODEL", "gpt-oss:120b")
+        super().__init__(logger=get_logger(__name__), name=ChatModel.MUSE_GLIMMER, is_use=True)
+        self.model_name = "muse-glimmer:30b"
         self.llm = None
 
         # モデルのパラメータ
@@ -26,8 +25,6 @@ class OllamaCloudResponseGenerator(ResponseGenerator):
         """モデルのセットアップ"""
         self.llm = ChatOllama(
             model=self.model_name,
-            base_url="https://ollama.com",
-            api_key=os.getenv("OLLAMA_API_KEY", None),
             temperature=self.temperature,
         )
 
