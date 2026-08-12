@@ -34,7 +34,7 @@ class TestOllamaCloudResponseGenerator:
 
     def test_init(self):
         """__init__メソッドのテスト"""
-        assert self.ollama_cloud_response_generator.name == ChatModel.OLLAMA
+        assert self.ollama_cloud_response_generator.name == ChatModel.OLLAMA_CLOUD
         assert self.ollama_cloud_response_generator.is_use == True
         assert self.ollama_cloud_response_generator.model_name == "gpt-oss:120b"
         assert self.ollama_cloud_response_generator.llm is None
