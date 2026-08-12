@@ -16,7 +16,7 @@ class OllamaCloudResponseGenerator(ResponseGenerator):
     def __init__(self) -> None:
         """初期化"""
         super().__init__(logger=get_logger(__name__), name=ChatModel.OLLAMA, is_use=True)
-        self.model_name = os.getenv("OLLAMA_MODEL", "gpt-oss:120b")
+        self.model_name = os.getenv("OLLAMA_CLOUD_MODEL", "gpt-oss:120b")
         self.llm = None
 
         # モデルのパラメータ
