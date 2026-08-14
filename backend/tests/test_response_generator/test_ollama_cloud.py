@@ -11,9 +11,9 @@ class TestOllamaCloudResponseGenerator:
     def setup_method(self):
         """テストメソッドのセットアップ"""
         # 環境変数を設定
-        self.original_ollama_model = os.getenv("OLLAMA_MODEL")
+        self.original_ollama_model = os.getenv("OLLAMA_CLOUD_MODEL")
         self.original_ollama_api_key = os.getenv("OLLAMA_API_KEY")
-        os.environ["OLLAMA_MODEL"] = "gpt-oss:120b"
+        os.environ["OLLAMA_CLOUD_MODEL"] = "gpt-oss:120b"
         os.environ["OLLAMA_API_KEY"] = "test_api_key"
 
         # OllamaCloudResponseGeneratorのインスタンスを作成
@@ -23,9 +23,9 @@ class TestOllamaCloudResponseGenerator:
         """テストメソッドの teardown"""
         # 環境変数を元に戻す
         if self.original_ollama_model is not None:
-            os.environ["OLLAMA_MODEL"] = self.original_ollama_model
-        elif "OLLAMA_MODEL" in os.environ:
-            del os.environ["OLLAMA_MODEL"]
+            os.environ["OLLAMA_CLOUD_MODEL"] = self.original_ollama_model
+        elif "OLLAMA_CLOUD_MODEL" in os.environ:
+            del os.environ["OLLAMA_CLOUD_MODEL"]
 
         if self.original_ollama_api_key is not None:
             os.environ["OLLAMA_API_KEY"] = self.original_ollama_api_key
@@ -34,7 +34,7 @@ class TestOllamaCloudResponseGenerator:
 
     def test_init(self):
         """__init__メソッドのテスト"""
-        assert self.ollama_cloud_response_generator.name == ChatModel.OLLAMA
+        assert self.ollama_cloud_response_generator.name == ChatModel.OLLAMA_CLOUD
         assert self.ollama_cloud_response_generator.is_use == True
         assert self.ollama_cloud_response_generator.model_name == "gpt-oss:120b"
         assert self.ollama_cloud_response_generator.llm is None
