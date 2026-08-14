@@ -4,8 +4,9 @@ import time
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+from modules.database.get_database_context import get_context
 from modules.logger import get_logger
-from modules.schema import ChatMessage, ChatModel, ChatModelParameter
+from modules.schema import ChatMessage, ChatModel, ChatModelParameter, Role
 
 from .base import ResponseGenerator
 
@@ -75,13 +76,18 @@ class GeminiResponseGenerator(ResponseGenerator):
         Returns:
             str: 生成された返答
         """
-        # 返答の生成
         start_time = time.perf_counter()
-        response = self.llm.invoke(input_messages)
+
+        # ユーザ入力をもとにベクトルDBからコンテキスト検索
+        context = {"role": Role.USER, "content": get_context(input_messages[-1]["content"])}
+
+        # 返答の生成
+        response = self.llm.invoke(input_messages + [context])
+
         generate_time = time.perf_counter() - start_time
         self.logger.debug(f"返答の生成時間: {generate_time:.2f}s")
 
         # 生成された返答のデコード
-        raw_response = response.content
+        raw_response = response.content[0]["text"]
 
         return raw_response
