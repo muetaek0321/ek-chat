@@ -18,6 +18,7 @@ class ChatModel(StrEnum):
     GEMINI = "Gemini(API)"
     GEMMA4_E2B = "Gemma4:E2B"
     GEMMA4_12B = "Gemma4:12B"
+    QWEN = "Qwen3.8:27B"
     MUSE_GLIMMER = "Muse-Glimmer:30B"
     OLLAMA_CLOUD = "Ollama(cloud)"
 
