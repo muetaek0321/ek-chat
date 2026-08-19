@@ -230,7 +230,6 @@ class ChatManager:
         Returns:
             GenerateChatResponse: アシスタントからの応答メッセージと新しいチャット情報
         """
-        self.chat_history.append(user_message.model_dump())
         input_messages = self.chat_history.copy()
 
         # SystemPromptが設定されている場合はチャット履歴の先頭にSystemPromptを追加
@@ -239,10 +238,12 @@ class ChatManager:
             input_messages.insert(0, self.system_prompt.model_dump())
 
         # LLMを使用して応答を生成
-        response = self.chat_model(input_messages)
+        response = self.chat_model(input_messages, user_message)
 
         # 生成された応答をChatMessage形式で返す
         assistant_message = ChatMessage(role=Role.ASSISTANT, content=response)
+        # ユーザ入力と返答文を履歴に追加
+        self.chat_history.append(user_message.model_dump())
         self.chat_history.append(assistant_message.model_dump())
 
         # チャット履歴を保存

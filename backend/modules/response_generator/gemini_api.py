@@ -4,9 +4,8 @@ import time
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from modules.database.get_database_context import get_context
 from modules.logger import get_logger
-from modules.schema import ChatMessage, ChatModel, ChatModelParameter, Role
+from modules.schema import ChatMessage, ChatModel, ChatModelParameter
 
 from .base import ResponseGenerator
 
@@ -21,7 +20,7 @@ class GeminiResponseGenerator(ResponseGenerator):
         self.llm = None
 
         # モデルのパラメータ
-        self.temperature = 0.1
+        self.temperature = 0.0
         self.thinking = "medium"
         self.thinking_budget_dict = {"low": 0, "medium": 1024, "high": 4096}
 
@@ -67,22 +66,22 @@ class GeminiResponseGenerator(ResponseGenerator):
         self.temperature = parameters.temperature
         self.thinking = parameters.thinking
 
-    def __call__(self, input_messages: list[ChatMessage]) -> str:
+    def __call__(self, input_messages: list[dict[str, str]], user_message: ChatMessage) -> str:
         """モデルの返答を生成する
 
         Args:
-            input_messages (list[ChatMessage]): ユーザ入力を含むチャット履歴
+            input_messages (list[dict[str, str]]): ユーザ入力を含むチャット履歴
 
         Returns:
             str: 生成された返答
         """
         start_time = time.perf_counter()
 
-        # ユーザ入力をもとにベクトルDBからコンテキスト検索
-        context = {"role": Role.USER, "content": get_context(input_messages[-1]["content"])}
+        # 入力データの変換
+        input_messages = self.convert_input_messages(input_messages, user_message.content)
 
         # 返答の生成
-        response = self.llm.invoke(input_messages + [context])
+        response = self.llm.invoke(input_messages)
 
         generate_time = time.perf_counter() - start_time
         self.logger.debug(f"返答の生成時間: {generate_time:.2f}s")
