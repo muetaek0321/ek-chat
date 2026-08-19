@@ -8,8 +8,9 @@ from modules.logger import get_logger
 from modules.response_generator.gemini_api import GeminiResponseGenerator
 from modules.response_generator.gemma4_12b import Gemma4LlmmaCppResponseGenerator
 from modules.response_generator.gemma4_e2b import Gemma4HuggingFaceResponseGenerator
-from modules.response_generator.muse_glimmer_30b import MuseGlimmerResponseGenerator
+from modules.response_generator.muse_glimmer import MuseGlimmerResponseGenerator
 from modules.response_generator.ollama_cloud import OllamaCloudResponseGenerator
+from modules.response_generator.qwen import QwenResponseGenerator
 from modules.schema import (
     ChatHistory,
     ChatInfo,
@@ -44,6 +45,7 @@ class ChatManager:
             ChatModel.GEMINI: GeminiResponseGenerator(),
             ChatModel.GEMMA4_E2B: Gemma4HuggingFaceResponseGenerator(),
             ChatModel.GEMMA4_12B: Gemma4LlmmaCppResponseGenerator(),
+            ChatModel.QWEN: QwenResponseGenerator(),
             ChatModel.MUSE_GLIMMER: MuseGlimmerResponseGenerator(),
             ChatModel.OLLAMA_CLOUD: OllamaCloudResponseGenerator(),
         }
