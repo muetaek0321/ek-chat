@@ -240,7 +240,7 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
               <NumberInputSlider
                 value={temprature}
                 setValue={setTemperature}
-                min={0.1}
+                min={0.0}
                 max={1.0}
                 step={0.1}
                 label="・回答の創造性（Temperature）"
