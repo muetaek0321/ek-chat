@@ -20,7 +20,7 @@ class GeminiResponseGenerator(ResponseGenerator):
         self.llm = None
 
         # モデルのパラメータ
-        self.temperature = 0.1
+        self.temperature = 0.0
         self.thinking = "medium"
         self.thinking_budget_dict = {"low": 0, "medium": 1024, "high": 4096}
 
@@ -66,22 +66,30 @@ class GeminiResponseGenerator(ResponseGenerator):
         self.temperature = parameters.temperature
         self.thinking = parameters.thinking
 
-    def __call__(self, input_messages: list[ChatMessage]) -> str:
+    def __call__(self, input_messages: list[dict[str, str]], user_message: ChatMessage) -> str:
         """モデルの返答を生成する
 
         Args:
-            input_messages (list[ChatMessage]): ユーザ入力を含むチャット履歴
+            input_messages (list[dict[str, str]]): これまでのチャット履歴
+            user_message (ChatMessage): ユーザ入力文
 
         Returns:
             str: 生成された返答
         """
-        # 返答の生成
         start_time = time.perf_counter()
+
+        # 入力データの変換
+        input_messages = self.convert_input_messages(
+            input_messages, user_message.content, num_ctx=5
+        )
+
+        # 返答の生成
         response = self.llm.invoke(input_messages)
+
         generate_time = time.perf_counter() - start_time
         self.logger.debug(f"返答の生成時間: {generate_time:.2f}s")
 
         # 生成された返答のデコード
-        raw_response = response.content
+        raw_response = response.content[0]["text"]
 
         return raw_response
