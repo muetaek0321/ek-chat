@@ -70,7 +70,8 @@ class GeminiResponseGenerator(ResponseGenerator):
         """モデルの返答を生成する
 
         Args:
-            input_messages (list[dict[str, str]]): ユーザ入力を含むチャット履歴
+            input_messages (list[dict[str, str]]): これまでのチャット履歴
+            user_message (ChatMessage): ユーザ入力文
 
         Returns:
             str: 生成された返答
@@ -78,7 +79,9 @@ class GeminiResponseGenerator(ResponseGenerator):
         start_time = time.perf_counter()
 
         # 入力データの変換
-        input_messages = self.convert_input_messages(input_messages, user_message.content)
+        input_messages = self.convert_input_messages(
+            input_messages, user_message.content, num_ctx=5
+        )
 
         # 返答の生成
         response = self.llm.invoke(input_messages)

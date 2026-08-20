@@ -23,7 +23,7 @@ RAG_PROMPT = """\
 """
 
 
-def get_context(query: str) -> str:
+def get_context(query: str, k: int = 5) -> str:
     """ChromaDBからの検索でコンテキストを作成
 
     Args:
@@ -47,7 +47,7 @@ def get_context(query: str) -> str:
     )
 
     # 類似文書検索
-    docs = vectorstore.similarity_search(query=query, k=5)
+    docs = vectorstore.similarity_search(query=query, k=k)
 
     context = "\n---------------\n".join([doc.page_content for doc in docs])
 

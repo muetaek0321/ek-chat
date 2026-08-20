@@ -66,13 +66,14 @@ class ResponseGenerator(ABC):
         raise NotImplementedError("__call__メソッドは継承先で実装されていません")
 
     def convert_input_messages(
-        self, input_messages: list[dict[str, str]], user_input: str
+        self, input_messages: list[dict[str, str]], user_input: str, num_ctx: int = 5
     ) -> list[SystemMessage, HumanMessage, AIMessage]:
         """LLMに入力するメッセージのデータを変換
 
         Args:
             input_message (list[dict[str, str]]): 辞書型のメッセージデータ
             user_input (str): ユーザの入力文
+            num_ctx (int): 検索で取得するコンテキスト数
 
         Returns:
             list[SystemMessage, HumanMessage, AIMessage]: LangChainのMessage形式に変換したデータ
@@ -89,6 +90,6 @@ class ResponseGenerator(ABC):
                 converted_messages.append(AIMessage(content=msg["content"]))
 
         # 入力されたユーザに質問にはベクトルDBの検索結果を与えてRAGで回答させる
-        converted_messages.append(HumanMessage(content=get_context(user_input)))
+        converted_messages.append(HumanMessage(content=get_context(user_input, k=num_ctx)))
 
         return converted_messages
