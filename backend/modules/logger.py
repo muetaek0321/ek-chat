@@ -21,6 +21,8 @@ def logging_config(debug: bool) -> None:
     logging.getLogger("httpcore").setLevel(logging.WARNING)
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("google_genai").setLevel(logging.WARNING)
+    logging.getLogger("sentence_transformers").setLevel(logging.WARNING)
+    logging.getLogger("chromadb").setLevel(logging.WARNING)
 
 
 def get_logger(name: str) -> logging.Logger:
