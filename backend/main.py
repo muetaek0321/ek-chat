@@ -41,14 +41,16 @@ async def http_exception_handler(
     req: Request,
     exc: HTTPException,
 ) -> JSONResponse:
-    """HTTPExceptionのエラーハンドラ
+    """HTTPExceptionのエラーハンドラ。
+
+    発生したHTTPエラーのログを出力し、クライアントへエラー詳細を含むJSONレスポンスを返します。
 
     Args:
-        req (Request): 発生したHTTPエラーのリクエスト情報
-        exc (HTTPException): 発生したHTTPエラーの例外オブジェクト
+        req: 発生したHTTPエラーのリクエスト情報。
+        exc: 発生したHTTPエラーの例外オブジェクト。
 
     Returns:
-        JSONResponse: エラーレスポンス（HTTPステータスコードとエラーメッセージを含むJSON形式のレスポンス）
+        HTTPステータスコードとエラーメッセージを含むJSON形式のレスポンス。
     """
     app_logger.error(
         f"HTTP error: method={req.method} path={req.url.path} status={exc.status_code} detail={exc.detail}"
@@ -64,14 +66,16 @@ async def other_exception_handler(
     req: Request,
     exc: Exception,
 ) -> JSONResponse:
-    """その他の例外のエラーハンドラ
+    """その他の予期しない例外のエラーハンドラ。
+
+    発生したエラーの詳細ログを出力し、ステータスコード500の共通エラーレスポンスを返します。
 
     Args:
-        req (Request): 発生したエラーのリクエスト情報
-        exc (Exception): 発生したエラーの例外オブジェクト
+        req: 発生したエラーのリクエスト情報。
+        exc: 発生した例外オブジェクト。
 
     Returns:
-        JSONResponse: エラーレスポンス（HTTPステータスコード500とエラーメッセージを含むJSON形式のレスポンス）
+        HTTPステータスコード500と内部エラーメッセージを含むJSON形式のレスポンス。
     """
     app_logger.error(f"Error: method={req.method} path={req.url.path} detail={exc}")
 
@@ -85,15 +89,15 @@ async def other_exception_handler(
     "/",
     response_class=RedirectResponse,
     summary="SwaggerUIにRedirect",
-    description="ルートエンドポイント: SwaggerUIにRedirectする",
 )
 def root() -> RedirectResponse:
-    """ルートエンドポイント: SwaggerUIにRedirect
+    """Swagger UIへリダイレクトする。
 
-    Returns:
-        RedirectResponse: SwaggerUIへのリダイレクトレスポンス
+    ルートパスへのアクセスをFastAPIのドキュメント（Swagger UI）へ転送します。
+
+    ### レスポンス
+    - **307 Temporary Redirect**: `/docs` へのリダイレクトレスポンス
     """
-
     return RedirectResponse(url="/docs")
 
 
@@ -101,18 +105,18 @@ def root() -> RedirectResponse:
     "/init",
     response_model=ChatInfoList,
     summary="アプリの初期データを取得",
-    description="チャットボットアプリの初期データを取得するエンドポイント",
 )
 async def init_app(
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> ChatInfoList:
-    """チャットボットアプリの初期データを取得
+    """チャットボットアプリの初期データを取得する。
 
-    Args:
-        api_logger (logging.Logger): エンドポイント用のロガー
+    保存先ディレクトリから既存のチャット一覧（チャットIDとタイトル）を読み込んで返します。
 
-    Returns:
-        ChatInfoList: チャット一覧のデータ
+    ### 処理の流れ
+    1. 保存先ディレクトリ内の全チャット履歴ファイルを走査
+    2. 各チャットの最初のユーザー入力をタイトル（先頭15文字）として取得
+    3. チャット一覧（`ChatInfoList`）を構築して返却
     """
     api_logger.debug("アプリの初期データを取得します")
 
@@ -126,18 +130,18 @@ async def init_app(
     "/new",
     response_model=ChatInfo,
     summary="新しいチャットを作成",
-    description="新しいチャットを作成するエンドポイント",
 )
 async def create_new_chat(
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> ChatInfo:
-    """新しいチャットを作成
+    """新しいチャットセッションを作成する。
 
-    Args:
-        api_logger (logging.Logger): エンドポイント用のロガー
+    新規チャット用の状態を初期化し、初期チャット情報を返します。
 
-    Returns:
-        ChatInfo: 作成された新しいチャットの情報
+    ### 処理の流れ
+    1. 新規チャットID（`"new"`）とデフォルトタイトルを設定
+    2. 現在のチャット履歴を初期化
+    3. 新しいチャット情報（`ChatInfo`）を返却
     """
     api_logger.debug("新しいチャットを作成します")
 
@@ -151,17 +155,21 @@ async def create_new_chat(
     "/delete",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="チャットを削除",
-    description="指定したIDのチャットを削除",
 )
 async def delete_chat(
     query: Annotated[ChatId, Depends()],
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> None:
-    """チャットを削除
+    """指定したIDのチャットを削除する。
 
-    Args:
-        query (ChatId): クエリパラメータ（チャットID）
-        api_logger (logging.Logger): エンドポイント用のロガー
+    クエリパラメータで指定されたチャットIDの履歴ファイルを削除します。
+
+    ### 処理の流れ
+    1. クエリパラメータから対象の `chat_id` を取得
+    2. `chat_id` が `"new"` 以外の場合、対応するチャット履歴ファイルを削除
+
+    ### エラーレスポンス
+    - **422 Unprocessable Entity**: クエリパラメータのバリデーションエラー
     """
     chat_id = query.chat_id
     api_logger.debug(f"チャットを削除します: {chat_id}")
@@ -174,20 +182,24 @@ async def delete_chat(
     "/history",
     response_model=ChatHistory,
     summary="チャットの履歴を取得",
-    description="チャットIDを指定して対応するチャットの履歴を取得するエンドポイント",
 )
 async def get_chat_history(
     query: Annotated[ChatId, Depends()],
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> ChatHistory:
-    """チャットの履歴を取得
+    """チャットのメッセージ履歴を取得する。
 
-    Args:
-        query (ChatId): クエリパラメータ（チャットID）
-        api_logger (logging.Logger): エンドポイント用のロガー
+    指定されたチャットIDに対応する過去の対話履歴をストレージから読み込んで返します。
 
-    Returns:
-        ChatHistory: 指定されたチャットIDのチャット履歴データ
+    ### 処理の流れ
+    1. クエリパラメータから `chat_id` を取得
+    2. `chat_id` が `"new"` の場合は空の履歴を返却
+    3. 既存のチャットIDの場合は該当する履歴ファイルからメッセージリストを読み込み
+    4. 現在選択中のチャットIDを更新し、履歴データ（`ChatHistory`）を返却
+
+    ### エラーレスポンス
+    - **422 Unprocessable Entity**: クエリパラメータのバリデーションエラー
+    - **500 Internal Server Error**: 指定されたIDのチャット履歴が見つからない、または読み込みに失敗した場合
     """
     chat_id = query.chat_id
     api_logger.debug(f"チャットID: {chat_id}")
@@ -202,15 +214,18 @@ async def get_chat_history(
     "/settings",
     response_model=SettingsResponse,
     summary="設定項目のデータを取得",
-    description="SystemPromptと設定されたモデルのデータを取得するエンドポイント",
 )
 async def get_settings(
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> SettingsResponse:
-    """設定項目のデータを取得
+    """システムプロンプトおよびモデル設定の情報を取得する。
 
-    Args:
-        api_logger (logging.Logger): エンドポイント用のロガー
+    現在登録されているSystemPromptのテキストと、利用可能な全チャットモデルの一覧（選択状態・パラメータ含む）を返します。
+
+    ### 処理の流れ
+    1. 登録されているSystemPromptテキストを取得
+    2. 各チャットモデルの利用可否、選択状態、パラメータ設定を取得
+    3. 設定データ（`SettingsResponse`）を構築して返却
     """
     api_logger.debug("設定項目のデータを取得します")
 
@@ -231,17 +246,22 @@ async def get_settings(
     "/system_prompt",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="SystemPromptのテキストを作成/更新",
-    description="SystemPromptのテキストを作成または更新するエンドポイント",
 )
 async def update_system_prompt(
     system_prompt: SystemPromptText,
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> None:
-    """SystemPromptを作成/更新
+    """SystemPromptのテキストを作成または更新する。
 
-    Args:
-        system_prompt (SystemPromptText): リクエストボディ（SystemPromptのテキスト）
-        api_logger (logging.Logger): エンドポイント用のロガー
+    リクエストボディで渡されたテキストを新しいSystemPromptとしてファイルに保存し、実行環境へ反映します。
+
+    ### 処理の流れ
+    1. リクエストボディからSystemPromptテキストを取得
+    2. `system_prompt.md` ファイルへ書き込み保存
+    3. チャット管理クラス内のSystemPromptを更新
+
+    ### エラーレスポンス
+    - **422 Unprocessable Entity**: リクエストボディのバリデーションエラー
     """
     system_prompt_text = system_prompt.text
     api_logger.debug(f"SystemPrompt: {system_prompt_text[:10]}...")
@@ -254,17 +274,22 @@ async def update_system_prompt(
     "/model",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="選択されたモデルに変更し設定を適用",
-    description="選択されたモデルに変更し設定を適用するエンドポイント",
 )
 async def select_chat_model(
     chat_model: SelectedChatModel,
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> None:
-    """選択されたモデルに変更し設定を適用
+    """使用するチャットモデルを変更しパラメータを適用する。
 
-    Args:
-        chat_model (SelectedChatModel): リクエストボディ（選択されたモデルとそのパラメータ）
-        api_logger (logging.Logger): エンドポイント用のロガー
+    指定されたチャットモデルへ切り替え、生成パラメータ（temperature、thinking等）を更新して初期化します。
+
+    ### 処理の流れ
+    1. 現在のモデルのリソース（GPUメモリ等）を解放
+    2. 指定されたチャットモデルへ切り替え
+    3. パラメータを更新し、切り替え先モデルの初期化処理を実行
+
+    ### エラーレスポンス
+    - **422 Unprocessable Entity**: リクエストボディのバリデーションエラー
     """
     selected_chat_model = chat_model.model
     parameters = chat_model.parameters
@@ -278,19 +303,24 @@ async def select_chat_model(
     "/chat",
     response_model=GenerateChatResponse,
     summary="userの入力に対してassistantの応答を生成",
-    description="アプリでのuserの入力に対してassistant（生成AI）の応答を生成するエンドポイント",
 )
 async def generate_chat_response(
     chat_message: ChatMessage, api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)]
 ) -> GenerateChatResponse:
-    """userの入力に対してassistantの生成
+    """ユーザーの入力に対してアシスタント（生成AI）の応答を生成する。
 
-    Args:
-        chat_message (ChatMessage): リクエストボディ（ユーザが入力したメッセージ）
-        api_logger (logging.Logger): エンドポイント用のロガー
+    ユーザーのメッセージを受け取り、SystemPromptおよび過去の会話コンテキストを含めてLLMへ問い合わせ、生成された応答を返します。対話履歴は永続化されます。
 
-    Returns:
-        GenerateChatResponse: 生成した返答文のデータとチャット情報
+    ### 処理の流れ
+    1. 既存のチャット履歴にSystemPromptを結合（設定時のみ）
+    2. 選択中のチャットモデルを呼び出して返答文を生成
+    3. ユーザーメッセージと生成されたアシスタントメッセージを履歴に追加
+    4. チャット履歴をストレージへ保存（新規チャットの場合は新しいチャットIDを発行）
+    5. アシスタントメッセージと新規チャット情報を返却
+
+    ### エラーレスポンス
+    - **422 Unprocessable Entity**: リクエストボディのバリデーションエラー
+    - **500 Internal Server Error**: モデル生成エラーまたはファイル保存エラー
     """
     api_logger.debug(chat_message.model_dump())
 
