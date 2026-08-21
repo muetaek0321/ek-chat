@@ -13,9 +13,10 @@ describe('ChatContentAssistant', () => {
     render(
       <AppThemeProvider initialTheme="light">
         <ChatContentAssistant message={message} />
-      </AppThemeProvider>
+      </AppThemeProvider>,
     )
     expect(screen.getByText('Hello from assistant!')).toBeInTheDocument()
     expect(screen.getByAltText('assistant_icon')).toBeInTheDocument()
+    expect(screen.getByLabelText('metadata')).toBeInTheDocument()
   })
 })

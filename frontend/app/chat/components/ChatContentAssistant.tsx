@@ -4,6 +4,9 @@ import ReactMarkdown from 'react-markdown'
 import Image from 'next/image'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Theme } from '@mui/material/styles'
 
 import { useTheme } from '../../ThemeProvider'
@@ -11,6 +14,14 @@ import { ChatMessage } from '@types'
 
 export interface ChatContentAssistantProps {
   message: ChatMessage
+}
+
+// メタデータ表示用のダミーデータ
+const dummyMetadata = {
+  model: 'gemma4_12b',
+  timestamp: '2026-08-21 12:00:00',
+  tokens: '128',
+  latency: '1.2s',
 }
 
 export default function ChatContentAssistant({ message }: ChatContentAssistantProps) {
@@ -58,8 +69,24 @@ export default function ChatContentAssistant({ message }: ChatContentAssistantPr
         <Box>
           <Image src="/assistant.png" alt="assistant_icon" width={50} height={50} />
         </Box>
-        <Box sx={chatBubbleStyle}>
-          <ReactMarkdown>{message.content}</ReactMarkdown>
+        <Box sx={{ position: 'relative', minHeight: 24 }}>
+          <Box sx={chatBubbleStyle}>
+            <ReactMarkdown>{message.content}</ReactMarkdown>
+          </Box>
+          <Tooltip title={JSON.stringify(dummyMetadata, null, 2)}>
+            <IconButton
+              aria-label="metadata"
+              sx={{
+                position: 'absolute',
+                bottom: 4,
+                right: 4,
+                bgcolor: 'action.hover',
+                '&:hover': { bgcolor: 'action.selected' },
+              }}
+            >
+              <InfoOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Box>
       </Stack>
     </Stack>
