@@ -7,7 +7,7 @@ import torch
 from langchain_community.chat_models import ChatLlamaCpp
 
 from modules.logger import get_logger
-from modules.schema import ChatMessage, ChatModel, ChatModelParameter
+from modules.schema import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
 
 from .base import ResponseGenerator
 
@@ -25,13 +25,15 @@ class Gemma4LlmmaCppResponseGenerator(ResponseGenerator):
         self.target_model_id = self.data_dir.joinpath(
             "models", "gemma-4-12B-it-qat-q4_0-gguf", "gemma-4-12b-it-qat-q4_0.gguf"
         )
+        self.model_name = self.target_model_id.name
         self.max_tokens = 1024
 
         self.processor = None
         self.target_model = None
+        self.metadata = ResponseMetadata()
 
         # モデルのパラメータ
-        self.temperature = 0.1
+        self.temperature = 0.0
 
     def setup(self) -> None:
         """モデルのセットアップ"""
@@ -83,22 +85,34 @@ class Gemma4LlmmaCppResponseGenerator(ResponseGenerator):
         """
         self.temperature = parameters.temperature
 
-    def __call__(self, input_messages: list[ChatMessage]) -> str:
+    def __call__(self, input_messages: list[dict[str, str]], user_message: ChatMessage) -> str:
         """モデルの返答を生成する
 
         Args:
-            input_messages (list[ChatMessage]): ユーザ入力を含むチャット履歴
+            input_messages (list[dict[str, str]]): これまでのチャット履歴
+            user_message (ChatMessage): ユーザ入力文
 
         Returns:
             str: 生成された返答
         """
         # 返答の生成
         start_time = time.perf_counter()
+
+        # 入力データの変換
+        input_messages = self.convert_input_messages(
+            input_messages, user_message.content, num_ctx=3
+        )
+
+        # 返答の生成
         response = self.llm.invoke(input_messages)
+
         generate_time = time.perf_counter() - start_time
         self.logger.debug(f"返答の生成時間: {generate_time:.2f}s")
+
+        # メタデータの取得
+        self.metadata = self.create_metadata(response.response_metadata, generate_time)
 
         # 生成された返答のデコード
         raw_response = response.content
 
-        return raw_response
+        return raw_response, self.metadata
