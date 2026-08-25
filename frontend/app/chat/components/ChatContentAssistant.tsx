@@ -4,14 +4,31 @@ import ReactMarkdown from 'react-markdown'
 import Image from 'next/image'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Theme } from '@mui/material/styles'
 
 import { useTheme } from '../../ThemeProvider'
-import { ChatMessage } from '@types'
+import { ChatMessage, ResponseMetadata } from '@types'
 
 export interface ChatContentAssistantProps {
   message: ChatMessage
 }
+
+// 英語のキーを日本語の表示名にマッピングする
+const metadataLabels: { [key: string]: string } = {
+  modelName: 'モデル名',
+  tokensPerSecond: 'token/sec',
+  elapsedTime: '生成時間',
+  executedAt: '実行日時',
+}
+
+// メタデータを日本語ラベルで key: value の形式で改行して結合する
+const formatMetadata = (metadata: ResponseMetadata) =>
+  Object.entries(metadata)
+    .map(([key, value]) => `${metadataLabels[key] ?? key}: ${value ?? 'None'}`)
+    .join('\n')
 
 export default function ChatContentAssistant({ message }: ChatContentAssistantProps) {
   const { fontSize } = useTheme()
@@ -58,8 +75,28 @@ export default function ChatContentAssistant({ message }: ChatContentAssistantPr
         <Box>
           <Image src="/assistant.png" alt="assistant_icon" width={50} height={50} />
         </Box>
-        <Box sx={chatBubbleStyle}>
-          <ReactMarkdown>{message.content}</ReactMarkdown>
+        <Box sx={{ position: 'relative', minHeight: 24 }}>
+          <Box sx={chatBubbleStyle}>
+            <ReactMarkdown>{message.content}</ReactMarkdown>
+          </Box>
+          {message.metadata && (
+            <Tooltip
+              title={<Box sx={{ whiteSpace: 'pre-line' }}>{formatMetadata(message.metadata)}</Box>}
+            >
+              <IconButton
+                aria-label="metadata"
+                sx={{
+                  position: 'absolute',
+                  bottom: 4,
+                  right: 4,
+                  bgcolor: 'action.hover',
+                  '&:hover': { bgcolor: 'action.selected' },
+                }}
+              >
+                <InfoOutlinedIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
         </Box>
       </Stack>
     </Stack>

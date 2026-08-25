@@ -5,7 +5,7 @@ import time
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from modules.logger import get_logger
-from modules.schema import ChatMessage, ChatModel, ChatModelParameter
+from modules.schema import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
 
 from .base import ResponseGenerator
 
@@ -18,6 +18,7 @@ class GeminiResponseGenerator(ResponseGenerator):
         super().__init__(logger=get_logger(__name__), name=ChatModel.GEMINI, is_use=True)
         self.model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")
         self.llm = None
+        self.metadata = ResponseMetadata()
 
         # モデルのパラメータ
         self.temperature = 0.0
@@ -89,7 +90,10 @@ class GeminiResponseGenerator(ResponseGenerator):
         generate_time = time.perf_counter() - start_time
         self.logger.debug(f"返答の生成時間: {generate_time:.2f}s")
 
+        # メタデータの取得
+        self.metadata = self.create_metadata(response.response_metadata, generate_time)
+
         # 生成された返答のデコード
         raw_response = response.content[0]["text"]
 
-        return raw_response
+        return raw_response, self.metadata

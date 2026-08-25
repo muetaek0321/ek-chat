@@ -4,7 +4,7 @@ import time
 from langchain_ollama import ChatOllama
 
 from modules.logger import get_logger
-from modules.schema import ChatMessage, ChatModel, ChatModelParameter
+from modules.schema import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
 
 from .base import ResponseGenerator
 
@@ -17,6 +17,7 @@ class MuseGlimmerResponseGenerator(ResponseGenerator):
         super().__init__(logger=get_logger(__name__), name=ChatModel.MUSE_GLIMMER, is_use=True)
         self.model_name = "muse-glimmer:30b"
         self.llm = None
+        self.metadata = ResponseMetadata()
 
         # モデルのパラメータ
         self.temperature = 0.0
@@ -82,7 +83,10 @@ class MuseGlimmerResponseGenerator(ResponseGenerator):
         generate_time = time.perf_counter() - start_time
         self.logger.debug(f"返答の生成時間: {generate_time:.2f}s")
 
-        # 生成された返答のデコード
+        # メタデータの取得
+        self.metadata = self.create_metadata(response.response_metadata, generate_time)
+
+        # 生成された返答の取得
         raw_response = response.content
 
-        return raw_response
+        return raw_response, self.metadata

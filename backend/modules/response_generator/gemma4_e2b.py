@@ -8,7 +8,7 @@ from accelerate.hooks import remove_hook_from_module
 from transformers import AutoModelForCausalLM, AutoProcessor
 
 from modules.logger import get_logger
-from modules.schema import ChatMessage, ChatModel, ChatModelParameter
+from modules.schema import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
 
 from .base import ResponseGenerator
 
@@ -25,11 +25,13 @@ class Gemma4HuggingFaceResponseGenerator(ResponseGenerator):
 
         self.target_model_id = self.data_dir.joinpath("models", "gemma-4-E2B-it")
         self.assistant_model_id = self.data_dir.joinpath("models", "gemma-4-E2B-it-assistant")
+        self.model_name = self.target_model_id.name
         self.max_new_tokens = 512
 
         self.processor = None
         self.target_model = None
         self.assistant_model = None
+        self.metadata = ResponseMetadata()
 
         # モデルのパラメータ
         self.temperature = 0.1
@@ -132,9 +134,22 @@ class Gemma4HuggingFaceResponseGenerator(ResponseGenerator):
         self.logger.debug(f"返答の生成時間: {generate_time:.2f}s")
 
         # 生成された返答のデコード
-        raw_response = self.processor.decode(outputs[0][input_len:], skip_special_tokens=False)
+        output_tokens = outputs[0][input_len:]
+        raw_response = self.processor.decode(output_tokens, skip_special_tokens=False)
+
+        # メタデータの取得
+        try:
+            eval_count = len(output_tokens)
+        except TypeError:
+            eval_count = None
+        eval_duration = generate_time * 1_000_000_000
+        response_metadata = {
+            "eval_count": eval_count,
+            "eval_duration": eval_duration,
+        }
+        self.metadata = self.create_metadata(response_metadata, generate_time)
 
         # 返答をパースしてcontentのみを取得
         response = self.processor.parse_response(raw_response)["content"]
 
-        return response
+        return response, self.metadata

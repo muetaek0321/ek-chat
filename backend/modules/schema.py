@@ -80,6 +80,17 @@ class SelectedChatModel(EndpointModel):
     parameters: ChatModelParameter = Field(..., description="選択したチャットモデルのパラメータ")
 
 
+class ResponseMetadata(EndpointModel):
+    """返答生成のメタ情報をまとめたBaseModel"""
+
+    model_name: str | None = Field(None, description="使用したモデルの名称")
+    tokens_per_second: float | None = Field(
+        None, description="トークン生成速度（秒あたりトークン数）"
+    )
+    elapsed_time: float | None = Field(None, description="全体の生成にかかった時間")
+    executed_at: str | None = Field(None, description="返答生成の実行時刻")
+
+
 class ChatModelInfo(EndpointModel):
     """チャットモデルの情報をまとめたBaseModel"""
 
@@ -103,6 +114,7 @@ class ChatMessage(EndpointModel):
 
     role: Role = Field(..., description="メッセージのrole（例: user, assistant）")
     content: str = Field(..., description="メッセージの内容")
+    metadata: ResponseMetadata | None = Field(None, description="返答時のメタデータ")
 
 
 class ChatHistory(RootModel[list[ChatMessage]]):

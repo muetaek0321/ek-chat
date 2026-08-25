@@ -1,10 +1,12 @@
 import logging
 from abc import ABC, abstractmethod
+from datetime import datetime
+from typing import Any
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
 from modules.database.get_database_context import get_context
-from modules.schema import ChatModel, ChatModelParameter, Role
+from modules.schema import ChatModel, ChatModelParameter, ResponseMetadata, Role
 
 
 class ResponseGenerator(ABC):
@@ -21,6 +23,8 @@ class ResponseGenerator(ABC):
         self.logger = logger
         self.name = name
         self.is_use = is_use
+        self.model_name = ""
+        self.metadata = ResponseMetadata()
 
     @abstractmethod
     def setup(self) -> None:
@@ -93,3 +97,30 @@ class ResponseGenerator(ABC):
         converted_messages.append(HumanMessage(content=get_context(user_input, k=num_ctx)))
 
         return converted_messages
+
+    def create_metadata(
+        self, response_metadata: dict[Any], generate_time: float
+    ) -> ResponseMetadata:
+        """返答生成のメタデータを生成する
+
+        Args:
+            response_metadata (dict[Any]): 返答のメタ情報
+            generate_time (float): 生成全体にかかった時間
+
+        Returns:
+            ResponseMetadata: 返答生成のメタ情報
+        """
+        # token/secの計算
+        eval_count = response_metadata.get("eval_count")
+        eval_duration = response_metadata.get("eval_duration")
+        if eval_count is not None and eval_duration:
+            tokens_per_second = round(eval_count / (eval_duration / 1_000_000_000), 2)
+        else:
+            tokens_per_second = None
+
+        return ResponseMetadata(
+            model_name=self.model_name,
+            tokens_per_second=tokens_per_second,
+            elapsed_time=round(generate_time, 2),
+            executed_at=datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
+        )
