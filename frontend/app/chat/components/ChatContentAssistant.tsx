@@ -10,19 +10,25 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Theme } from '@mui/material/styles'
 
 import { useTheme } from '../../ThemeProvider'
-import { ChatMessage } from '@types'
+import { ChatMessage, ResponseMetadata } from '@types'
 
 export interface ChatContentAssistantProps {
   message: ChatMessage
 }
 
-// メタデータ表示用のダミーデータ
-const dummyMetadata = {
-  model: 'gemma4_12b',
-  timestamp: '2026-08-21 12:00:00',
-  tokens: '128',
-  latency: '1.2s',
+// 英語のキーを日本語の表示名にマッピングする
+const metadataLabels: { [key: string]: string } = {
+  modelName: 'モデル名',
+  tokensPerSecond: 'token/sec',
+  elapsedTime: '生成時間',
+  executedAt: '実行日時',
 }
+
+// メタデータを日本語ラベルで key: value の形式で改行して結合する
+const formatMetadata = (metadata: ResponseMetadata) =>
+  Object.entries(metadata)
+    .map(([key, value]) => `${metadataLabels[key] ?? key}: ${value ?? 'None'}`)
+    .join('\n')
 
 export default function ChatContentAssistant({ message }: ChatContentAssistantProps) {
   const { fontSize } = useTheme()
@@ -73,20 +79,24 @@ export default function ChatContentAssistant({ message }: ChatContentAssistantPr
           <Box sx={chatBubbleStyle}>
             <ReactMarkdown>{message.content}</ReactMarkdown>
           </Box>
-          <Tooltip title={JSON.stringify(dummyMetadata, null, 2)}>
-            <IconButton
-              aria-label="metadata"
-              sx={{
-                position: 'absolute',
-                bottom: 4,
-                right: 4,
-                bgcolor: 'action.hover',
-                '&:hover': { bgcolor: 'action.selected' },
-              }}
+          {message.metadata && (
+            <Tooltip
+              title={<Box sx={{ whiteSpace: 'pre-line' }}>{formatMetadata(message.metadata)}</Box>}
             >
-              <InfoOutlinedIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
+              <IconButton
+                aria-label="metadata"
+                sx={{
+                  position: 'absolute',
+                  bottom: 4,
+                  right: 4,
+                  bgcolor: 'action.hover',
+                  '&:hover': { bgcolor: 'action.selected' },
+                }}
+              >
+                <InfoOutlinedIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
         </Box>
       </Stack>
     </Stack>

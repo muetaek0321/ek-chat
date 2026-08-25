@@ -4,10 +4,19 @@ export interface ChatInfo {
   title: string
 }
 
+// 返答生成時のメタデータ
+export interface ResponseMetadata {
+  modelName: string
+  tokensPerSecond: number
+  elapsedTime: number
+  executedAt: string
+}
+
 // チャットメッセージ
 export interface ChatMessage {
   role: 'user' | 'assistant'
   content: string
+  metadata?: ResponseMetadata | null
 }
 
 // チャット生成のレスポンスデータ

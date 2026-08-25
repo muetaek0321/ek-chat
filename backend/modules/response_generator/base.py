@@ -110,16 +110,17 @@ class ResponseGenerator(ABC):
         Returns:
             ResponseMetadata: 返答生成のメタ情報
         """
+        # token/secの計算
         eval_count = response_metadata.get("eval_count")
         eval_duration = response_metadata.get("eval_duration")
-        tokens_per_second = (
-            eval_count / (eval_duration / 1_000_000_000)
-            if eval_count is not None and eval_duration
-            else None
-        )
+        if eval_count is not None and eval_duration:
+            tokens_per_second = round(eval_count / (eval_duration / 1_000_000_000), 2)
+        else:
+            tokens_per_second = None
+
         return ResponseMetadata(
             model_name=self.model_name,
             tokens_per_second=tokens_per_second,
-            elapsed_time=generate_time,
+            elapsed_time=round(generate_time, 2),
             executed_at=datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
         )
