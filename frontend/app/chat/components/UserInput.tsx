@@ -2,9 +2,11 @@
 
 import React, { useState } from 'react'
 import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import IconButton from '@mui/material/IconButton'
 import SendIcon from '@mui/icons-material/Send'
+import CircularProgress from '@mui/material/CircularProgress'
 
 import { ApiResponse, postRequest } from '@lib/fetchData'
 import { ChatMessage, ChatInfo, GeneratedChatMessage } from '@types'
@@ -101,7 +103,28 @@ export default function UserInput({
         onClick={handleSendUserInput}
         disabled={inputText.trim() === '' || isRunning}
       >
-        <SendIcon fontSize="large" />
+        <Box
+          sx={{
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <SendIcon fontSize="large" sx={{ display: 'block' }} />
+          {isRunning && (
+            <CircularProgress
+              size={32}
+              sx={{
+                position: 'absolute',
+                top: '15%',
+                left: '10%',
+                transform: 'translate(-50%, -50%)',
+                pointerEvents: 'none',
+              }}
+            />
+          )}
+        </Box>
       </IconButton>
     </Stack>
   )
