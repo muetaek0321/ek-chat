@@ -1,5 +1,6 @@
-import os
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 from modules.response_generator.gemini_api import GeminiResponseGenerator
 from modules.schema import ChatMessage, ChatModel, ChatModelParameter
@@ -10,28 +11,17 @@ class TestGeminiResponseGenerator:
 
     def setup_method(self):
         """テストメソッドのセットアップ"""
-        # 環境変数を設定
-        self.original_gemini_model = os.getenv("GEMINI_MODEL")
-        os.environ["GEMINI_MODEL"] = "gemini-2.5-flash-lite"
-
         # GeminiResponseGeneratorのインスタンスを作成
         self.gemini_response_generator = GeminiResponseGenerator()
-
-    def teardown_method(self):
-        """テストメソッドの teardown"""
-        # 環境変数を元に戻す
-        if self.original_gemini_model is not None:
-            os.environ["GEMINI_MODEL"] = self.original_gemini_model
-        elif "GEMINI_MODEL" in os.environ:
-            del os.environ["GEMINI_MODEL"]
 
     def test_init(self):
         """__init__メソッドのテスト"""
         assert self.gemini_response_generator.name == ChatModel.GEMINI
-        assert self.gemini_response_generator.is_use == True
-        assert self.gemini_response_generator.model_name == "gemini-2.5-flash-lite"
+        assert self.gemini_response_generator.is_use
+        assert self.gemini_response_generator.model_name == ""
+        assert self.gemini_response_generator.model_index == 0
         assert self.gemini_response_generator.llm is None
-        assert self.gemini_response_generator.temperature == 0.1
+        assert self.gemini_response_generator.temperature == 0.0
         assert self.gemini_response_generator.thinking == "medium"
         assert self.gemini_response_generator.thinking_budget_dict == {
             "low": 0,
@@ -51,8 +41,8 @@ class TestGeminiResponseGenerator:
 
         # 結果を検証
         mock_chat_google_generative_ai.assert_called_once_with(
-            model="gemini-2.5-flash-lite",
-            temperature=0.1,
+            model="gemini-3.8-flash",
+            temperature=0.0,
             thinking_budget=1024,
         )
         assert self.gemini_response_generator.llm == mock_llm_instance
@@ -76,7 +66,7 @@ class TestGeminiResponseGenerator:
 
         # 結果を検証
         assert isinstance(parameters, ChatModelParameter)
-        assert parameters.temperature == 0.1
+        assert parameters.temperature == 0.0
         assert parameters.thinking == "medium"
 
     def test_update_parameters(self):
@@ -94,22 +84,58 @@ class TestGeminiResponseGenerator:
     @patch("modules.response_generator.gemini_api.ChatGoogleGenerativeAI")
     def test_call(self, mock_chat_google_generative_ai):
         """__call__メソッドのテスト"""
-        # モックオブジェクトを設定
-        mock_response = MagicMock()
-        mock_response.content = "Hello, how can I help you?"
+        mock_response = MagicMock(text="Hello, how can I help you?", response_metadata={})
         mock_llm_instance = MagicMock()
         mock_llm_instance.invoke.return_value = mock_response
         mock_chat_google_generative_ai.return_value = mock_llm_instance
+        formatted_messages = [MagicMock()]
+        self.gemini_response_generator.convert_input_messages = MagicMock(
+            return_value=formatted_messages
+        )
 
-        # setupメソッドを呼び出す
-        self.gemini_response_generator.setup()
+        response, metadata = self.gemini_response_generator(
+            [], ChatMessage(role="user", content="Hello")
+        )
 
-        # 入力メッセージを作成
-        input_messages = [ChatMessage(role="user", content="Hello")]
-
-        # __call__メソッドを呼び出す
-        response = self.gemini_response_generator(input_messages)
-
-        # 結果を検証
         assert response == "Hello, how can I help you?"
-        mock_llm_instance.invoke.assert_called_once_with(input_messages)
+        assert metadata.model_name == "gemini-3.8-flash"
+        mock_llm_instance.invoke.assert_called_once_with(formatted_messages)
+
+    @patch("modules.response_generator.gemini_api.ChatGoogleGenerativeAI")
+    def test_call_retries_with_next_model(self, mock_chat_google_generative_ai):
+        """失敗したモデルを解放し、次のモデルで一度だけ再試行する"""
+        failed_llm = MagicMock()
+        failed_llm.invoke.side_effect = RuntimeError("request failed")
+        mock_response = MagicMock(text="Retried response", response_metadata={})
+        next_llm = MagicMock()
+        next_llm.invoke.return_value = mock_response
+        mock_chat_google_generative_ai.side_effect = [failed_llm, next_llm]
+        formatted_messages = [MagicMock()]
+        self.gemini_response_generator.convert_input_messages = MagicMock(
+            return_value=formatted_messages
+        )
+
+        response, metadata = self.gemini_response_generator(
+            [], ChatMessage(role="user", content="Hello")
+        )
+
+        assert response == "Retried response"
+        assert metadata.model_name == "gemini-3.7-flash"
+        assert self.gemini_response_generator.model_index == 1
+        assert mock_chat_google_generative_ai.call_args_list[0].kwargs["model"] == "gemini-3.8-flash"
+        assert mock_chat_google_generative_ai.call_args_list[1].kwargs["model"] == "gemini-3.7-flash"
+
+    @patch("modules.response_generator.gemini_api.ChatGoogleGenerativeAI")
+    def test_call_does_not_initialize_another_model_after_final_failure(
+        self, mock_chat_google_generative_ai
+    ):
+        """最後の試行に失敗した後、不要な次モデルの初期化を行わない"""
+        self.gemini_response_generator.model_list = ["first", "second"]
+        mock_chat_google_generative_ai.return_value.invoke.side_effect = RuntimeError("request failed")
+        self.gemini_response_generator.convert_input_messages = MagicMock(return_value=[])
+
+        with pytest.raises(RuntimeError, match="request failed"):
+            self.gemini_response_generator([], ChatMessage(role="user", content="Hello"))
+
+        assert mock_chat_google_generative_ai.call_count == 2
+        assert self.gemini_response_generator.llm is None
