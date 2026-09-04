@@ -9,10 +9,24 @@ import { Theme } from '@mui/material/styles'
 import { useTheme } from '../../ThemeProvider'
 import { ChatMessage } from '@types'
 
+/**
+ * ユーザー発言の吹き出しを描画するコンポーネントの Props。
+ *
+ * @param message - 表示対象のチャットメッセージ。`role` が `'user'` であることを前提とする。
+ */
 export interface ChatContentUserProps {
   message: ChatMessage
 }
 
+/**
+ * ユーザー発言をチャット吹き出し形式で表示するコンポーネント。
+ *
+ * メッセージ本文を Markdown としてレンダリングし、右寄せの吹き出し＋ユーザーアイコンとして描画する。
+ * 吹き出しの三角形は CSS 疑似要素（`::before` / `::after`）で構成される。
+ *
+ * @param props - {@link ChatContentUserProps}
+ * @returns ユーザー発言の吹き出し UI
+ */
 export default function ChatContentUser({ message }: ChatContentUserProps) {
   const { fontSize } = useTheme()
 

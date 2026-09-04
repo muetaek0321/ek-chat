@@ -12,6 +12,11 @@ import { Theme } from '@mui/material/styles'
 import { useTheme } from '../../ThemeProvider'
 import { ChatMessage, ResponseMetadata } from '@types'
 
+/**
+ * アシスタント応答の吹き出しを描画するコンポーネントの Props。
+ *
+ * @param message - 表示対象のチャットメッセージ。`role` が `'assistant'` であることを前提とする。
+ */
 export interface ChatContentAssistantProps {
   message: ChatMessage
 }
@@ -24,12 +29,23 @@ const metadataLabels: { [key: string]: string } = {
   executedAt: '実行日時',
 }
 
-// メタデータを日本語ラベルで key: value の形式で改行して結合する
+/**
+ * 応答メタデータを tooltip 表示用に日本語ラベル付きの文字列へ整形する。
+ *
+ * @param metadata - 表示対象のサーバー応答メタデータ。
+ * @returns 各キーを "ラベル: 値" の形式で改行区切りにした文字列。
+ */
 const formatMetadata = (metadata: ResponseMetadata) =>
   Object.entries(metadata)
     .map(([key, value]) => `${metadataLabels[key] ?? key}: ${value ?? 'None'}`)
     .join('\n')
 
+/**
+ * AIアシスタントの応答メッセージをチャットバブルとして描画する。
+ *
+ * @param message - 表示するメッセージ本文とメタデータを含むチャットデータ。
+ * @returns アシスタントのアイコン、本文、メタデータ情報ボタンを含む React ノード。
+ */
 export default function ChatContentAssistant({ message }: ChatContentAssistantProps) {
   const { fontSize } = useTheme()
 

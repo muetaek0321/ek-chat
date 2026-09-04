@@ -69,4 +69,22 @@ describe('UserInput', () => {
       expect(setIsRunningMock).toHaveBeenCalledWith(false)
     })
   })
+
+  it('renders circular progress overlaid on SendIcon when isRunning is true', () => {
+    render(
+      <AppThemeProvider initialTheme="light">
+        <UserInput
+          setChatHistory={() => {}}
+          setChatInfoList={() => {}}
+          isRunning={true}
+          setIsRunning={() => {}}
+        />
+      </AppThemeProvider>
+    )
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+    expect(screen.getByTestId('SendIcon')).toBeInTheDocument()
+    const button = screen.getByRole('button')
+    expect(button).toBeDisabled()
+  })
 })
+

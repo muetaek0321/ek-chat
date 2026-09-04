@@ -20,7 +20,7 @@ user-invocable: true
     - 基本的に [Google Python Style Guide] の Docstring 形式に従う。
     - 構成セクション: 概要（Summary）、`Args:`、`Returns:`、`Yields:`、`Raises:`、`Examples:` など。
     - 型ヒント（Type Hints）がコードに明記されている場合、Docstring内での型表記の重複は避け、役割や制約の説明に集中する。
-    - プロジェクトの `.github/copilot-instructions.md` の規定を遵守する。
+    - プロジェクトおよび対象ディレクトリの `AGENTS.md` の規定を遵守する。
   - **FastAPI (API エンドポイント / Swagger UI 連携)**:
     - エンドポイント関数の Docstring は Swagger UI / OpenAPI ドキュメントに直接反映・レンダリングされることを前提に記述する。
     - **1行目（Summary）**: エンドポイントの簡潔な概要（Swagger UI のタイトル／アコーディオン見出しとして表示されるため、1行でわかりやすく記述）。
