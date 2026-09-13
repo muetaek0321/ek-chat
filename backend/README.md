@@ -1,5 +1,13 @@
 # ek-chat Backend
 
+[![Python](https://img.shields.io/badge/Python-3.13+-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.136+-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Pydantic](https://img.shields.io/badge/Pydantic-v2-E92063?logo=pydantic&logoColor=white)](https://docs.pydantic.dev/)
+[![uv](https://img.shields.io/badge/uv-managed-DE5FE9?logo=astral&logoColor=white)](https://astral.sh/uv)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.11+--cu128-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Ruff](https://img.shields.io/badge/Ruff-0.15+-D7FF64?logo=ruff&logoColor=black)](https://docs.astral.sh/ruff/)
+[![Pytest](https://img.shields.io/badge/pytest-9.1+-0A9EDC?logo=pytest&logoColor=white)](https://docs.pytest.org/)
+
 ek-chat アプリケーションのバックエンド API サーバーです。FastAPI を利用して構築されており、各種 LLM による返答生成、Chroma を用いた RAG（検索拡張生成）、チャットセッションおよびシステムプロンプトの管理を行います。
 
 ---
@@ -8,7 +16,7 @@ ek-chat アプリケーションのバックエンド API サーバーです。F
 
 - **RESTful API の提供**: FastAPI による高速・型安全なエンドポイント
 - **マルチ LLM サポート**:
-  - **Gemini(API)**: `langchain-google-genai`（Thinking パラメータ調整可能）
+  - **Gemini(API)**: `langchain-google-genai`（Thinking パラメータ調整可能、モデル自動選択・エラー時フォールバック機能付き）
   - **Gemma4:E2B**: Hugging Face `transformers` + `accelerate`（Speculative Decoding: 補助モデル連携）
   - **Gemma4:12B**: `llama-cpp-python`（`ChatLlamaCpp`）による量子化 GGUF モデル推論
   - **Qwen3.8:27B / Muse-Glimmer:30B**: Ollama ローカル推論連携（`langchain-ollama`）
@@ -64,7 +72,6 @@ copy .env.example .env
 | `HF_HOME` | Hugging Face モデルキャッシュ先パス | `./develop/models` |
 | `CHAT_MODEL` | 起動時に初期選択されるモデル名 | `Gemini(API)` |
 | `GOOGLE_API_KEY` | Gemini API を使用する場合の API キー | `your-google-api-key` |
-| `GEMINI_MODEL` | Gemini API で使用するモデル名 | `gemini-2.5-flash` |
 | `OLLAMA_API_KEY` | Ollama Cloud を使用する場合の API キー | `your-ollama-api-key` |
 | `OLLAMA_CLOUD_MODEL` | Ollama Cloud で使用するモデル名 | `gpt-oss:120b` |
 | `EMBEDDING_MODE` | Embedding モデルの指定 (`huggingface` または `gemini`) | `huggingface` |
@@ -150,4 +157,4 @@ uv run python modules/database/create_database_chroma.py
 
 ### Author
 - *[muetaek0321](https://github.com/muetaek0321)*
-- *Gemini 3.7 Flash*
+- *Gemini 3.8 Flash*

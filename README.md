@@ -1,5 +1,15 @@
 # ek-chat
 
+[![Python](https://img.shields.io/badge/Python-3.13+-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.136+-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.2+-black?logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.2+-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![MUI](https://img.shields.io/badge/MUI-v9-007FFF?logo=mui&logoColor=white)](https://mui.com/)
+[![uv](https://img.shields.io/badge/uv-managed-DE5FE9?logo=astral&logoColor=white)](https://astral.sh/uv)
+[![Ruff](https://img.shields.io/badge/Ruff-0.15+-D7FF64?logo=ruff&logoColor=black)](https://docs.astral.sh/ruff/)
+
 FastAPI バックエンドと Next.js フロントエンドで構成された、LLM・RAG（検索拡張生成）対応のチャットアプリケーションです。
 
 ---
@@ -23,7 +33,7 @@ FastAPI バックエンドと Next.js フロントエンドで構成された、
 ## 主な機能
 
 1. **マルチモデル対応**:
-   - **Gemini(API)**: `langchain-google-genai` を用いた Gemini API 呼び出し（Thinking 時間調整対応）
+   - **Gemini(API)**: `langchain-google-genai` を用いた Gemini API 呼び出し（Thinking 時間調整対応、エラー時のフォールバックモデル自動切り替え機能付き）
    - **Gemma4:E2B**: Hugging Face `transformers` + `accelerate` による Speculative Decoding（補助モデルを用いた高速推論）
    - **Gemma4:12B**: `llama-cpp-python`（`ChatLlamaCpp`）による GGUF 量子化モデル推論
    - **Qwen3.8:27B / Muse-Glimmer:30B**: Ollama ローカル推論との連携
@@ -38,7 +48,9 @@ FastAPI バックエンドと Next.js フロントエンドで構成された、
 4. **システムプロンプト・設定管理**:
    - UI からのシステムプロンプト即時更新（Markdown 形式で永続化）
    - モデルごとのパラメータ（Temperature、Thinking Budget）の設定・動的反映
-5. **UI カスタマイズ**:
+5. **UI カスタマイズ & フィードバック**:
+   - 返答生成時のプログレス表示（送信アイコン上のサークルプログレス）
+   - 返答メタデータ（使用モデル名、トークン生成速度、生成時間、実行時刻）の表示
    - Light / Dark テーマのサポート
    - フォントサイズ変更（環境変数設定）
 
@@ -161,7 +173,6 @@ yarn dev
 | `HF_HOME` | Hugging Face モデルキャッシュディレクトリ | `./develop/models` |
 | `CHAT_MODEL` | 起動時に初期選択されるチャットモデル名 | `Gemini(API)` |
 | `GOOGLE_API_KEY` | Gemini API を使用するための API キー | `your-google-api-key` |
-| `GEMINI_MODEL` | 使用する Gemini モデル名 | `gemini-2.5-flash` |
 | `OLLAMA_API_KEY` | Ollama Cloud を使用する場合の API キー | `your-ollama-api-key` |
 | `OLLAMA_CLOUD_MODEL` | Ollama Cloud で使用するモデル名 | `gpt-oss:120b` |
 | `EMBEDDING_MODE` | RAG 用 Embedding モデルの種類 (`huggingface` または `gemini`) | `huggingface` |
@@ -268,4 +279,4 @@ yarn build
 
 ### Author
 - *[muetaek0321](https://github.com/muetaek0321)*
-- *Gemini 3.7 Flash*
+- *Gemini 3.8 Flash*
