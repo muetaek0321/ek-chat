@@ -1,5 +1,14 @@
 # ek-chat Frontend
 
+[![Next.js](https://img.shields.io/badge/Next.js-16.2+-black?logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.2+-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![MUI](https://img.shields.io/badge/MUI-v9-007FFF?logo=mui&logoColor=white)](https://mui.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Vitest](https://img.shields.io/badge/Vitest-4.1+-FCC72B?logo=vitest&logoColor=black)](https://vitest.dev/)
+[![ESLint](https://img.shields.io/badge/ESLint-9+-4B32C3?logo=eslint&logoColor=white)](https://eslint.org/)
+[![Prettier](https://img.shields.io/badge/Prettier-3.8+-F7B93E?logo=prettier&logoColor=black)](https://prettier.io/)
+
 ek-chat アプリケーションのフロントエンド UI です。Next.js (App Router) と React を用いて構築されており、FastAPI バックエンドと連携したチャットインターフェースを提供します。
 
 ---
@@ -9,7 +18,8 @@ ek-chat アプリケーションのフロントエンド UI です。Next.js (Ap
 - **チャット UI**:
   - メッセージ送受信（Markdown レンダリング対応）
   - 新規チャット作成、履歴一覧のサイドバー表示、履歴の切り替え・削除
-  - 送信中のローディング表示および入力制御
+  - 送信中のローディング表示（プログレスサークル表示）および入力制御
+  - 返答メタデータ（使用モデル名、トークン生成速度、生成時間、実行時刻）の表示
 - **設定モーダル**:
   - **システムプロンプトの編集**: リアルタイム取得・更新
   - **チャットモデル設定**: 利用可能なモデルの選択（利用不可モデルはグレーアウト表示）
@@ -50,11 +60,11 @@ Copy-Item .env.example .env
 copy .env.example .env
 ```
 
-| 変数名 | 説明 | 既定値 / 設定例 |
-|---|---|---|
-| `BACKEND_URL` | バックエンド API サーバーのベース URL | `http://localhost:8000` |
-| `DEFAULT_THEME` | デフォルトのカラーテーマ (`light` または `dark`) | `light` |
-| `DEFAULT_FONT_SIZE` | デフォルトフォントサイズ (px) | `16` |
+| 変数名              | 説明                                             | 既定値 / 設定例         |
+| ------------------- | ------------------------------------------------ | ----------------------- |
+| `BACKEND_URL`       | バックエンド API サーバーのベース URL            | `http://localhost:8000` |
+| `DEFAULT_THEME`     | デフォルトのカラーテーマ (`light` または `dark`) | `light`                 |
+| `DEFAULT_FONT_SIZE` | デフォルトフォントサイズ (px)                    | `16`                    |
 
 ---
 
@@ -74,14 +84,14 @@ yarn dev
 
 `package.json` に定義されている主要スクリプトです。
 
-| コマンド | 説明 |
-|---|---|
-| `yarn dev` | Next.js 開発サーバーの起動 |
-| `yarn build` | 本番環境向けビルドの実行 |
-| `yarn start` | ビルド済み本番サーバーの起動 |
-| `yarn lint` | ESLint によるコードの静的解析 |
-| `yarn prettier --write .` | Prettier によるコードフォーマット |
-| `yarn test` | Vitest / React Testing Library による単体テストの実行 |
+| コマンド                  | 説明                                                  |
+| ------------------------- | ----------------------------------------------------- |
+| `yarn dev`                | Next.js 開発サーバーの起動                            |
+| `yarn build`              | 本番環境向けビルドの実行                              |
+| `yarn start`              | ビルド済み本番サーバーの起動                          |
+| `yarn lint`               | ESLint によるコードの静的解析                         |
+| `yarn prettier --write .` | Prettier によるコードフォーマット                     |
+| `yarn test`               | Vitest / React Testing Library による単体テストの実行 |
 
 ---
 
@@ -109,5 +119,6 @@ frontend/
 ---
 
 ### Author
-- *[muetaek0321](https://github.com/muetaek0321)*
-- *Gemini 3.7 Flash*
+
+- _[muetaek0321](https://github.com/muetaek0321)_
+- _Gemini 3.8 Flash_

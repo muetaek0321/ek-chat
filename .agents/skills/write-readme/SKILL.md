@@ -13,6 +13,7 @@ user-invocable: true
 ## 基本方針
 
 - **フォーマット**: Markdown 形式、日本語で記述。
+- **バッジの活用**: GitHub リポジトリトップで主要技術スタックや構成が一目で把握できるよう、Shields.io による README badges を適切に配置する。
 - **事実ベース**: ソースコードや設定ファイルから確認できる内容を優先。推測が必要な情報は断定せず「要確認」と明記する。
 - **自然な表現**: 文字化けしているコメントや表示文言はそのまま転記せず、識別子・型・API・ファイル構成から読み取れる自然な日本語に整理する。
 - **実用性**: 初めて参加する開発者が概要理解、環境構築、起動、主要機能の把握まで進められる内容にする。
@@ -42,7 +43,7 @@ user-invocable: true
 1. **プロジェクトの実態把握**:
    - 上記ファイルを探索・読み込み、技術スタック、環境変数、APIエンドポイント、起動コマンド、ディレクトリ構成などの最新状態を収集します。
 2. **構成要素の整理**:
-   - 下記の「README に含める標準構成」に従い、収集した情報を章ごとに整理します。
+   - 下記の「README に含める標準構成」に従い、収集した情報を章ごとに整理します。プロジェクト名直下に配置するバッジ（主要技術やバージョン）も選定します。
 3. **ファイルへの出力・更新**:
    - 収集した情報に基づいて `README.md`（必要に応じて `backend/README.md`, `frontend/README.md`）を作成または更新します。
 
@@ -55,13 +56,30 @@ user-invocable: true
 ### 1. プロジェクト名
 - リポジトリ名や既存ファイルから判断できる名前。判断できない場合は「要確認」とする。
 
-### 2. 概要
+### 2. バッジ（Badges）
+- プロジェクト名直下に GitHub リポジトリページ向けのステータスバッジ（Shields.io 形式）を並べて配置。
+- ソースコードや設定ファイルから確認できる技術スタックやバージョンに応じたバッジを表示する。
+  - 主要言語・ランタイム（例: Python バージョン、Node.js / TypeScript）
+  - 主要フレームワーク（例: FastAPI, Next.js, React）
+  - パッケージマネージャ・ツール（例: uv, Astral, Tailwind CSS, MUI）
+  - コード品質・フォーマッタ（例: Ruff, ESLint, Prettier）
+  - ライセンス（リポジトリ内で確認できる場合）
+- バッジの記述例:
+  ```markdown
+  [![Python](https://img.shields.io/badge/Python-3.13+-blue?logo=python&logoColor=white)](https://www.python.org/)
+  [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+  [![Next.js](https://img.shields.io/badge/Next.js-16+-black?logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![uv](https://img.shields.io/badge/uv-managed-DE5FE9?logo=astral&logoColor=white)](https://astral.sh/uv)
+  ```
+
+### 3. 概要
 - アプリケーションの目的
 - ユーザーができること
 - backend と frontend の役割
 - LLM を利用したチャットアプリであること
 
-### 3. 主な機能
+### 4. 主な機能
 ソースコードから確認できる機能を箇条書きで整理：
 - チャットの作成
 - チャット履歴の表示・保存・削除
@@ -70,16 +88,16 @@ user-invocable: true
 - チャットモデルの選択
 - モデルパラメータの設定
 
-### 4. 技術スタック
+### 5. 技術スタック
 - **Frontend**: Next.js, React, TypeScript, MUI, Tailwind CSS など
 - **Backend**: FastAPI, Pydantic, uvicorn, uv など
 - **AI/LLM**: Gemini API, Gemma 系ローカルモデル, LangChain Google GenAI, Transformers, PyTorch など
 - **Tooling**: ESLint, Prettier, Ruff など
 
-### 5. ディレクトリ構成
+### 6. ディレクトリ構成
 主要ディレクトリと重要ファイルだけをツリー形式で記載（ロックファイルや生成物をすべて列挙しすぎない）。
 
-### 6. セットアップ
+### 7. セットアップ
 
 #### Backend
 - 必要な Python バージョン（`.python-version` 参照）
@@ -94,11 +112,11 @@ user-invocable: true
 - 依存関係のインストール方法
 - `BACKEND_URL` など必要な環境変数
 
-### 7. 起動方法
+### 8. 起動方法
 - Backend / Frontend それぞれの開発サーバー起動手順。
 - 実際のスクリプトやエントリポイントに基づき記述（未確認コマンドは「要確認」）。
 
-### 8. 環境変数
+### 9. 環境変数
 コードから参照されている環境変数を表形式で整理。
 
 | 変数名 | 使用箇所 | 説明 | 既定値 |
@@ -111,7 +129,7 @@ user-invocable: true
 
 ※ コード上で直接確認できないが暗黙的に必要な環境変数は「要確認」として記載。
 
-### 9. API 概要
+### 10. API 概要
 `backend/main.py` および `backend/modules/schema.py` に基づく主要エンドポイントを表形式で整理。
 - `GET /`
 - `GET /init`
@@ -123,13 +141,13 @@ user-invocable: true
 - `PATCH /model`
 - `POST /chat`
 
-### 10. データ保存
+### 11. データ保存
 `DATA_DIR` を基準としたチャット履歴、システムプロンプト、ローカルモデル等の保存場所・形式（JSON, Markdownなど）の説明。
 
-### 11. 開発コマンド
+### 12. 開発コマンド
 確認できる範囲で Lint, Format, Test, Build などのコマンドを記載（存在しないコマンドは作成しない）。
 
-### 12. 注意点・今後の改善候補
+### 13. 注意点・今後の改善候補
 ソースコードから読み取れる制約や改善候補。
 - README 作成時点でテストが確認できない/不十分な点
 - ローカルモデル利用に必要な GPU / モデルファイルに関する注意
@@ -140,6 +158,7 @@ user-invocable: true
 ## 出力ルール
 
 - `README.md` としてそのまま保存できる Markdown を出力する。
+- プロジェクト名（`# プロジェクト名`）の直下に README badges を配置する。
 - コードブロックには適切な言語名を指定する。
 - 外部ドキュメントへのリンクは必要最小限に留める。
 - 実装と異なる一般的なテンプレート文は残さない。
