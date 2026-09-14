@@ -6,6 +6,7 @@ from typing import Any
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
 from modules.database.get_database_context import get_context
+from modules.morphological.morphological_extraction import MorphologicalExtraction
 from modules.schema import ChatModel, ChatModelParameter, ResponseMetadata, Role
 
 
@@ -25,6 +26,9 @@ class ResponseGenerator(ABC):
         self.is_use = is_use
         self.model_name = ""
         self.metadata = ResponseMetadata()
+
+        # 形態素解析器の初期化
+        self.morphological_extractor = MorphologicalExtraction()
 
     @abstractmethod
     def setup(self) -> None:
@@ -92,6 +96,10 @@ class ResponseGenerator(ABC):
                 converted_messages.append(HumanMessage(content=msg["content"]))
             elif msg["role"] == Role.ASSISTANT:
                 converted_messages.append(AIMessage(content=msg["content"]))
+
+        # 形態素解析で曲名を抽出
+        songs = self.morphological_extractor.extract_songs(user_input)
+        print(f"抽出された曲名: {songs}")
 
         # 入力されたユーザに質問にはベクトルDBの検索結果を与えてRAGで回答させる
         converted_messages.append(HumanMessage(content=get_context(user_input, k=num_ctx)))
