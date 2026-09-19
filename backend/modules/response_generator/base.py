@@ -6,6 +6,7 @@ from typing import Any
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
 from modules.database.get_database_context import get_context
+from modules.extractor.songs_extractor import SongsExtractor
 from modules.schema import ChatModel, ChatModelParameter, ResponseMetadata, Role
 
 
@@ -25,6 +26,9 @@ class ResponseGenerator(ABC):
         self.is_use = is_use
         self.model_name = ""
         self.metadata = ResponseMetadata()
+
+        # 曲名抽出器の準備
+        self.extractor = SongsExtractor()
 
     @abstractmethod
     def setup(self) -> None:
@@ -92,6 +96,10 @@ class ResponseGenerator(ABC):
                 converted_messages.append(HumanMessage(content=msg["content"]))
             elif msg["role"] == Role.ASSISTANT:
                 converted_messages.append(AIMessage(content=msg["content"]))
+
+        # 曲名の抽出
+        songs = self.extractor.extract_songs(user_input)
+        print(songs)
 
         # 入力されたユーザに質問にはベクトルDBの検索結果を与えてRAGで回答させる
         converted_messages.append(HumanMessage(content=get_context(user_input, k=num_ctx)))
