@@ -5,6 +5,7 @@ from pathlib import Path
 # backendフォルダのrootから実行してデータベースを作成するためsys.pathに追加
 sys.path.append("./")
 
+import pandas as pd
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import TextLoader
@@ -34,12 +35,13 @@ def create_database() -> None:
     )
 
     # 楽曲のデータをベクトル化して保存
-    song_data_pathlist = list((data_dir / "elephantkashimashi" / "songs").iterdir())
-    for song_data_path in tqdm(song_data_pathlist, desc="songs"):
+    songs_df = pd.read_parquet(data_dir / "elephantkashimashi" / "songs.parquet", columns=["db"])
+    songs_df = songs_df[~songs_df["db"].isna()]
+    for id, row in tqdm(list(songs_df.iterrows()), desc="songs"):
         # 楽曲のjsonデータをmarkdown形式に変換
-        doc = songs_json_to_markdown_doc(song_data_path)
+        doc = songs_json_to_markdown_doc(json_path=Path(row["db"]))
         # ベクトル化して保存
-        vectorstore.add_documents([doc])
+        vectorstore.add_documents(documents=[doc], ids=[id])
 
     # その他テキストデータをベクトル化して保存
     song_data_pathlist = list((data_dir / "elephantkashimashi" / "other").iterdir())
