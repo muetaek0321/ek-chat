@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
 
+from modules.database.get_database_context import SearchVectorDB
 from modules.logger import get_logger
 from modules.response_generator.gemini_api import GeminiResponseGenerator
 from modules.response_generator.gemma4_12b import Gemma4LlmmaCppResponseGenerator
@@ -40,14 +41,17 @@ class ChatManager:
         # SystemPromptの読み込み
         self.load_system_prompt()
 
+        # ベクトルDBの定義
+        self.vectordb = SearchVectorDB()
+
         # 使用可能なモデル一覧（GPUが使用可能かどうかで動的に変更）
         self.chat_models = {
-            ChatModel.GEMINI: GeminiResponseGenerator(),
-            ChatModel.GEMMA4_E2B: Gemma4HuggingFaceResponseGenerator(),
-            ChatModel.GEMMA4_12B: Gemma4LlmmaCppResponseGenerator(),
-            ChatModel.QWEN: QwenResponseGenerator(),
-            ChatModel.MUSE_GLIMMER: MuseGlimmerResponseGenerator(),
-            ChatModel.OLLAMA_CLOUD: OllamaCloudResponseGenerator(),
+            ChatModel.GEMINI: GeminiResponseGenerator(self.vectordb),
+            ChatModel.OLLAMA_CLOUD: OllamaCloudResponseGenerator(self.vectordb),
+            ChatModel.GEMMA4_E2B: Gemma4HuggingFaceResponseGenerator(self.vectordb),
+            ChatModel.GEMMA4_12B: Gemma4LlmmaCppResponseGenerator(self.vectordb),
+            ChatModel.QWEN: QwenResponseGenerator(self.vectordb),
+            ChatModel.MUSE_GLIMMER: MuseGlimmerResponseGenerator(self.vectordb),
         }
 
         # 使用するモデルの初期化

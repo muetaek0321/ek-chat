@@ -1,9 +1,11 @@
 import gc
 import os
+import shutil
 import time
 
 from langchain_ollama import ChatOllama
 
+from modules.database.get_database_context import SearchVectorDB
 from modules.logger import get_logger
 from modules.schema import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
 
@@ -13,9 +15,18 @@ from .base import ResponseGenerator
 class OllamaCloudResponseGenerator(ResponseGenerator):
     """OllamaCloudを使用した返答生成クラス"""
 
-    def __init__(self) -> None:
-        """初期化"""
-        super().__init__(logger=get_logger(__name__), name=ChatModel.OLLAMA_CLOUD, is_use=True)
+    def __init__(self, vectordb: SearchVectorDB) -> None:
+        """初期化
+
+        Args:
+            vectordb (SearchVectorDB): ベクトルDB
+        """
+        super().__init__(
+            logger=get_logger(__name__),
+            name=ChatModel.OLLAMA_CLOUD,
+            is_use=bool(shutil.which("ollama")),
+            vectordb=vectordb,
+        )
         self.model_name = os.getenv("OLLAMA_CLOUD_MODEL", "gpt-oss:120b")
         self.llm = None
         self.metadata = ResponseMetadata()

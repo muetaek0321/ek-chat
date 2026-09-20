@@ -1,8 +1,10 @@
 import gc
+import shutil
 import time
 
 from langchain_ollama import ChatOllama
 
+from modules.database.get_database_context import SearchVectorDB
 from modules.logger import get_logger
 from modules.schema import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
 
@@ -12,9 +14,18 @@ from .base import ResponseGenerator
 class MuseGlimmerResponseGenerator(ResponseGenerator):
     """Muse-Glimmer(Ollama)を使用した返答生成クラス"""
 
-    def __init__(self) -> None:
-        """初期化"""
-        super().__init__(logger=get_logger(__name__), name=ChatModel.MUSE_GLIMMER, is_use=True)
+    def __init__(self, vectordb: SearchVectorDB) -> None:
+        """初期化
+
+        Args:
+            vectordb (SearchVectorDB): ベクトルDB
+        """
+        super().__init__(
+            logger=get_logger(__name__),
+            name=ChatModel.MUSE_GLIMMER,
+            is_use=bool(shutil.which("ollama")),
+            vectordb=vectordb,
+        )
         self.model_name = "muse-glimmer:30b"
         self.llm = None
         self.metadata = ResponseMetadata()
