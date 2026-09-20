@@ -5,26 +5,40 @@ from typing import Any
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
-from modules.database.get_database_context import get_context
+from modules.database.get_database_context import SearchVectorDB
+from modules.extractor.songs_extractor import SongsExtractor
 from modules.schema import ChatModel, ChatModelParameter, ResponseMetadata, Role
 
 
 class ResponseGenerator(ABC):
     """返答生成クラスの継承元クラス"""
 
-    def __init__(self, logger: logging.Logger, name: ChatModel, is_use: bool) -> None:
+    def __init__(
+        self,
+        logger: logging.Logger,
+        name: ChatModel,
+        is_use: bool,
+        vectordb: SearchVectorDB | None = None,
+    ) -> None:
         """初期化
 
         Args:
             logger (logging.Logger): loggerオブジェクト
             name (ChatModel): モデルの名前
             is_use (bool): モデルを使用するかどうか
+            vectordb (SearchVectorDB | None): ベクトルDBのインスタンス
         """
         self.logger = logger
         self.name = name
         self.is_use = is_use
         self.model_name = ""
         self.metadata = ResponseMetadata()
+
+        # 曲名抽出器の準備
+        self.extractor = SongsExtractor()
+
+        # ベクトルDBの準備
+        self.vectordb = vectordb
 
     @abstractmethod
     def setup(self) -> None:
@@ -93,8 +107,19 @@ class ResponseGenerator(ABC):
             elif msg["role"] == Role.ASSISTANT:
                 converted_messages.append(AIMessage(content=msg["content"]))
 
-        # 入力されたユーザに質問にはベクトルDBの検索結果を与えてRAGで回答させる
-        converted_messages.append(HumanMessage(content=get_context(user_input, k=num_ctx)))
+        if self.vectordb is None:
+            self.logger.warning(
+                "ベクトルDBが定義されていません。コンテキストの取得はスキップします。"
+            )
+            converted_messages.append(HumanMessage(content=user_input))
+        else:
+            # 楽曲IDの抽出
+            song_ids = self.extractor.extract_songs(user_input)
+
+            # 入力されたユーザに質問にはベクトルDBの検索結果を与えてRAGで回答させる
+            converted_messages.append(
+                HumanMessage(content=self.vectordb.get_context(user_input, ids=song_ids, k=num_ctx))
+            )
 
         return converted_messages
 

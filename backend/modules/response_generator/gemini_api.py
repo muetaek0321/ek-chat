@@ -3,6 +3,7 @@ import time
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+from modules.database.get_database_context import SearchVectorDB
 from modules.logger import get_logger
 from modules.schema import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
 
@@ -21,9 +22,15 @@ class GeminiResponseGenerator(ResponseGenerator):
         "gemma-4-31b-it",
     ]
 
-    def __init__(self) -> None:
-        """初期化"""
-        super().__init__(logger=get_logger(__name__), name=ChatModel.GEMINI, is_use=True)
+    def __init__(self, vectordb: SearchVectorDB) -> None:
+        """初期化
+
+        Args:
+            vectordb (SearchVectorDB): ベクトルDB
+        """
+        super().__init__(
+            logger=get_logger(__name__), name=ChatModel.GEMINI, is_use=True, vectordb=vectordb
+        )
         self.model_index = 0  # デフォルトのモデルインデックスを設定
         self.llm = None
         self.metadata = ResponseMetadata()

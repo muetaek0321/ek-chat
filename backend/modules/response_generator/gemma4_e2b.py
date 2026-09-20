@@ -7,6 +7,7 @@ import torch
 from accelerate.hooks import remove_hook_from_module
 from transformers import AutoModelForCausalLM, AutoProcessor
 
+from modules.database.get_database_context import SearchVectorDB
 from modules.logger import get_logger
 from modules.schema import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
 
@@ -16,10 +17,17 @@ from .base import ResponseGenerator
 class Gemma4HuggingFaceResponseGenerator(ResponseGenerator):
     """Gemma4:E2Bを使用した返答生成クラス"""
 
-    def __init__(self) -> None:
-        """初期化"""
+    def __init__(self, vectordb: SearchVectorDB) -> None:
+        """初期化
+
+        Args:
+            vectordb (SearchVectorDB): ベクトルDB
+        """
         super().__init__(
-            logger=get_logger(__name__), name=ChatModel.GEMMA4_E2B, is_use=torch.cuda.is_available()
+            logger=get_logger(__name__),
+            name=ChatModel.GEMMA4_E2B,
+            is_use=torch.cuda.is_available(),
+            vectordb=vectordb,
         )
         self.data_dir = Path(os.getenv("DATA_DIR", "./develop"))
 
