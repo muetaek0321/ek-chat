@@ -97,12 +97,13 @@ class ResponseGenerator(ABC):
             elif msg["role"] == Role.ASSISTANT:
                 converted_messages.append(AIMessage(content=msg["content"]))
 
-        # 曲名の抽出
-        songs = self.extractor.extract_songs(user_input)
-        print(songs)
+        # 楽曲IDの抽出
+        song_ids = self.extractor.extract_songs(user_input)
 
         # 入力されたユーザに質問にはベクトルDBの検索結果を与えてRAGで回答させる
-        converted_messages.append(HumanMessage(content=get_context(user_input, k=num_ctx)))
+        converted_messages.append(
+            HumanMessage(content=get_context(user_input, ids=song_ids, k=num_ctx))
+        )
 
         return converted_messages
 

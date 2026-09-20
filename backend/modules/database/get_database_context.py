@@ -2,9 +2,11 @@ import os
 from pathlib import Path
 
 from langchain_chroma import Chroma
+from langchain_core.documents import Document
 
 from modules.database.embedding_models import get_embedding
 
+DEFAULT_SONG_LIST = []
 RAG_PROMPT = """\
 あなたは提示された情報を元に正確に回答するアシスタントです。
 以下の「制約事項」を厳密に守り、「コンテキスト」の情報のみに基づいて「ユーザの質問」に回答してください。
@@ -23,11 +25,13 @@ RAG_PROMPT = """\
 """
 
 
-def get_context(query: str, k: int = 5) -> str:
+def get_context(query: str, ids: list[str] = DEFAULT_SONG_LIST, k: int = 5) -> str:
     """ChromaDBからの検索でコンテキストを作成
 
     Args:
         query (str): 検索クエリ（ユーザの入力文）
+        ids (str): 入力文から抽出した特定キーワードに紐づくIDのリスト
+        k (int): ベクトルDBから検索するコンテキスト数
 
     Return:
         str: 検索結果をまとめたコンテキストデータ
@@ -39,15 +43,24 @@ def get_context(query: str, k: int = 5) -> str:
     # Embeddingモデルの読み込み
     embedding = get_embedding(os.getenv("EMBEDDING_MODE", "gemini"))
 
-    # ベクトルDBから検索
+    # ベクトルDBを定義
     vectorstore = Chroma(
         embedding_function=embedding,
         persist_directory=persist_directory,
         collection_name="elephants",
     )
 
-    # 類似文書検索
-    docs = vectorstore.similarity_search(query=query, k=k)
+    # 取得したDocumentを格納するリスト
+    docs: list[Document] = []
+
+    # 抽出した楽曲の情報をあらかじめ取得
+    docs += vectorstore.get_by_ids(ids)
+
+    # それ以外の関連文書を類似文書検索で取得
+    # NOTE: 現在は重複を許容する仕様（今後対応する想定）
+    k = k - len(docs)
+    if k > 0:
+        docs = vectorstore.similarity_search(query=query, k=k)
 
     context = "\n---------------\n".join([doc.page_content for doc in docs])
 
