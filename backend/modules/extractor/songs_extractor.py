@@ -1,25 +1,22 @@
+import os
 from pathlib import Path
 
 import ahocorasick
 import pandas as pd
 
-DEFAULT_PATH = Path("F:/elephantkashimashi/songs.parquet")
-
 
 class SongsExtractor:
     """楽曲名抽出クラス"""
 
-    def __init__(self, data_path: Path | str = DEFAULT_PATH) -> None:
-        """楽曲名リストを読み込み、Aho-Corasickオートマトンを構築する
-
-        Args:
-            data_path (Path | str): 楽曲名キーワードが記述されたファイルのパス
-        """
-        self.data_path = Path(data_path)
+    def __init__(self) -> None:
+        """初期化"""
+        # データ格納先のディレクトリ
+        data_dir = Path(os.getenv("DATA_DIR", "data"))
+        self.data_path = data_dir / "elephantkashimashi" / "songs.parquet"
         self.automaton = ahocorasick.Automaton()
 
         # 曲名リストを取得
-        self.songs_df = pd.read_parquet(data_path, columns=["title"])
+        self.songs_df = pd.read_parquet(self.data_path, columns=["title"])
         self.songs_ids = {}
         for id, row in self.songs_df.iterrows():
             title = row["title"]
