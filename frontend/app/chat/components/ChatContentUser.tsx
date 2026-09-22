@@ -73,7 +73,7 @@ export default function ChatContentUser({ message }: ChatContentUserProps) {
           <ReactMarkdown>{message.content}</ReactMarkdown>
         </Box>
         <Box>
-          <Image src="/user.png" alt="user_icon" width={50} height={50} />
+          <Image src="/user.svg" alt="user_icon" width={50} height={50} />
         </Box>
       </Stack>
     </Stack>
