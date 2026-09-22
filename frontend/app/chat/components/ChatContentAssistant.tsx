@@ -89,7 +89,7 @@ export default function ChatContentAssistant({ message }: ChatContentAssistantPr
     <Stack direction="row" sx={{ width: '100%', justifyContent: 'flex-start' }}>
       <Stack direction="row" spacing={1} sx={{ p: 0.5 }}>
         <Box>
-          <Image src="/assistant.png" alt="assistant_icon" width={50} height={50} />
+          <Image src="/assistant.svg" alt="assistant_icon" width={50} height={50} />
         </Box>
         <Box sx={{ position: 'relative', minHeight: 24 }}>
           <Box sx={chatBubbleStyle}>
