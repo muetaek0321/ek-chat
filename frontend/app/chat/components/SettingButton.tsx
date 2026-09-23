@@ -42,7 +42,7 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
 
   // SystemPromptの取得
   const getSystemPrompt = async () => {
-    await getRequest<Settings>('/settings')
+    await getRequest<Settings>('/chat/settings')
       .then((res: ApiResponse<Settings>) => {
         if (res.success && res.data !== undefined) {
           // システムプロンプトを取得
@@ -67,7 +67,7 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
     const editedSystemPrompt: SystemPrompt = {
       text: systemPromptText,
     }
-    await patchRequest<undefined>('/system_prompt', editedSystemPrompt)
+    await patchRequest<undefined>('/chat/system_prompt', editedSystemPrompt)
       .then((res: ApiResponse<undefined>) => {
         if (res.success) {
           // 登録後にモーダルを閉じる
@@ -92,7 +92,7 @@ export default function SettingButton({ isRunning }: SettingButtonProps) {
         thinking: thinking,
       },
     }
-    await patchRequest<undefined>('/model', chatModelSetting)
+    await patchRequest<undefined>('/chat/model', chatModelSetting)
       .then((res: ApiResponse<undefined>) => {
         if (res.success) {
           // 登録後にモーダルを閉じる
