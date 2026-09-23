@@ -60,7 +60,8 @@ class SearchVectorDB:
         docs: list[Document] = []
 
         # 抽出した楽曲の情報をあらかじめ取得
-        docs += self.vectorstore.get_by_ids(ids)
+        if len(ids) > 0:
+            docs += self.vectorstore.get_by_ids(ids)
 
         # それ以外の関連文書を類似文書検索で取得
         # NOTE: 現在は重複を許容する仕様（今後対応する想定）
