@@ -6,12 +6,12 @@ from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse, RedirectResponse
 
+from modules.logger import get_logger, logging_config
+from routers import chat, database
+
 # .envファイルから環境変数を読み込む
 # NOTE: Router側でも環境変数を有効にするためこの段階で読み込むようにする
 load_dotenv()
-
-from modules.logger import get_logger, logging_config
-from routers import chat
 
 # ロガーのインスタンスを取得
 logging_config(debug=(os.getenv("ENVIRON", "prod") == "dev"))
@@ -22,6 +22,7 @@ app = FastAPI()
 
 # Routerの設定
 app.include_router(chat.router)
+app.include_router(database.router)
 
 
 @app.exception_handler(HTTPException)

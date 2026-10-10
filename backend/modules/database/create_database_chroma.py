@@ -23,6 +23,8 @@ def create_database() -> None:
     # データ格納先のディレクトリ
     data_dir = Path(os.getenv("DATA_DIR", "data"))
     persist_directory = data_dir / "chroma"
+    # 楽曲情報のデータファイルのパス
+    songs_data_path = Path(os.getenv("SONGS_DATA_PATH", "./develop/songs.parquet"))
 
     # Embeddingモデルの読み込み
     embedding = get_embedding(os.getenv("EMBEDDING_MODE", "gemini"))
@@ -35,7 +37,7 @@ def create_database() -> None:
     )
 
     # 楽曲のデータをベクトル化して保存
-    songs_df = pd.read_parquet(data_dir / "elephantkashimashi" / "songs.parquet", columns=["db"])
+    songs_df = pd.read_parquet(songs_data_path, columns=["db"])
     songs_df = songs_df[~songs_df["db"].isna()]
     for id, row in tqdm(list(songs_df.iterrows()), desc="songs"):
         # 楽曲のjsonデータをmarkdown形式に変換
