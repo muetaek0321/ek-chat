@@ -74,3 +74,9 @@ class SongData(EndpointModel):
     included_in: list[SongIncludedIn] = Field(default_factory=list, description="収録作品リスト")
     details: SongDetails = Field(..., description="楽曲の詳細情報")
     youtube_video_id: list[str] = Field(default_factory=list, description="YouTube動画IDリスト")
+
+
+class SongDataRequest(EndpointModel):
+    """楽曲の詳細情報取得リクエスト"""
+
+    song_id: str = Field(..., description="楽曲ID")
