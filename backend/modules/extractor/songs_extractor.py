@@ -11,12 +11,11 @@ class SongsExtractor:
     def __init__(self) -> None:
         """初期化"""
         # データ格納先のディレクトリ
-        data_dir = Path(os.getenv("DATA_DIR", "data"))
-        self.data_path = data_dir / "elephantkashimashi" / "songs.parquet"
+        self.songs_data_path = Path(os.getenv("SONGS_DATA_PATH", "./develop/songs.parquet"))
         self.automaton = ahocorasick.Automaton()
 
         # 曲名リストを取得
-        self.songs_df = pd.read_parquet(self.data_path, columns=["title"])
+        self.songs_df = pd.read_parquet(self.songs_data_path, columns=["title"])
         self.songs_ids = {}
         for id, row in self.songs_df.iterrows():
             title = row["title"]
