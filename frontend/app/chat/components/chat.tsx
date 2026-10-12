@@ -7,6 +7,7 @@ import IconButton from '@mui/material/IconButton'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import MenuIcon from '@mui/icons-material/Menu'
 
+import SwitchPageButton from '@components/SwitchPageButton'
 import NewChatButton from './NewChatButton'
 import SettingButton from './SettingButton'
 import ChatList from './ChatList'
@@ -146,6 +147,7 @@ export default function Chat() {
             overflow: 'hidden',
           }}
         >
+          <SwitchPageButton target="database" isRunning={isRunning} />
           <NewChatButton createNewChat={createNewChat} isRunning={isRunning} />
           <SettingButton isRunning={isRunning} />
           <ChatList

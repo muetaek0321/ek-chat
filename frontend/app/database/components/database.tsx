@@ -7,6 +7,7 @@ import IconButton from '@mui/material/IconButton'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import MenuIcon from '@mui/icons-material/Menu'
 
+import SwitchPageButton from '@components/SwitchPageButton'
 import CategoryItemButton from './CategoryItemButton'
 import YoutubeVideoPanel from './YoutubeVideoPanel'
 import { ApiResponse, getRequest } from '@lib/fetchData'
@@ -98,6 +99,7 @@ export default function Database() {
             overflow: 'hidden',
           }}
         >
+          <SwitchPageButton target="chat" />
           <Box sx={{ py: 1 }}>
             <CategoryItemButton
               category="songs"
