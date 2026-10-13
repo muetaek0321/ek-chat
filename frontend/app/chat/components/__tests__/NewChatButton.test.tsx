@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import NewChatButton from '../NewChatButton'
-import { AppThemeProvider } from '../../../ThemeProvider'
+import { AppThemeProvider } from '@AppThemeProvider'
 
 describe('NewChatButton', () => {
   it('renders button and calls createNewChat on click', () => {

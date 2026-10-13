@@ -9,7 +9,7 @@ import Tooltip from '@mui/material/Tooltip'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Theme } from '@mui/material/styles'
 
-import { useTheme } from '../../ThemeProvider'
+import { useTheme } from '@AppThemeProvider'
 import { ChatMessage, ResponseMetadata } from '@types'
 
 /**
