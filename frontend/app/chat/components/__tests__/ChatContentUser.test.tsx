@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import ChatContentUser from '../ChatContentUser'
-import { AppThemeProvider } from '../../../ThemeProvider'
+import { AppThemeProvider } from '@AppThemeProvider'
 import { ChatMessage } from '@types'
 
 describe('ChatContentUser', () => {

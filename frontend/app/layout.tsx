@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { AppThemeProvider } from './ThemeProvider'
+import { AppThemeProvider } from '@AppThemeProvider'
 import './globals.css'
 
 const geistSans = Geist({

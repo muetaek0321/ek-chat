@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import SettingButton from '../SettingButton'
-import { AppThemeProvider } from '../../../ThemeProvider'
+import { AppThemeProvider } from '@AppThemeProvider'
 import { getRequest } from '@lib/fetchData'
 
 vi.mock('@lib/fetchData', () => ({
