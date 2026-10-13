@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import NumberInputSlider from '../NumberInputSlider'
-import { AppThemeProvider } from '../../ThemeProvider'
+import { AppThemeProvider } from '@AppThemeProvider'
 
 describe('NumberInputSlider', () => {
   it('renders correctly with label', () => {

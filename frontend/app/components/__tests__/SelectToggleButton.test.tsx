@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import SelectToggleButton from '../SelectToggleButton'
-import { AppThemeProvider } from '../../ThemeProvider'
+import { AppThemeProvider } from '@AppThemeProvider'
 
 describe('SelectToggleButton', () => {
   const buttonLabels = ['Option 1', 'Option 2', 'Option 3']

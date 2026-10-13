@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton'
 import BackspaceIcon from '@mui/icons-material/Backspace'
 import type { MouseEvent } from 'react'
 
-import { useTheme } from '../../ThemeProvider'
+import { useTheme } from '@AppThemeProvider'
 import { ApiResponse, deleteRequest } from '@lib/fetchData'
 import { ChatInfo } from '@types'
 

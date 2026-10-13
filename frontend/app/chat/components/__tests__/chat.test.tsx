@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import Chat from '../chat'
-import { AppThemeProvider } from '../../../ThemeProvider'
+import { AppThemeProvider } from '@AppThemeProvider'
 import { getRequest, putRequest } from '@lib/fetchData'
 
 vi.mock('@lib/fetchData', () => ({

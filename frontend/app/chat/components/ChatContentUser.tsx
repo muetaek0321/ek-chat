@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import { Theme } from '@mui/material/styles'
 
-import { useTheme } from '../../ThemeProvider'
+import { useTheme } from '@AppThemeProvider'
 import { ChatMessage } from '@types'
 
 /**
