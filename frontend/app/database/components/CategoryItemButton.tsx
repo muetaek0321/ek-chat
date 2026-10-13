@@ -6,11 +6,12 @@ import LibraryMusicTwoToneIcon from '@mui/icons-material/LibraryMusicTwoTone'
 import AlbumTwoToneIcon from '@mui/icons-material/AlbumTwoTone'
 
 import { useTheme } from '../../ThemeProvider'
+import { Category } from './database-types'
 
 export interface CategoryItemButtonProps {
-  category: string
+  category: Category
   title: string
-  handleDatabaseCategorySwitch: React.Dispatch<React.SetStateAction<string>>
+  handleDatabaseCategorySwitch: React.Dispatch<React.SetStateAction<Category>>
 }
 
 export default function CategoryItemButton({

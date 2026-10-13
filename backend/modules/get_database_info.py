@@ -23,7 +23,7 @@ def get_database_list_data() -> DatabaseListResponse:
 
     # レスポンスデータの作成
     # NOTE: 現状は楽曲情報のみだが今後追加する可能性あり
-    response = DatabaseListResponse(songs=songs)
+    response = DatabaseListResponse(songs=songs, releases=[])
 
     return response
 

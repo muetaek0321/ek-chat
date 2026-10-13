@@ -9,9 +9,9 @@ import MenuIcon from '@mui/icons-material/Menu'
 
 import SwitchPageButton from '@components/SwitchPageButton'
 import CategoryItemButton from './CategoryItemButton'
-import YoutubeVideoPanel from './YoutubeVideoPanel'
+import OutlineListPanel from './OutlineListPanel'
 import { ApiResponse, getRequest } from '@lib/fetchData'
-import { SongDataOutline, DatabaseListResponse } from './database-types'
+import { Category, OutlineLists, SongData } from './database-types'
 
 export default function Database() {
   const chatListWidth = 250
@@ -20,11 +20,11 @@ export default function Database() {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true)
 
   // データベースの一覧データ
-  const [category, setCategory] = useState<string>('songs')
-  const [songsList, setSongsList] = useState<SongDataOutline[]>([])
+  const [category, setCategory] = useState<Category>('songs')
+  const [outlineLists, setOutlineLists] = useState<OutlineLists>({ songs: [], releases: [] })
 
   // 楽曲DBの表示データ
-  const [videoIds, setVideoIds] = useState<string[]>(['0melyLHqP-s', 'T1gBpKHwqQY', 'EfPFG23UZ4c'])
+  const [songInfo, setSongInfo] = useState<SongData>()
 
   // サイドバーの開閉切り替え
   const toggleSidebar = () => {
@@ -38,10 +38,11 @@ export default function Database() {
 
   // ページを開いた時にデータベースの情報を取得
   const getDatabaseInfoList = useCallback(async () => {
-    await getRequest<DatabaseListResponse>('/database/list')
-      .then((res: ApiResponse<DatabaseListResponse>) => {
+    await getRequest<OutlineLists>('/database/list')
+      .then((res: ApiResponse<OutlineLists>) => {
         if (res.success && res.data !== undefined) {
-          setSongsList(res.data.songs)
+          console.log(res.data)
+          setOutlineLists(res.data)
         } else {
           alert('データベースの取得に失敗しました。')
           console.log('Error:', res.error)
@@ -119,12 +120,11 @@ export default function Database() {
       <Box
         sx={{
           width: `calc(100vw - ${currentSidebarWidth}px)`,
+          height: '100%',
           transition: 'width 0.3s ease',
         }}
       >
-        {videoIds.map((videoId, index) => (
-          <YoutubeVideoPanel key={index} videoId={videoId} />
-        ))}
+        <OutlineListPanel category={category} outlineLists={outlineLists} />
       </Box>
     </Stack>
   )

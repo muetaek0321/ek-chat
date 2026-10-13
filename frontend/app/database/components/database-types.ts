@@ -1,12 +1,22 @@
+// データベースの種類
+export type Category = 'songs' | 'releases'
+
 // 楽曲DBの概要データ
 export interface SongDataOutline {
   id: string
   title: string
 }
 
+// リリースDBの概要データ
+export interface ReleasesDataOutline {
+  id: string
+  title: string
+}
+
 // 楽曲DBの一覧レスポンスデータ
-export interface DatabaseListResponse {
+export interface OutlineLists {
   songs: SongDataOutline[]
+  releases: ReleasesDataOutline[]
 }
 
 // 収録作品情報

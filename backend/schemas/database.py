@@ -10,10 +10,18 @@ class SongDataOutline(EndpointModel):
     title: str = Field(..., description="楽曲名")
 
 
+class ReleaseDataOutline(EndpointModel):
+    """リリースDBの概要データ"""
+
+    id: str = Field(..., description="リリースID")
+    title: str = Field(..., description="リリース名（シングル、アルバムなど）")
+
+
 class DatabaseListResponse(EndpointModel):
     """チャットの情報を表すBaseModel"""
 
     songs: list[SongDataOutline] = Field(..., description="楽曲DBのデータリスト")
+    releases: list[ReleaseDataOutline] = Field(..., description="リリースDBのデータリスト")
 
 
 class SongIncludedIn(EndpointModel):
