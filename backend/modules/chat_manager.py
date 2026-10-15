@@ -12,6 +12,7 @@ from modules.response_generator.gemma4_e2b import Gemma4HuggingFaceResponseGener
 from modules.response_generator.muse_glimmer import MuseGlimmerResponseGenerator
 from modules.response_generator.ollama_cloud import OllamaCloudResponseGenerator
 from modules.response_generator.qwen import QwenResponseGenerator
+from modules.response_generator.sarashina_api import SarashinaResponseGenerator
 from modules.schema import (
     ChatHistory,
     ChatInfo,
@@ -48,6 +49,7 @@ class ChatManager:
         self.chat_models = {
             ChatModel.GEMINI: GeminiResponseGenerator(self.vectordb),
             ChatModel.OLLAMA_CLOUD: OllamaCloudResponseGenerator(self.vectordb),
+            ChatModel.SARASHINA: SarashinaResponseGenerator(self.vectordb),
             ChatModel.GEMMA4_E2B: Gemma4HuggingFaceResponseGenerator(self.vectordb),
             ChatModel.GEMMA4_12B: Gemma4LlmmaCppResponseGenerator(self.vectordb),
             ChatModel.QWEN: QwenResponseGenerator(self.vectordb),
