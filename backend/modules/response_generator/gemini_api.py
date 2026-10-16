@@ -15,10 +15,10 @@ class GeminiResponseGenerator(ResponseGenerator):
 
     # 使用可能なモデルのリスト
     model_list = [
+        "gemini-3.5-flash-lite",
         "gemini-3.8-flash",
         "gemini-3.7-flash",
         "gemini-3.6-flash",
-        "gemini-3.5-flash-lite",
         "gemma-4-31b-it",
     ]
 

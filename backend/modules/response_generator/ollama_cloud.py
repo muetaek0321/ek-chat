@@ -99,11 +99,9 @@ class OllamaCloudResponseGenerator(ResponseGenerator):
 
         generate_time = time.perf_counter() - start_time
         self.logger.debug(f"返答の生成時間: {generate_time:.2f}s")
-        print(response)
 
         # メタデータの取得
         self.metadata = self.create_metadata(response.response_metadata, generate_time)
-        print(self.metadata)
 
         # 生成された返答の取得
         raw_response = response.content

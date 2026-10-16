@@ -21,6 +21,7 @@ class ChatModel(StrEnum):
     QWEN = "Qwen3.8:27B"
     MUSE_GLIMMER = "Muse-Glimmer:30B"
     OLLAMA_CLOUD = "Ollama(cloud)"
+    SARASHINA = "Sarashina"
 
 
 class Thinking(StrEnum):
