@@ -10,6 +10,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import SwitchPageButton from '@components/SwitchPageButton'
 import CategoryItemButton from './CategoryItemButton'
 import OutlineListPanel from './OutlineListPanel'
+import SongsInfoPanel from './SongsInfoPanel'
 import { ApiResponse, getRequest } from '@lib/fetchData'
 import { Category, OutlineLists, SongData } from './database-types'
 
@@ -22,6 +23,7 @@ export default function Database() {
   // データベースの一覧データ
   const [category, setCategory] = useState<Category>('songs')
   const [outlineLists, setOutlineLists] = useState<OutlineLists>({ songs: [], releases: [] })
+  const [isDatabaseDetail, setIsDatabaseDetail] = useState<boolean>(false)
 
   // 楽曲DBの表示データ
   const [songInfo, setSongInfo] = useState<SongData>()
@@ -41,7 +43,6 @@ export default function Database() {
     await getRequest<OutlineLists>('/database/list')
       .then((res: ApiResponse<OutlineLists>) => {
         if (res.success && res.data !== undefined) {
-          console.log(res.data)
           setOutlineLists(res.data)
         } else {
           alert('データベースの取得に失敗しました。')
@@ -58,6 +59,31 @@ export default function Database() {
       getDatabaseInfoList()
     }
   }, [getDatabaseInfoList])
+
+  // 表示データをクリックしたときの処理
+  const handleClickDatabaseOutline = async (databaseId: string) => {
+    if (category === 'songs') {
+      // 楽曲データベースからデータを取得
+      const query = new URLSearchParams({
+        songId: databaseId,
+      }).toString()
+      await getRequest<SongData>(`/database/song_data?${query}`)
+        .then((res: ApiResponse<SongData>) => {
+          if (res.success && res.data !== undefined) {
+            setSongInfo(res.data)
+            setIsDatabaseDetail(true)
+          } else {
+            alert('楽曲データの取得に失敗しました。')
+            console.log('Error:', res.error)
+          }
+        })
+        .catch((err) => console.log('Error:', err))
+    } else if (category === 'releases') {
+      // リリースデータベースからデータを取得
+      // TODO: 現状は未実装
+      // apiUrl = `/database/release_data?releaseId=${databaseId}`
+    }
+  }
 
   return (
     <Stack direction="row" sx={{ height: '100vh' }}>
@@ -124,7 +150,18 @@ export default function Database() {
           transition: 'width 0.3s ease',
         }}
       >
-        <OutlineListPanel category={category} outlineLists={outlineLists} />
+        {isDatabaseDetail ? (
+          <SongsInfoPanel
+            songInfo={songInfo}
+            onBackOutlineList={() => setIsDatabaseDetail(false)}
+          />
+        ) : (
+          <OutlineListPanel
+            category={category}
+            outlineLists={outlineLists}
+            handleClickDatabaseOutline={handleClickDatabaseOutline}
+          />
+        )}
       </Box>
     </Stack>
   )

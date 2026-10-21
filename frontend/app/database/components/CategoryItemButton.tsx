@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack'
 import LibraryMusicTwoToneIcon from '@mui/icons-material/LibraryMusicTwoTone'
 import AlbumTwoToneIcon from '@mui/icons-material/AlbumTwoTone'
 
-import { useTheme } from '../../ThemeProvider'
+import { useTheme } from '@AppThemeProvider'
 import { Category } from './database-types'
 
 export interface CategoryItemButtonProps {
