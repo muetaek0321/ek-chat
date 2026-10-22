@@ -26,7 +26,33 @@
     "files.watcherExclude": {
         "**/.git/objects/**": true,
         "**/.git/subtree-cache/**": true,
-        "**/node_modules/*/**": true
+        "**/.git/refs/**": true,
+        "**/node_modules/**": true,
+        "**/.next/**": true,
+        "**/.venv/**": true,
+        "**/__pycache__/**": true,
+        "**/.ruff_cache/**": true,
+        "**/.pytest_cache/**": true,
+        "**/coverage/**": true,
+        "**/dist/**": true,
+        "**/build/**": true
     },
-    "js/ts.tsserver.maxMemory": 4096
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/.next": true,
+        "**/.venv": true,
+        "**/.ruff_cache": true,
+        "**/.pytest_cache": true,
+        "**/coverage": true,
+        "**/dist": true,
+        "**/build": true
+    },
+    "typescript.tsdk": "frontend/node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "typescript.tsserver.maxMemory": 4096,
+    "js/ts.tsserver.maxMemory": 4096,
+    "typescript.tsserver.useSeparateSyntaxServer": "typeCheck",
+    "typescript.disableAutomaticTypeAcquisition": true,
+    "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+    "typescript.preferences.includePackageJsonAutoImports": "auto"
 }
