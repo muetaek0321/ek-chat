@@ -7,7 +7,9 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
 
+import YoutubeVideoPanel from './YoutubeVideoPanel'
 import { SongData } from './database-types'
 
 // セクションタイトル用のヘルパーコンポーネント
@@ -184,6 +186,12 @@ export default function SongsInfoPanel({ songInfo, onBackOutlineList }: SongsInf
           </TableContainer>
         </>
       )}
+
+      <Stack direction="row" spacing={1} sx={{ width: '100%', overflowX: 'auto' }}>
+        {songInfo.youtubeVideoId.map((id) => (
+          <YoutubeVideoPanel key={id} videoId={id} />
+        ))}
+      </Stack>
 
       <Button variant="outlined" color="inherit" onClick={onBackOutlineList}>
         戻る
