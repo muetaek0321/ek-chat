@@ -7,6 +7,7 @@ import IconButton from '@mui/material/IconButton'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import MenuIcon from '@mui/icons-material/Menu'
 
+import SwitchPageButton from '@components/SwitchPageButton'
 import NewChatButton from './NewChatButton'
 import SettingButton from './SettingButton'
 import ChatList from './ChatList'
@@ -43,7 +44,7 @@ export default function Chat() {
       const query = new URLSearchParams({
         chatId: chatId,
       }).toString()
-      await getRequest<ChatMessage[]>(`/history?${query}`)
+      await getRequest<ChatMessage[]>(`/chat/history?${query}`)
         .then((res: ApiResponse<ChatMessage[]>) => {
           if (res.success && res.data !== undefined) {
             setChatHistory(res.data)
@@ -60,7 +61,7 @@ export default function Chat() {
   // 新しいチャットの作成
   const createNewChat = useCallback(async () => {
     // 新しいチャットの作成APIを呼び出し
-    await putRequest<ChatInfo>('/new')
+    await putRequest<ChatInfo>('/chat/new')
       .then((res: ApiResponse<ChatInfo>) => {
         if (res.success && res.data !== undefined) {
           const newChatInfo = res.data
@@ -79,7 +80,7 @@ export default function Chat() {
 
   // アプリ立ち上げ時に保存済みチャットの情報の取得
   const getChatInfoList = useCallback(async () => {
-    await getRequest<ChatInfo[]>('/init')
+    await getRequest<ChatInfo[]>('/chat/init')
       .then((res: ApiResponse<ChatInfo[]>) => {
         if (res.success && res.data !== undefined) {
           const chatInfoList = res.data
@@ -146,6 +147,7 @@ export default function Chat() {
             overflow: 'hidden',
           }}
         >
+          <SwitchPageButton target="database" isRunning={isRunning} />
           <NewChatButton createNewChat={createNewChat} isRunning={isRunning} />
           <SettingButton isRunning={isRunning} />
           <ChatList

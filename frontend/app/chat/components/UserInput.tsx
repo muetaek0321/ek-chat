@@ -45,7 +45,7 @@ export default function UserInput({
     setChatHistory((prev) => [...prev, userInput, generating])
 
     // backendと通信して返答生成
-    await postRequest<GeneratedChatMessage>('/chat', userInput)
+    await postRequest<GeneratedChatMessage>('/chat/generate', userInput)
       .then((res: ApiResponse<GeneratedChatMessage>) => {
         if (res.success && res.data !== undefined) {
           const response = res.data
