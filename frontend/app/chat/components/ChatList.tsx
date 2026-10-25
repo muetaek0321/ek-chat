@@ -15,6 +15,7 @@ export interface ChatListProps {
   setChatInfoList: React.Dispatch<React.SetStateAction<ChatInfo[]>>
   getChatHistory: (chatId: string) => void
   createNewChat: () => void
+  selectedChatId: string
   isRunning: boolean
 }
 
@@ -23,6 +24,7 @@ export default function ChatList({
   setChatInfoList,
   getChatHistory,
   createNewChat,
+  selectedChatId,
   isRunning,
 }: ChatListProps) {
   const { fontSize } = useTheme()
@@ -68,7 +70,12 @@ export default function ChatList({
       {chatInfoList.map((chatInfo, i) => (
         <Box
           key={i}
-          sx={{ border: 1, borderRadius: 1, borderColor: '#e0e0e0', my: 0.5 }}
+          sx={{
+            border: 1,
+            borderRadius: 1,
+            borderColor: chatInfo.chatId === selectedChatId ? '#505050' : '#e0e0e0',
+            my: 0.5,
+          }}
           onClick={() => handleChatSwitch(chatInfo.chatId)}
         >
           <Box
@@ -77,7 +84,10 @@ export default function ChatList({
               px: 1,
               cursor: 'pointer',
               pointerEvents: isRunning ? 'none' : 'auto',
+              backgroundColor:
+                chatInfo.chatId === selectedChatId ? theme.palette.custom.hover : 'white',
               '&:hover': { backgroundColor: theme.palette.custom.hover },
+              borderRadius: 1,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',

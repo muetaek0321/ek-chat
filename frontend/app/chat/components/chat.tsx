@@ -27,6 +27,7 @@ export default function Chat() {
 
   const [chatInfoList, setChatInfoList] = useState<ChatInfo[]>([])
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([])
+  const [selectedChatId, setSelectedChatId] = useState<string>('')
 
   // サイドバーの開閉切り替え
   const toggleSidebar = () => {
@@ -48,6 +49,7 @@ export default function Chat() {
         .then((res: ApiResponse<ChatMessage[]>) => {
           if (res.success && res.data !== undefined) {
             setChatHistory(res.data)
+            setSelectedChatId(chatId)
           } else {
             alert('チャット履歴の取得に失敗しました。')
             console.log('Error:', res.error)
@@ -155,6 +157,7 @@ export default function Chat() {
             setChatInfoList={setChatInfoList}
             getChatHistory={getChatHistory}
             createNewChat={createNewChat}
+            selectedChatId={selectedChatId}
             isRunning={isRunning}
           />
         </Box>
