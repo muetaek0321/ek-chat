@@ -1,6 +1,7 @@
 # 共通
 .env
 develop/
+technical_debt_report.md
 
 ### backend
 .venv/
