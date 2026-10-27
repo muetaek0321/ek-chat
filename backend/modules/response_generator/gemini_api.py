@@ -3,9 +3,9 @@ import time
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from modules.database.get_database_context import SearchVectorDB
 from modules.logger import get_logger
 from modules.schema import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
+from modules.vectorstore.get_database_context import SearchVectorDB
 
 from .base import ResponseGenerator
 

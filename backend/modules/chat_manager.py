@@ -4,7 +4,6 @@ from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
 
-from modules.database.get_database_context import SearchVectorDB
 from modules.logger import get_logger
 from modules.response_generator.gemini_api import GeminiResponseGenerator
 from modules.response_generator.gemma4_12b import Gemma4LlmmaCppResponseGenerator
@@ -25,6 +24,7 @@ from modules.schema import (
     Role,
     SystemPromptText,
 )
+from modules.vectorstore.get_database_context import SearchVectorDB
 
 # ロガーのインスタンスを取得
 logger = get_logger(__name__)

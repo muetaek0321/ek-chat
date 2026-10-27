@@ -4,7 +4,7 @@ from pathlib import Path
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 
-from modules.database.embedding_models import get_embedding
+from modules.vectorstore.embedding_models import get_embedding
 
 DEFAULT_SONG_LIST = []
 RAG_PROMPT = """\
