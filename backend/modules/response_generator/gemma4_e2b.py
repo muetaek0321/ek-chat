@@ -7,9 +7,9 @@ import torch
 from accelerate.hooks import remove_hook_from_module
 from transformers import AutoModelForCausalLM, AutoProcessor
 
-from modules.database.get_database_context import SearchVectorDB
 from modules.logger import get_logger
 from modules.schema import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
+from modules.vectorstore.get_database_context import SearchVectorDB
 
 from .base import ResponseGenerator
 

@@ -11,8 +11,8 @@ from langchain_chroma import Chroma
 from langchain_community.document_loaders import TextLoader
 from tqdm import tqdm
 
-from modules.database.embedding_models import get_embedding
-from modules.database.json_to_markdown import songs_json_to_markdown_doc
+from modules.vectorstore.embedding_models import get_embedding
+from modules.vectorstore.json_to_markdown import songs_json_to_markdown_doc
 
 # 環境変数の読み込み
 load_dotenv("./.env")
