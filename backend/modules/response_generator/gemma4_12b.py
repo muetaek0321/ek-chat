@@ -6,6 +6,7 @@ from pathlib import Path
 import torch
 from langchain_community.chat_models import ChatLlamaCpp
 
+from modules.extractor.songs_extractor import SongsExtractor
 from modules.logger import get_logger
 from modules.schema import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
 from modules.vectorstore.get_database_context import SearchVectorDB
@@ -16,17 +17,19 @@ from .base import ResponseGenerator
 class Gemma4LlmmaCppResponseGenerator(ResponseGenerator):
     """Gemma4:12Bを使用した返答生成クラス"""
 
-    def __init__(self, vectordb: SearchVectorDB) -> None:
+    def __init__(self, vectordb: SearchVectorDB | None, extractor: SongsExtractor | None) -> None:
         """初期化
 
         Args:
             vectordb (SearchVectorDB): ベクトルDB
+            extractor (SongsExtractor): 曲名抽出器
         """
         super().__init__(
             logger=get_logger(__name__),
             name=ChatModel.GEMMA4_12B,
             is_use=torch.cuda.is_available(),
             vectordb=vectordb,
+            extractor=extractor,
         )
         self.data_dir = Path(os.getenv("DATA_DIR", "./develop"))
 

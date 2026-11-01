@@ -12,15 +12,44 @@ logger = get_logger(__name__)
 
 # 楽曲情報リストの取得
 SONGS_DATA_PATH = Path(os.getenv("SONGS_DATA_PATH", "./develop/songs.parquet"))
-if SONGS_DATA_PATH.exists():
-    SONGS_DB = pd.read_parquet(SONGS_DATA_PATH, columns=["title", "db"])
-else:
-    logger.warning(f"楽曲情報データが見つかりません: {SONGS_DATA_PATH}")
-    SONGS_DB = pd.DataFrame(columns=["title", "db"])
+SONGS_DB: pd.DataFrame = pd.DataFrame(columns=["title", "db"])
+
+
+def load_songs_database(path: Path | None = None) -> pd.DataFrame:
+    """楽曲情報データベースを読み込む。
+
+    Args:
+        path: 読み込み対象のファイルパス。指定がない場合は SONGS_DATA_PATH を使用。
+
+    Returns:
+        pd.DataFrame: 読み込まれた楽曲情報データ。
+    """
+    global SONGS_DB
+
+    data_path = path or SONGS_DATA_PATH
+
+    if data_path.exists():
+        SONGS_DB = pd.read_parquet(data_path, columns=["title", "db"])
+        logger.info(f"楽曲情報データを読み込みました: {data_path} ({len(SONGS_DB)}件)")
+    else:
+        logger.warning(f"楽曲情報データが見つかりません: {data_path}")
+        SONGS_DB = pd.DataFrame(columns=["title", "db"])
+
+    return SONGS_DB
 
 
 def get_database_list_data() -> DatabaseListResponse:
-    """データベースのリストを取得"""
+    """データベースのリストを取得
+    
+    Returns:
+        DatabaseListResponse: データベースの一覧データ
+    """
+    global SONGS_DB
+
+    # 未読み込みかつファイルが存在する場合は自動読み込み
+    if SONGS_DB.empty and SONGS_DATA_PATH.exists():
+        load_songs_database()
+
     # DBが空の行を除外
     songs_df = SONGS_DB[SONGS_DB["db"].notna()]
 
@@ -35,7 +64,17 @@ def get_database_list_data() -> DatabaseListResponse:
 
 
 def get_song_database(song_id: str) -> SongData:
-    """楽曲IDに基づいて楽曲の詳細情報を取得"""
+    """楽曲IDに基づいて楽曲の詳細情報を取得
+    
+    Returns:
+        SongData: 楽曲データ
+    """
+    global SONGS_DB
+
+    # 未読み込みかつファイルが存在する場合は自動読み込み
+    if SONGS_DB.empty and SONGS_DATA_PATH.exists():
+        load_songs_database()
+
     # 楽曲情報を取得
     song_db_path = Path(SONGS_DB.loc[song_id, "db"])
     if not song_db_path.exists():

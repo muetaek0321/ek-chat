@@ -4,6 +4,7 @@ import time
 
 from langchain_openai import ChatOpenAI
 
+from modules.extractor.songs_extractor import SongsExtractor
 from modules.logger import get_logger
 from modules.schema import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
 from modules.vectorstore.get_database_context import SearchVectorDB
@@ -14,17 +15,19 @@ from .base import ResponseGenerator
 class SarashinaResponseGenerator(ResponseGenerator):
     """SarashinaAPIを使用した返答生成クラス"""
 
-    def __init__(self, vectordb: SearchVectorDB) -> None:
+    def __init__(self, vectordb: SearchVectorDB | None, extractor: SongsExtractor | None) -> None:
         """初期化
 
         Args:
             vectordb (SearchVectorDB): ベクトルDB
+            extractor (SongsExtractor): 曲名抽出器
         """
         super().__init__(
             logger=get_logger(__name__),
             name=ChatModel.SARASHINA,
             is_use=True,
             vectordb=vectordb,
+            extractor=extractor,
         )
         self.model_name = "sarashina3-mini"
         self.llm = None

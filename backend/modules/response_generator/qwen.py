@@ -4,6 +4,7 @@ import time
 
 from langchain_ollama import ChatOllama
 
+from modules.extractor.songs_extractor import SongsExtractor
 from modules.logger import get_logger
 from modules.schema import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
 from modules.vectorstore.get_database_context import SearchVectorDB
@@ -14,17 +15,19 @@ from .base import ResponseGenerator
 class QwenResponseGenerator(ResponseGenerator):
     """Qwen3.8 27B(Ollama)を使用した返答生成クラス"""
 
-    def __init__(self, vectordb: SearchVectorDB) -> None:
+    def __init__(self, vectordb: SearchVectorDB | None, extractor: SongsExtractor | None) -> None:
         """初期化
 
         Args:
             vectordb (SearchVectorDB): ベクトルDB
+            extractor (SongsExtractor): 曲名抽出器
         """
         super().__init__(
             logger=get_logger(__name__),
             name=ChatModel.QWEN,
             is_use=bool(shutil.which("ollama")),
             vectordb=vectordb,
+            extractor=extractor,
         )
         self.model_name = "hf.co/unsloth/Qwen3.8-27B-GGUF:UD-IQ3_S"
         self.llm = None

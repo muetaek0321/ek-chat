@@ -3,6 +3,7 @@ import time
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+from modules.extractor.songs_extractor import SongsExtractor
 from modules.logger import get_logger
 from modules.schema import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
 from modules.vectorstore.get_database_context import SearchVectorDB
@@ -22,14 +23,19 @@ class GeminiResponseGenerator(ResponseGenerator):
         "gemma-4-31b-it",
     ]
 
-    def __init__(self, vectordb: SearchVectorDB) -> None:
+    def __init__(self, vectordb: SearchVectorDB | None, extractor: SongsExtractor | None) -> None:
         """初期化
 
         Args:
             vectordb (SearchVectorDB): ベクトルDB
+            extractor (SongsExtractor): 曲名抽出器
         """
         super().__init__(
-            logger=get_logger(__name__), name=ChatModel.GEMINI, is_use=True, vectordb=vectordb
+            logger=get_logger(__name__),
+            name=ChatModel.GEMINI,
+            is_use=True,
+            vectordb=vectordb,
+            extractor=extractor,
         )
         self.model_index = 0  # デフォルトのモデルインデックスを設定
         self.llm = None

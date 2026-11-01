@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 
 import uvicorn
 from dotenv import load_dotenv
@@ -10,15 +11,40 @@ from fastapi.responses import JSONResponse, RedirectResponse
 # NOTE: Router側でも環境変数を有効にするためこの段階で読み込むようにする
 load_dotenv()
 
-from modules.logger import get_logger, logging_config
-from routers import chat, database
+from modules.get_database_info import load_songs_database  # noqa: E402
+from modules.logger import get_logger, logging_config  # noqa: E402
+from routers import chat, database  # noqa: E402
+from routers.chat import chat as chat_manager  # noqa: E402
 
 # ロガーのインスタンスを取得
 logging_config(debug=(os.getenv("ENVIRON", "prod") == "dev"))
 app_logger = get_logger(__name__)
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """FastAPIアプリケーションのライフサイクル管理。
+
+    サーバー起動時に必要な各種ファイルの読み込み処理を実行します。
+    """
+    app_logger.info("サーバー起動処理: ファイル読み込みを開始します")
+
+    # 楽曲情報データベースの読み込み
+    songs_df = load_songs_database()
+
+    # 曲名抽出器に楽曲データを渡してオートマトンを構築
+    chat_manager.extractor.load_data(songs_df=songs_df)
+
+    # システムプロンプトの読み込み
+    chat_manager.load_system_prompt()
+
+    app_logger.info("サーバー起動処理: ファイル読み込みが完了しました")
+    yield
+    app_logger.info("サーバーを停止します")
+
+
 # FastAPIアプリケーションのインスタンスを作成
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 # Routerの設定
 app.include_router(chat.router)

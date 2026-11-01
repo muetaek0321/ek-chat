@@ -19,6 +19,7 @@ class ResponseGenerator(ABC):
         name: ChatModel,
         is_use: bool,
         vectordb: SearchVectorDB | None = None,
+        extractor: SongsExtractor | None = None,
     ) -> None:
         """初期化
 
@@ -35,7 +36,7 @@ class ResponseGenerator(ABC):
         self.metadata = ResponseMetadata()
 
         # 曲名抽出器の準備
-        self.extractor = SongsExtractor()
+        self.extractor = extractor
 
         # ベクトルDBの準備
         self.vectordb = vectordb
