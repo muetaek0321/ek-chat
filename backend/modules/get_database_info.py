@@ -4,13 +4,19 @@ from pathlib import Path
 
 import pandas as pd
 
+from modules.logger import get_logger
 from schemas.database import DatabaseListResponse, SongData, SongDataOutline
+
+# ロガー設定
+logger = get_logger(__name__)
 
 # 楽曲情報リストの取得
 SONGS_DATA_PATH = Path(os.getenv("SONGS_DATA_PATH", "./develop/songs.parquet"))
-if not SONGS_DATA_PATH.exists():
-    raise FileNotFoundError(f"楽曲情報データが見つかりません: {SONGS_DATA_PATH}")
-SONGS_DB = pd.read_parquet(SONGS_DATA_PATH, columns=["title", "db"])
+if SONGS_DATA_PATH.exists():
+    SONGS_DB = pd.read_parquet(SONGS_DATA_PATH, columns=["title", "db"])
+else:
+    logger.warning(f"楽曲情報データが見つかりません: {SONGS_DATA_PATH}")
+    SONGS_DB = pd.DataFrame(columns=["title", "db"])
 
 
 def get_database_list_data() -> DatabaseListResponse:

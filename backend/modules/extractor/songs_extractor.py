@@ -4,6 +4,11 @@ from pathlib import Path
 import ahocorasick
 import pandas as pd
 
+from modules.logger import get_logger
+
+# ロガー設定
+logger = get_logger(__name__)
+
 
 class SongsExtractor:
     """楽曲名抽出クラス"""
@@ -13,9 +18,16 @@ class SongsExtractor:
         # データ格納先のディレクトリ
         self.songs_data_path = Path(os.getenv("SONGS_DATA_PATH", "./develop/songs.parquet"))
         self.automaton = ahocorasick.Automaton()
+        self.is_available = self.songs_data_path.exists()
 
         # 曲名リストを取得
-        self.songs_df = pd.read_parquet(self.songs_data_path, columns=["title"])
+        if self.is_available:
+            self.songs_df = pd.read_parquet(self.songs_data_path, columns=["title"])
+        else:
+            # NOTE: データが存在しない場合は空のデータフレームを作成して対応
+            logger.warning(f"楽曲情報データが見つかりません: {self.songs_data_path}")
+            self.songs_df = pd.DataFrame(columns=["title"])
+
         self.songs_ids = {}
         for id, row in self.songs_df.iterrows():
             title = row["title"]
@@ -66,6 +78,10 @@ class SongsExtractor:
         Returns:
             list[str]: 抽出された楽曲名のリスト
         """
+        if not self.is_available:
+            logger.warning("楽曲情報データが存在しないため、抽出をスキップします")
+            return []
+
         # 抽出したい単語と出現位置を格納
         matches = []
         for end_index, title in self.automaton.iter(input_text):
