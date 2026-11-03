@@ -11,10 +11,10 @@ from fastapi.responses import JSONResponse, RedirectResponse
 # NOTE: Router側でも環境変数を有効にするためこの段階で読み込むようにする
 load_dotenv()
 
-from modules.get_database_info import load_songs_database  # noqa: E402
+from modules.chat_manager import ChatManager  # noqa: E402
+from modules.database_info import DatabaseInfoManager  # noqa: E402
 from modules.logger import get_logger, logging_config  # noqa: E402
 from routers import chat, database  # noqa: E402
-from routers.chat import chat as chat_manager  # noqa: E402
 
 # ロガーのインスタンスを取得
 logging_config(debug=(os.getenv("ENVIRON", "prod") == "dev"))
@@ -29,14 +29,19 @@ async def lifespan(app: FastAPI):
     """
     app_logger.info("サーバー起動処理: ファイル読み込みを開始します")
 
+    # ChatManagerのインスタンスを作成
+    chat_manager = ChatManager()
+
     # 楽曲情報データベースの読み込み
-    songs_df = load_songs_database()
+    db_manager = DatabaseInfoManager()
+    songs_df = db_manager.load_songs_database()
 
     # 曲名抽出器に楽曲データを渡してオートマトンを構築
     chat_manager.extractor.load_data(songs_df=songs_df)
 
-    # システムプロンプトの読み込み
-    chat_manager.load_system_prompt()
+    # API共通変数を格納
+    app.state.chat_manager = chat_manager
+    app.state.db_manager = db_manager
 
     app_logger.info("サーバー起動処理: ファイル読み込みが完了しました")
     yield
