@@ -1,7 +1,7 @@
 import logging
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 
 from modules.chat_manager import ChatManager
 from modules.logger import get_endpoint_logger
@@ -20,8 +20,18 @@ from modules.schema import (
 # APIRouterの定義
 router = APIRouter(prefix="/chat", tags=["chat"])
 
-# ChatManagerのインスタンスを作成
-chat = ChatManager()
+
+def get_chat_manager(req: Request) -> ChatManager:
+    """チャット管理クラスを取得する関数
+
+    Args:
+        req (Request): APIエンドポイントのRequestオブジェクト
+
+    Returns:
+        ChatManager: チャット管理クラスのインスタンス
+    """
+    chat_manager: ChatManager = req.app.state.chat_manager
+    return chat_manager
 
 
 @router.get(
@@ -30,6 +40,7 @@ chat = ChatManager()
     summary="アプリの初期データを取得",
 )
 async def init_app(
+    chat_manager: Annotated[ChatManager, Depends(get_chat_manager)],
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> ChatInfoList:
     """チャットボットアプリの初期データを取得する。
@@ -44,7 +55,7 @@ async def init_app(
     api_logger.debug("アプリの初期データを取得します")
 
     # 保存済みのチャット一覧を取得
-    chat_info_list = chat.load_chat_list()
+    chat_info_list = chat_manager.load_chat_list()
 
     return chat_info_list
 
@@ -55,6 +66,7 @@ async def init_app(
     summary="新しいチャットを作成",
 )
 async def create_new_chat(
+    chat_manager: Annotated[ChatManager, Depends(get_chat_manager)],
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> ChatInfo:
     """新しいチャットセッションを作成する。
@@ -69,7 +81,7 @@ async def create_new_chat(
     api_logger.debug("新しいチャットを作成します")
 
     # 新しいチャットを作成
-    new_chat_info = chat.new_chat()
+    new_chat_info = chat_manager.new_chat()
 
     return new_chat_info
 
@@ -81,6 +93,7 @@ async def create_new_chat(
 )
 async def delete_chat(
     query: Annotated[ChatId, Depends()],
+    chat_manager: Annotated[ChatManager, Depends(get_chat_manager)],
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> None:
     """指定したIDのチャットを削除する。
@@ -98,7 +111,7 @@ async def delete_chat(
     api_logger.debug(f"チャットを削除します: {chat_id}")
 
     # チャットの削除
-    chat.delete_chat(chat_id)
+    chat_manager.delete_chat(chat_id)
 
 
 @router.get(
@@ -108,6 +121,7 @@ async def delete_chat(
 )
 async def get_chat_history(
     query: Annotated[ChatId, Depends()],
+    chat_manager: Annotated[ChatManager, Depends(get_chat_manager)],
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> ChatHistory:
     """チャットのメッセージ履歴を取得する。
@@ -128,7 +142,7 @@ async def get_chat_history(
     api_logger.debug(f"チャットID: {chat_id}")
 
     # チャットの履歴を取得
-    chat_history = chat.load_chat_history(chat_id=chat_id)
+    chat_history = chat_manager.load_chat_history(chat_id=chat_id)
 
     return chat_history
 
@@ -139,6 +153,7 @@ async def get_chat_history(
     summary="設定項目のデータを取得",
 )
 async def get_settings(
+    chat_manager: Annotated[ChatManager, Depends(get_chat_manager)],
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> SettingsResponse:
     """システムプロンプトおよびモデル設定の情報を取得する。
@@ -153,8 +168,8 @@ async def get_settings(
     api_logger.debug("設定項目のデータを取得します")
 
     # 設定を取得
-    system_prompt = chat.get_system_prompt()
-    chat_model_info_list = chat.get_chat_model_info()
+    system_prompt = chat_manager.get_system_prompt()
+    chat_model_info_list = chat_manager.get_chat_model_info()
 
     # レスポンスデータを作成
     response = SettingsResponse(
@@ -172,6 +187,7 @@ async def get_settings(
 )
 async def update_system_prompt(
     system_prompt: SystemPromptText,
+    chat_manager: Annotated[ChatManager, Depends(get_chat_manager)],
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> None:
     """SystemPromptのテキストを作成または更新する。
@@ -190,7 +206,7 @@ async def update_system_prompt(
     api_logger.debug(f"SystemPrompt: {system_prompt_text[:10]}...")
 
     # SystemPromptを作成/更新し登録
-    chat.update_system_prompt(system_prompt_text)
+    chat_manager.update_system_prompt(system_prompt_text)
 
 
 @router.patch(
@@ -200,6 +216,7 @@ async def update_system_prompt(
 )
 async def select_chat_model(
     chat_model: SelectedChatModel,
+    chat_manager: Annotated[ChatManager, Depends(get_chat_manager)],
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> None:
     """使用するチャットモデルを変更しパラメータを適用する。
@@ -219,7 +236,7 @@ async def select_chat_model(
     api_logger.debug(f"モデル: {selected_chat_model.value} パラメータ: {parameters.model_dump()}")
 
     # 選択されたモデルに変更し設定を適用
-    chat.change_chat_model(selected_chat_model, parameters)
+    chat_manager.change_chat_model(selected_chat_model, parameters)
 
 
 @router.post(
@@ -228,7 +245,9 @@ async def select_chat_model(
     summary="userの入力に対してassistantの応答を生成",
 )
 async def generate_chat_response(
-    chat_message: ChatMessage, api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)]
+    chat_message: ChatMessage,
+    chat_manager: Annotated[ChatManager, Depends(get_chat_manager)],
+    api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> GenerateChatResponse:
     """ユーザーの入力に対してアシスタント（生成AI）の応答を生成する。
 
@@ -248,6 +267,6 @@ async def generate_chat_response(
     api_logger.debug(chat_message.model_dump())
 
     # 返答を生成
-    response = chat.generate(user_message=chat_message)
+    response = chat_manager.generate(user_message=chat_message)
 
     return response
