@@ -9,7 +9,7 @@ import SendIcon from '@mui/icons-material/Send'
 import CircularProgress from '@mui/material/CircularProgress'
 
 import { ApiResponse, postRequest } from '@lib/fetchData'
-import { ChatMessage, ChatInfo, GeneratedChatMessage } from '@types'
+import { ChatMessage, ChatInfo, GeneratedChatMessage } from './chat-types'
 
 export interface UserInputProps {
   setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>

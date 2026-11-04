@@ -8,7 +8,7 @@ import type { MouseEvent } from 'react'
 
 import { useTheme } from '@AppThemeProvider'
 import { ApiResponse, deleteRequest } from '@lib/fetchData'
-import { ChatInfo } from '@types'
+import { ChatInfo } from './chat-types'
 
 export interface ChatListProps {
   chatInfoList: ChatInfo[]

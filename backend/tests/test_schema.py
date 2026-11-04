@@ -1,4 +1,4 @@
-from modules.schema import (
+from schemas.chat import (
     ChatHistory,
     ChatId,
     ChatInfo,

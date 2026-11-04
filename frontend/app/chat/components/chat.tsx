@@ -15,7 +15,7 @@ import ChatContentUser from './ChatContentUser'
 import ChatContentAssistant from './ChatContentAssistant'
 import UserInput from './UserInput'
 import { ApiResponse, getRequest, putRequest } from '@lib/fetchData'
-import { ChatInfo, ChatMessage } from '@types'
+import { ChatInfo, ChatMessage } from './chat-types'
 
 export default function Chat() {
   const chatListWidth = 250

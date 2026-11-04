@@ -14,7 +14,8 @@ from modules.response_generator.ollama_cloud import OllamaCloudResponseGenerator
 from modules.response_generator.plamo_api import PlamoResponseGenerator
 from modules.response_generator.qwen import QwenResponseGenerator
 from modules.response_generator.sarashina_api import SarashinaResponseGenerator
-from modules.schema import (
+from modules.vectorstore.get_database_context import SearchVectorDB
+from schemas.chat import (
     ChatHistory,
     ChatInfo,
     ChatInfoList,
@@ -26,7 +27,6 @@ from modules.schema import (
     Role,
     SystemPromptText,
 )
-from modules.vectorstore.get_database_context import SearchVectorDB
 
 # ロガーのインスタンスを取得
 logger = get_logger(__name__)

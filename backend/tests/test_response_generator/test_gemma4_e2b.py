@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from modules.response_generator.gemma4_e2b import Gemma4HuggingFaceResponseGenerator
-from modules.schema import ChatMessage, ChatModel, ChatModelParameter
+from schemas.chat import ChatMessage, ChatModel, ChatModelParameter
 
 
 class TestGemma4HuggingFaceResponseGenerator:

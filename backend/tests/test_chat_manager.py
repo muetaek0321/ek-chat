@@ -7,7 +7,7 @@ from unittest.mock import MagicMock
 from dotenv import load_dotenv
 
 from modules.chat_manager import ChatManager
-from modules.schema import (
+from schemas.chat import (
     ChatInfo,
     ChatInfoList,
     ChatMessage,

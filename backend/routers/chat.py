@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Request, status
 
 from modules.chat_manager import ChatManager
 from modules.logger import get_endpoint_logger
-from modules.schema import (
+from schemas.chat import (
     ChatHistory,
     ChatId,
     ChatInfo,

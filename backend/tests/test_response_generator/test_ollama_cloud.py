@@ -2,7 +2,7 @@ import os
 from unittest.mock import MagicMock, patch
 
 from modules.response_generator.ollama_cloud import OllamaCloudResponseGenerator
-from modules.schema import ChatMessage, ChatModel, ChatModelParameter
+from schemas.chat import ChatMessage, ChatModel, ChatModelParameter
 
 
 class TestOllamaCloudResponseGenerator:
