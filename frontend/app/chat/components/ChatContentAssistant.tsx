@@ -10,7 +10,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Theme } from '@mui/material/styles'
 
 import { useTheme } from '@AppThemeProvider'
-import { ChatMessage, ResponseMetadata } from '@types'
+import { ChatMessage, ResponseMetadata } from './chat-types'
 
 /**
  * アシスタント応答の吹き出しを描画するコンポーネントの Props。

@@ -7,7 +7,7 @@ import Box from '@mui/material/Box'
 import { Theme } from '@mui/material/styles'
 
 import { useTheme } from '@AppThemeProvider'
-import { ChatMessage } from '@types'
+import { ChatMessage } from './chat-types'
 
 /**
  * ユーザー発言の吹き出しを描画するコンポーネントの Props。

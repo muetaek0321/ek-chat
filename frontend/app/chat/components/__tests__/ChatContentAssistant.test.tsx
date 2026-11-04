@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import ChatContentAssistant from '../ChatContentAssistant'
 import { AppThemeProvider } from '@AppThemeProvider'
-import { ChatMessage } from '@types'
+import { ChatMessage } from '../chat-types'
 
 describe('ChatContentAssistant', () => {
   it('renders message content and assistant icon correctly', () => {

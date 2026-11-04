@@ -19,7 +19,7 @@ import SelectToggleButton from '@components/SelectToggleButton'
 import LoadingDialog from '@components/LoadingDialog'
 import { CustomTabPanel, a11yProps } from '@components/TabPanel'
 import { ApiResponse, getRequest, patchRequest } from '@lib/fetchData'
-import { SystemPrompt, ChatModelInfo, Settings } from '@types'
+import { SystemPrompt, ChatModelInfo, Settings } from './chat-types'
 import { sidebarButtonStyle, commonModalStyle } from '@styles'
 
 export interface SettingButtonProps {
