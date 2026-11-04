@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from modules.response_generator.gemini_api import GeminiResponseGenerator
-from modules.schema import ChatMessage, ChatModel, ChatModelParameter
+from schemas.chat import ChatMessage, ChatModel, ChatModelParameter
 
 
 class TestGeminiResponseGenerator:
@@ -122,8 +122,12 @@ class TestGeminiResponseGenerator:
         assert response == "Retried response"
         assert metadata.model_name == "gemini-3.7-flash"
         assert self.gemini_response_generator.model_index == 1
-        assert mock_chat_google_generative_ai.call_args_list[0].kwargs["model"] == "gemini-3.8-flash"
-        assert mock_chat_google_generative_ai.call_args_list[1].kwargs["model"] == "gemini-3.7-flash"
+        assert (
+            mock_chat_google_generative_ai.call_args_list[0].kwargs["model"] == "gemini-3.8-flash"
+        )
+        assert (
+            mock_chat_google_generative_ai.call_args_list[1].kwargs["model"] == "gemini-3.7-flash"
+        )
 
     @patch("modules.response_generator.gemini_api.ChatGoogleGenerativeAI")
     def test_call_does_not_initialize_another_model_after_final_failure(
@@ -131,7 +135,9 @@ class TestGeminiResponseGenerator:
     ):
         """最後の試行に失敗した後、不要な次モデルの初期化を行わない"""
         self.gemini_response_generator.model_list = ["first", "second"]
-        mock_chat_google_generative_ai.return_value.invoke.side_effect = RuntimeError("request failed")
+        mock_chat_google_generative_ai.return_value.invoke.side_effect = RuntimeError(
+            "request failed"
+        )
         self.gemini_response_generator.convert_input_messages = MagicMock(return_value=[])
 
         with pytest.raises(RuntimeError, match="request failed"):

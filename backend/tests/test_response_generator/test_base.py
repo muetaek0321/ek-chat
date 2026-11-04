@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from modules.response_generator.base import ResponseGenerator
-from modules.schema import ChatModel, ChatModelParameter
+from schemas.chat import ChatModel, ChatModelParameter
 
 
 # テスト用のダミーサブクラスを作成

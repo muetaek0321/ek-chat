@@ -6,8 +6,8 @@ from langchain_ollama import ChatOllama
 
 from modules.extractor.songs_extractor import SongsExtractor
 from modules.logger import get_logger
-from modules.schema import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
 from modules.vectorstore.get_database_context import SearchVectorDB
+from schemas.chat import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
 
 from .base import ResponseGenerator
 

@@ -6,8 +6,8 @@ from typing import Any
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
 from modules.extractor.songs_extractor import SongsExtractor
-from modules.schema import ChatModel, ChatModelParameter, ResponseMetadata, Role
 from modules.vectorstore.get_database_context import SearchVectorDB
+from schemas.chat import ChatModel, ChatModelParameter, ResponseMetadata, Role
 
 
 class ResponseGenerator(ABC):
