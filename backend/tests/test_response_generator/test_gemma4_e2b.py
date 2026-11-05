@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+import torch
+
 from modules.response_generator.gemma4_e2b import Gemma4HuggingFaceResponseGenerator
 from schemas.chat import ChatMessage, ChatModel, ChatModelParameter
 
@@ -16,7 +18,9 @@ class TestGemma4HuggingFaceResponseGenerator:
         os.environ["DATA_DIR"] = "./develop"
 
         # Gemma4HuggingFaceResponseGeneratorのインスタンスを作成
-        self.gemma4_huggingface_response_generator = Gemma4HuggingFaceResponseGenerator()
+        self.gemma4_huggingface_response_generator = Gemma4HuggingFaceResponseGenerator(
+            vectordb=None, extractor=None
+        )
 
     def teardown_method(self):
         """テストメソッドの teardown"""
@@ -29,9 +33,7 @@ class TestGemma4HuggingFaceResponseGenerator:
     def test_init(self):
         """__init__メソッドのテスト"""
         assert self.gemma4_huggingface_response_generator.name == ChatModel.GEMMA4_E2B
-        assert (
-            self.gemma4_huggingface_response_generator.is_use == True
-        )  # Assuming CUDA is available in test environment
+        assert self.gemma4_huggingface_response_generator.is_use == torch.cuda.is_available()
         assert self.gemma4_huggingface_response_generator.target_model_id == Path(
             "./develop/models/gemma-4-E2B-it"
         )
@@ -79,7 +81,8 @@ class TestGemma4HuggingFaceResponseGenerator:
         assert self.gemma4_huggingface_response_generator.target_model == mock_target_model
         assert self.gemma4_huggingface_response_generator.assistant_model == mock_assistant_model
 
-    def test_cleanup(self):
+    @patch("modules.response_generator.gemma4_e2b.remove_hook_from_module")
+    def test_cleanup(self, mock_remove_hook):
         """cleanupメソッドのテスト"""
         # モックのモデルとプロセッサオブジェクトを作成
         mock_target_model = MagicMock()
@@ -102,6 +105,7 @@ class TestGemma4HuggingFaceResponseGenerator:
     def test_get_parameters(self):
         """get_parametersメソッドのテスト"""
         # get_parametersメソッドを呼び出す
+        self.gemma4_huggingface_response_generator.is_use = True
         parameters = self.gemma4_huggingface_response_generator.get_parameters()
 
         # 結果を検証
@@ -149,7 +153,7 @@ class TestGemma4HuggingFaceResponseGenerator:
         input_messages = [ChatMessage(role="user", content="Hello")]
 
         # __call__メソッドを呼び出す
-        response = self.gemma4_huggingface_response_generator(input_messages)
+        response, metadata = self.gemma4_huggingface_response_generator(input_messages)
 
         # 結果を検証
         assert response == "Hello, how can I help you?"

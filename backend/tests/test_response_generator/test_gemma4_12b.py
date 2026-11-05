@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+import torch
+
 from modules.response_generator.gemma4_12b import Gemma4LlmmaCppResponseGenerator
 from schemas.chat import ChatMessage, ChatModel, ChatModelParameter
 
@@ -16,7 +18,9 @@ class TestGemma4LlmmaCppResponseGenerator:
         os.environ["DATA_DIR"] = "./develop"
 
         # Gemma4LlmmaCppResponseGeneratorのインスタンスを作成
-        self.gemma4_llamacpp_response_generator = Gemma4LlmmaCppResponseGenerator()
+        self.gemma4_llamacpp_response_generator = Gemma4LlmmaCppResponseGenerator(
+            vectordb=None, extractor=None
+        )
 
     def teardown_method(self):
         """テストメソッドの teardown"""
@@ -29,16 +33,14 @@ class TestGemma4LlmmaCppResponseGenerator:
     def test_init(self):
         """__init__メソッドのテスト"""
         assert self.gemma4_llamacpp_response_generator.name == ChatModel.GEMMA4_12B
-        assert (
-            self.gemma4_llamacpp_response_generator.is_use == True
-        )  # Assuming CUDA is available in test environment
+        assert self.gemma4_llamacpp_response_generator.is_use == torch.cuda.is_available()
         assert self.gemma4_llamacpp_response_generator.target_model_id == Path(
             "./develop/models/gemma-4-12B-it-qat-q4_0-gguf/gemma-4-12b-it-qat-q4_0.gguf"
         )
         assert self.gemma4_llamacpp_response_generator.max_tokens == 1024
         assert self.gemma4_llamacpp_response_generator.processor is None
         assert self.gemma4_llamacpp_response_generator.target_model is None
-        assert self.gemma4_llamacpp_response_generator.temperature == 0.1
+        assert self.gemma4_llamacpp_response_generator.temperature == 0.0
 
     @patch("modules.response_generator.gemma4_12b.ChatLlamaCpp")
     def test_setup(self, mock_chat_llama_cpp):
@@ -56,7 +58,7 @@ class TestGemma4LlmmaCppResponseGenerator:
                 Path("./develop/models/gemma-4-12B-it-qat-q4_0-gguf/gemma-4-12b-it-qat-q4_0.gguf")
             ),
             max_tokens=1024,
-            temperature=0.1,
+            temperature=0.0,
             n_ctx=8192,
             n_gpu_layers=-1,
             n_batch=1024,
@@ -81,11 +83,12 @@ class TestGemma4LlmmaCppResponseGenerator:
     def test_get_parameters(self):
         """get_parametersメソッドのテスト"""
         # get_parametersメソッドを呼び出す
+        self.gemma4_llamacpp_response_generator.is_use = True
         parameters = self.gemma4_llamacpp_response_generator.get_parameters()
 
         # 結果を検証
         assert isinstance(parameters, ChatModelParameter)
-        assert parameters.temperature == 0.1
+        assert parameters.temperature == 0.0
         assert parameters.thinking is None
 
     def test_update_parameters(self):
@@ -105,6 +108,7 @@ class TestGemma4LlmmaCppResponseGenerator:
         # モックオブジェクトを設定
         mock_response = MagicMock()
         mock_response.content = "Hello, how can I help you?"
+        mock_response.response_metadata = {}
         mock_llm_instance = MagicMock()
         mock_llm_instance.invoke.return_value = mock_response
         mock_chat_llama_cpp.return_value = mock_llm_instance
@@ -113,11 +117,14 @@ class TestGemma4LlmmaCppResponseGenerator:
         self.gemma4_llamacpp_response_generator.setup()
 
         # 入力メッセージを作成
-        input_messages = [ChatMessage(role="user", content="Hello")]
+        user_message = ChatMessage(role="user", content="Hello")
+        self.gemma4_llamacpp_response_generator.convert_input_messages = MagicMock(
+            return_value=[{"role": "user", "content": "Hello"}]
+        )
 
         # __call__メソッドを呼び出す
-        response = self.gemma4_llamacpp_response_generator(input_messages)
+        response, metadata = self.gemma4_llamacpp_response_generator([], user_message)
 
         # 結果を検証
         assert response == "Hello, how can I help you?"
-        mock_llm_instance.invoke.assert_called_once_with(input_messages)
+        mock_llm_instance.invoke.assert_called_once_with([{"role": "user", "content": "Hello"}])

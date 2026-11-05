@@ -63,7 +63,7 @@ describe('UserInput', () => {
     fireEvent.click(button)
 
     expect(setIsRunningMock).toHaveBeenCalledWith(true)
-    expect(postRequest).toHaveBeenCalledWith('/chat', { role: 'user', content: 'Hi' })
+    expect(postRequest).toHaveBeenCalledWith('/chat/generate', { role: 'user', content: 'Hi' })
 
     await waitFor(() => {
       expect(setIsRunningMock).toHaveBeenCalledWith(false)

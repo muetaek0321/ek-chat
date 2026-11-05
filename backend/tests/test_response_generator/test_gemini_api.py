@@ -12,7 +12,7 @@ class TestGeminiResponseGenerator:
     def setup_method(self):
         """テストメソッドのセットアップ"""
         # GeminiResponseGeneratorのインスタンスを作成
-        self.gemini_response_generator = GeminiResponseGenerator()
+        self.gemini_response_generator = GeminiResponseGenerator(vectordb=None, extractor=None)
 
     def test_init(self):
         """__init__メソッドのテスト"""
@@ -41,7 +41,7 @@ class TestGeminiResponseGenerator:
 
         # 結果を検証
         mock_chat_google_generative_ai.assert_called_once_with(
-            model="gemini-3.8-flash",
+            model="gemini-3.5-flash-lite",
             temperature=0.0,
             thinking_budget=1024,
         )
@@ -98,7 +98,7 @@ class TestGeminiResponseGenerator:
         )
 
         assert response == "Hello, how can I help you?"
-        assert metadata.model_name == "gemini-3.8-flash"
+        assert metadata.model_name == "gemini-3.5-flash-lite"
         mock_llm_instance.invoke.assert_called_once_with(formatted_messages)
 
     @patch("modules.response_generator.gemini_api.ChatGoogleGenerativeAI")
@@ -120,13 +120,14 @@ class TestGeminiResponseGenerator:
         )
 
         assert response == "Retried response"
-        assert metadata.model_name == "gemini-3.7-flash"
+        assert metadata.model_name == "gemini-3.8-flash"
         assert self.gemini_response_generator.model_index == 1
         assert (
-            mock_chat_google_generative_ai.call_args_list[0].kwargs["model"] == "gemini-3.8-flash"
+            mock_chat_google_generative_ai.call_args_list[0].kwargs["model"]
+            == "gemini-3.5-flash-lite"
         )
         assert (
-            mock_chat_google_generative_ai.call_args_list[1].kwargs["model"] == "gemini-3.7-flash"
+            mock_chat_google_generative_ai.call_args_list[1].kwargs["model"] == "gemini-3.8-flash"
         )
 
     @patch("modules.response_generator.gemini_api.ChatGoogleGenerativeAI")

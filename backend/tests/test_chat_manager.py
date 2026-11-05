@@ -2,11 +2,12 @@ import json
 import os
 import tempfile
 from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from dotenv import load_dotenv
 
 from modules.chat_manager import ChatManager
+from modules.response_generator.gemini_api import GeminiResponseGenerator
 from schemas.chat import (
     ChatInfo,
     ChatInfoList,
@@ -15,6 +16,7 @@ from schemas.chat import (
     ChatModelInfo,
     ChatModelParameter,
     GenerateChatResponse,
+    ResponseMetadata,
     Role,
     SystemPromptText,
     Thinking,
@@ -42,8 +44,13 @@ class TestChatManager:
         self.system_prompt_path = self.data_dir / "system_prompt.md"
         self.system_prompt_path.write_text("You are a helpful assistant.", encoding="utf-8")
 
-        # ChatManagerのインスタンスを作成
-        self.chat_manager = ChatManager()
+        # ChatManagerのインスタンスを作成（外部依存・重い処理はモック化）
+        with (
+            patch("modules.chat_manager.SearchVectorDB"),
+            patch("modules.chat_manager.SongsExtractor"),
+            patch.object(GeminiResponseGenerator, "setup"),
+        ):
+            self.chat_manager = ChatManager()
 
     def teardown_method(self):
         """テストメソッドの teardown"""
@@ -237,7 +244,7 @@ class TestChatManager:
 
         # 結果を検証
         assert isinstance(chat_model_info_list, list)
-        assert len(chat_model_info_list) == 4
+        assert len(chat_model_info_list) == len(self.chat_manager.chat_models)
         for chat_model_info in chat_model_info_list:
             assert isinstance(chat_model_info, ChatModelInfo)
             assert chat_model_info.model_name in ChatModel
@@ -268,8 +275,9 @@ class TestChatManager:
         """generateメソッドのテスト"""
         # モックオブジェクトを設定
         mock_response = "Hello, how can I help you?"
+        mock_metadata = ResponseMetadata(model_name="test-model")
         self.chat_manager.chat_model = MagicMock()
-        self.chat_manager.chat_model.return_value = mock_response
+        self.chat_manager.chat_model.return_value = (mock_response, mock_metadata)
 
         # 事前に新規チャット作成
         self.chat_manager.new_chat()
@@ -284,5 +292,6 @@ class TestChatManager:
         assert isinstance(generate_chat_response, GenerateChatResponse)
         assert generate_chat_response.assistant_message.role == Role.ASSISTANT
         assert generate_chat_response.assistant_message.content == mock_response
+        assert generate_chat_response.assistant_message.metadata == mock_metadata
         assert generate_chat_response.new_chat_info is not None
         assert isinstance(generate_chat_response.new_chat_info, ChatInfo)

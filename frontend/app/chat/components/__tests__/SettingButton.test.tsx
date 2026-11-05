@@ -38,6 +38,6 @@ describe('SettingButton', () => {
       expect(screen.getByText('設定', { selector: 'b' })).toBeInTheDocument()
     })
     
-    expect(getRequest).toHaveBeenCalledWith('/settings')
+    expect(getRequest).toHaveBeenCalledWith('/chat/settings')
   })
 })

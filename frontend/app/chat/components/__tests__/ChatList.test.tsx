@@ -26,6 +26,7 @@ describe('ChatList', () => {
           setChatInfoList={() => {}}
           getChatHistory={() => {}}
           createNewChat={() => {}}
+          selectedChatId=""
           isRunning={false}
         />
       </AppThemeProvider>
@@ -43,6 +44,7 @@ describe('ChatList', () => {
           setChatInfoList={() => {}}
           getChatHistory={getChatHistoryMock}
           createNewChat={() => {}}
+          selectedChatId=""
           isRunning={false}
         />
       </AppThemeProvider>
@@ -64,6 +66,7 @@ describe('ChatList', () => {
           setChatInfoList={setChatInfoListMock}
           getChatHistory={getChatHistoryMock}
           createNewChat={() => {}}
+          selectedChatId=""
           isRunning={false}
         />
       </AppThemeProvider>
@@ -73,7 +76,7 @@ describe('ChatList', () => {
     const deleteButtons = screen.getAllByRole('button')
     fireEvent.click(deleteButtons[1]) // click delete on Chat 2
 
-    expect(deleteRequest).toHaveBeenCalledWith('/delete?chatId=2')
+    expect(deleteRequest).toHaveBeenCalledWith('/chat/delete?chatId=2')
 
     await waitFor(() => {
       expect(setChatInfoListMock).toHaveBeenCalled()
