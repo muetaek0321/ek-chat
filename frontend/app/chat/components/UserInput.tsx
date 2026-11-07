@@ -3,10 +3,12 @@
 import React, { useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import Tooltip from '@mui/material/Tooltip'
 import TextField from '@mui/material/TextField'
 import IconButton from '@mui/material/IconButton'
 import SendIcon from '@mui/icons-material/Send'
 import CircularProgress from '@mui/material/CircularProgress'
+import ManageSearchIcon from '@mui/icons-material/ManageSearch'
 
 import { ApiResponse, postRequest } from '@lib/fetchData'
 import { ChatMessage, ChatInfo, GeneratedChatMessage } from './chat-types'
@@ -85,47 +87,75 @@ export default function UserInput({
   }
 
   return (
-    <Stack direction="row" spacing={1} sx={{ p: 0.5, height: '100%' }}>
-      <TextField
-        variant="outlined"
-        size="small"
-        fullWidth
-        rows={2}
-        value={inputText}
-        sx={(theme) => ({ bgcolor: theme.palette.custom.input })}
-        onChange={(e) => setInputText(e.target.value)}
-        onKeyDown={handleEnterKeyPress}
-        disabled={isRunning}
-      />
-      <IconButton
-        color="primary"
-        sx={{ height: '100%' }}
-        onClick={handleSendUserInput}
-        disabled={inputText.trim() === '' || isRunning}
+    <Box sx={{ px: 0.5, flexDirection: 'column' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0.5,
+          px: 0.5,
+          py: 0.25,
+        }}
+        role="toolbar"
       >
-        <Box
-          sx={{
-            position: 'relative',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+        {/* RAGの有効/無効切り替え */}
+        <Tooltip title="RAGの有効化" placement="top">
+          <IconButton
+            size="small"
+            disabled={isRunning}
+            aria-label="RAGの有効化"
+            color="default"
+            sx={{ p: 0.5 }}
+          >
+            <ManageSearchIcon sx={{ fontSize: '1.5rem' }} />
+          </IconButton>
+        </Tooltip>
+      </Box>
+
+      {/* 入力欄と送信ボタン */}
+      <Stack direction="row" spacing={1} sx={{ width: '100%', alignItems: 'center' }}>
+        <TextField
+          variant="outlined"
+          size="small"
+          fullWidth
+          rows={2}
+          value={inputText}
+          sx={(theme) => ({ bgcolor: theme.palette.custom.input })}
+          onChange={(e) => setInputText(e.target.value)}
+          onKeyDown={handleEnterKeyPress}
+          disabled={isRunning}
+        />
+        <IconButton
+          color="primary"
+          aria-label="送信"
+          sx={{ height: '100%' }}
+          onClick={handleSendUserInput}
+          disabled={inputText.trim() === '' || isRunning}
         >
-          <SendIcon fontSize="large" sx={{ display: 'block' }} />
-          {isRunning && (
-            <CircularProgress
-              size={32}
-              sx={{
-                position: 'absolute',
-                top: '15%',
-                left: '10%',
-                transform: 'translate(-50%, -50%)',
-                pointerEvents: 'none',
-              }}
-            />
-          )}
-        </Box>
-      </IconButton>
-    </Stack>
+          <Box
+            sx={{
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <SendIcon fontSize="large" sx={{ display: 'block' }} />
+            {isRunning && (
+              <CircularProgress
+                size={32}
+                sx={{
+                  position: 'absolute',
+                  top: '15%',
+                  left: '10%',
+                  transform: 'translate(-50%, -50%)',
+                  pointerEvents: 'none',
+                }}
+              />
+            )}
+          </Box>
+        </IconButton>
+      </Stack>
+    </Box>
   )
 }

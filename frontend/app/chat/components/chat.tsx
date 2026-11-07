@@ -20,7 +20,6 @@ import { ChatInfo, ChatMessage } from './chat-types'
 export default function Chat() {
   const chatListWidth = 250
   const collapsedWidth = 48
-  const userInputHeight = 50
 
   const [isRunning, setIsRunning] = useState<boolean>(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true)
@@ -168,11 +167,14 @@ export default function Chat() {
         sx={{
           width: `calc(100vw - ${currentSidebarWidth}px)`,
           transition: 'width 0.3s ease',
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100vh',
         }}
       >
         <Box
           sx={{
-            height: `calc(100vh - ${userInputHeight}px)`,
+            flex: 1,
             width: '100%',
             overflowY: 'auto',
             p: 1,
@@ -188,7 +190,7 @@ export default function Chat() {
             </Box>
           ))}
         </Box>
-        <Box sx={{ height: userInputHeight, borderTop: 1, borderColor: 'divider' }}>
+        <Box sx={{ borderTop: 1, borderColor: 'divider' }}>
           <UserInput
             setChatHistory={setChatHistory}
             setChatInfoList={setChatInfoList}

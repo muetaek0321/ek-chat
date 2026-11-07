@@ -25,9 +25,11 @@ describe('UserInput', () => {
       </AppThemeProvider>
     )
     expect(screen.getByRole('textbox')).toBeInTheDocument()
-    const button = screen.getByRole('button')
-    expect(button).toBeInTheDocument()
-    expect(button).toBeDisabled() // disabled when input is empty
+    const sendButton = screen.getByRole('button', { name: '送信' })
+    expect(sendButton).toBeInTheDocument()
+    expect(sendButton).toBeDisabled() // disabled when input is empty
+    expect(screen.getByText('option')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'オプションを開く' })).toBeInTheDocument()
   })
 
   it('enables button when text is entered and calls API on click', async () => {
@@ -51,11 +53,11 @@ describe('UserInput', () => {
           isRunning={false}
           setIsRunning={setIsRunningMock}
         />
-      </AppThemeProvider>
+      </AppThemeProvider>,
     )
 
     const input = screen.getByRole('textbox')
-    const button = screen.getByRole('button')
+    const button = screen.getByRole('button', { name: '送信' })
 
     fireEvent.change(input, { target: { value: 'Hi' } })
     expect(button).not.toBeDisabled()
@@ -79,12 +81,51 @@ describe('UserInput', () => {
           isRunning={true}
           setIsRunning={() => {}}
         />
-      </AppThemeProvider>
+      </AppThemeProvider>,
     )
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
     expect(screen.getByTestId('SendIcon')).toBeInTheDocument()
-    const button = screen.getByRole('button')
+    const button = screen.getByRole('button', { name: '送信' })
     expect(button).toBeDisabled()
+    const optionButton = screen.getByRole('button', { name: 'オプションを開く' })
+    expect(optionButton).toBeDisabled()
+  })
+
+  it('toggles option area to show and hide control icon buttons', () => {
+    render(
+      <AppThemeProvider initialTheme="light">
+        <UserInput
+          setChatHistory={() => {}}
+          setChatInfoList={() => {}}
+          isRunning={false}
+          setIsRunning={() => {}}
+        />
+      </AppThemeProvider>,
+    )
+
+    const optionButton = screen.getByRole('button', { name: 'オプションを開く' })
+    expect(optionButton).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.getByText('option')).toBeInTheDocument()
+
+    // オプションをクリックして展開（「option」文字は消え、アイコンが横並びになる）
+    fireEvent.click(optionButton)
+    expect(screen.queryByText('option')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'オプションを閉じる' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    )
+    expect(screen.getByRole('button', { name: 'モード設定' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'AI機能' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '思考モード' })).toBeInTheDocument()
+
+    // もう一度クリックして折りたたみ（「option」文字が再表示される）
+    fireEvent.click(screen.getByRole('button', { name: 'オプションを閉じる' }))
+    expect(screen.getByText('option')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'オプションを開く' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    )
+    expect(screen.queryByRole('button', { name: 'モード設定' })).not.toBeInTheDocument()
   })
 })
 
