@@ -131,6 +131,13 @@ class ChatId(EndpointModel):
     chat_id: str | None = Field(None, description="チャットIDの指定")
 
 
+class GenerateChatRequest(EndpointModel):
+    """assistantの応答生成のRequestModel"""
+
+    user_message: ChatMessage = Field(..., description="ユーザーからのメッセージ")
+    is_rag_enabled: bool = Field(..., description="RAGが有効かどうかのフラグ")
+
+
 class GenerateChatResponse(EndpointModel):
     """assistantの応答生成のResponseModel"""
 

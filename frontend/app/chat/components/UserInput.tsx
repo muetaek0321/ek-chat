@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import Tooltip from '@mui/material/Tooltip'
 import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import SendIcon from '@mui/icons-material/Send'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -28,6 +29,9 @@ export default function UserInput({
 }: UserInputProps) {
   const [inputText, setInputText] = useState<string>('')
 
+  // モード制御
+  const [isRAGEnabled, setIsRAGEnabled] = useState<boolean>(true)
+
   // 返答生成中の表示
   const generating: ChatMessage = {
     role: 'assistant',
@@ -47,7 +51,11 @@ export default function UserInput({
     setChatHistory((prev) => [...prev, userInput, generating])
 
     // backendと通信して返答生成
-    await postRequest<GeneratedChatMessage>('/chat/generate', userInput)
+    const submitData = {
+      userMessage: userInput,
+      isRagEnabled: isRAGEnabled,
+    }
+    await postRequest<GeneratedChatMessage>('/chat/generate', submitData)
       .then((res: ApiResponse<GeneratedChatMessage>) => {
         if (res.success && res.data !== undefined) {
           const response = res.data
@@ -100,15 +108,22 @@ export default function UserInput({
       >
         {/* RAGの有効/無効切り替え */}
         <Tooltip title="RAGの有効化" placement="top">
-          <IconButton
+          <Button
             size="small"
             disabled={isRunning}
             aria-label="RAGの有効化"
-            color="default"
-            sx={{ p: 0.5 }}
+            color="inherit"
+            variant="contained"
+            onClick={() => setIsRAGEnabled((prev) => !prev)}
+            sx={{
+              p: 0.5,
+              minWidth: 'auto',
+              bgcolor: isRAGEnabled ? 'grey' : 'white',
+              color: isRAGEnabled ? 'white' : 'black',
+            }}
           >
             <ManageSearchIcon sx={{ fontSize: '1.5rem' }} />
-          </IconButton>
+          </Button>
         </Tooltip>
       </Box>
 

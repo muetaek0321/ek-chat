@@ -65,7 +65,10 @@ describe('UserInput', () => {
     fireEvent.click(button)
 
     expect(setIsRunningMock).toHaveBeenCalledWith(true)
-    expect(postRequest).toHaveBeenCalledWith('/chat/generate', { role: 'user', content: 'Hi' })
+    expect(postRequest).toHaveBeenCalledWith('/chat/generate', {
+      userMessage: { role: 'user', content: 'Hi' },
+      isRagEnabled: true,
+    })
 
     await waitFor(() => {
       expect(setIsRunningMock).toHaveBeenCalledWith(false)
@@ -128,4 +131,3 @@ describe('UserInput', () => {
     expect(screen.queryByRole('button', { name: 'モード設定' })).not.toBeInTheDocument()
   })
 })
-
