@@ -10,7 +10,7 @@ from schemas.chat import (
     ChatId,
     ChatInfo,
     ChatInfoList,
-    ChatMessage,
+    GenerateChatRequest,
     GenerateChatResponse,
     SelectedChatModel,
     SettingsResponse,
@@ -245,7 +245,7 @@ async def select_chat_model(
     summary="userの入力に対してassistantの応答を生成",
 )
 async def generate_chat_response(
-    chat_message: ChatMessage,
+    payload: GenerateChatRequest,
     chat_manager: Annotated[ChatManager, Depends(get_chat_manager)],
     api_logger: Annotated[logging.Logger, Depends(get_endpoint_logger)],
 ) -> GenerateChatResponse:
@@ -264,9 +264,11 @@ async def generate_chat_response(
     - **422 Unprocessable Entity**: リクエストボディのバリデーションエラー
     - **500 Internal Server Error**: モデル生成エラーまたはファイル保存エラー
     """
-    api_logger.debug(chat_message.model_dump())
+    user_message = payload.user_message
+    options = payload.options
+    api_logger.debug(f"{user_message.model_dump()}, RAG: {options.is_rag_enabled}")
 
     # 返答を生成
-    response = chat_manager.generate(user_message=chat_message)
+    response = chat_manager.generate(user_message=user_message, options=options)
 
     return response

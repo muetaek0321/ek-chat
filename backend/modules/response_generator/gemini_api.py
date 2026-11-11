@@ -6,7 +6,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from modules.extractor.songs_extractor import SongsExtractor
 from modules.logger import get_logger
 from modules.vectorstore.get_database_context import SearchVectorDB
-from schemas.chat import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
+from schemas.chat import ChatMessage, ChatModel, ChatModelParameter, ChatOptions, ResponseMetadata
 
 from .base import ResponseGenerator
 
@@ -90,22 +90,23 @@ class GeminiResponseGenerator(ResponseGenerator):
         self.thinking = parameters.thinking
 
     def __call__(
-        self, input_messages: list[dict[str, str]], user_message: ChatMessage
+        self, input_messages: list[dict[str, str]], user_message: ChatMessage, options: ChatOptions
     ) -> tuple[str, ResponseMetadata]:
         """モデルの返答を生成する
 
         Args:
             input_messages (list[dict[str, str]]): これまでのチャット履歴
             user_message (ChatMessage): ユーザ入力文
+            options (ChatOptions): チャットのオプション設定
 
         Returns:
-            str: 生成された返答
+            tuple[str, ResponseMetadata]: 生成された返答とメタデータ
         """
         start_time = time.perf_counter()
 
         # 入力データの変換
         formatted_messages = self.convert_input_messages(
-            input_messages, user_message.content, num_ctx=5
+            input_messages, user_message.content, options, num_ctx=5
         )
 
         last_exception: Exception | None = None

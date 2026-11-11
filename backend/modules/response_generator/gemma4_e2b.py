@@ -10,7 +10,14 @@ from transformers import AutoModelForCausalLM, AutoProcessor
 from modules.extractor.songs_extractor import SongsExtractor
 from modules.logger import get_logger
 from modules.vectorstore.get_database_context import SearchVectorDB
-from schemas.chat import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
+from schemas.chat import (
+    ChatMessage,
+    ChatModel,
+    ChatModelParameter,
+    ChatOptions,
+    ResponseMetadata,
+    Role,
+)
 
 from .base import ResponseGenerator
 
@@ -112,18 +119,33 @@ class Gemma4HuggingFaceResponseGenerator(ResponseGenerator):
         """
         self.temperature = parameters.temperature
 
-    def __call__(self, input_messages: list[ChatMessage]) -> str:
+    def __call__(
+        self, input_messages: list[dict[str, str]], user_message: ChatMessage, options: ChatOptions
+    ) -> tuple[str, ResponseMetadata]:
         """モデルの返答を生成する
 
         Args:
-            input_messages (list[ChatMessage]): ユーザ入力を含むチャット履歴
+            input_messages (list[dict[str, str]]): これまでのチャット履歴
+            user_message (ChatMessage): ユーザ入力文
+            options (ChatOptions): チャットのオプション設定
 
         Returns:
-            str: 生成された返答
+            tuple[str, ResponseMetadata]: 生成された返答とメタデータ
         """
+        # 入力データの変換
+        formatted_messages = list(input_messages)
+        user_content = user_message.content
+        if options.is_rag_enabled and self.vectordb is not None:
+            self.logger.info("ベクトルDBからコンテキストを取得します。")
+            song_ids = self.extractor.extract_songs(user_content)
+            user_content = self.vectordb.get_context(user_content, ids=song_ids, k=3)
+        else:
+            self.logger.debug("チャットのオプションはすべて無効です。")
+        formatted_messages.append({"role": Role.USER, "content": user_content})
+
         # チャットテンプレートの設定
         text = self.processor.apply_chat_template(
-            input_messages,
+            formatted_messages,
             tokenize=False,
             add_generation_prompt=True,
         )
