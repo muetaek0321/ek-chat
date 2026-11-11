@@ -7,7 +7,7 @@ from langchain_openai import ChatOpenAI
 from modules.extractor.songs_extractor import SongsExtractor
 from modules.logger import get_logger
 from modules.vectorstore.get_database_context import SearchVectorDB
-from schemas.chat import ChatMessage, ChatModel, ChatModelParameter, ResponseMetadata
+from schemas.chat import ChatMessage, ChatModel, ChatModelParameter, ChatOptions, ResponseMetadata
 
 from .base import ResponseGenerator
 
@@ -78,22 +78,25 @@ class PlamoResponseGenerator(ResponseGenerator):
         """
         self.temperature = parameters.temperature
 
-    def __call__(self, input_messages: list[dict[str, str]], user_message: ChatMessage) -> str:
+    def __call__(
+        self, input_messages: list[dict[str, str]], user_message: ChatMessage, options: ChatOptions
+    ) -> tuple[str, ResponseMetadata]:
         """モデルの返答を生成する
 
         Args:
             input_messages (list[dict[str, str]]): これまでのチャット履歴
             user_message (ChatMessage): ユーザ入力文
+            options (ChatOptions): チャットのオプション設定
 
         Returns:
-            str: 生成された返答
+            tuple[str, ResponseMetadata]: 生成された返答とメタデータ
         """
         # 返答の生成
         start_time = time.perf_counter()
 
         # 入力データの変換
         input_messages = self.convert_input_messages(
-            input_messages, user_message.content, num_ctx=5
+            input_messages, user_message.content, options, num_ctx=5
         )
 
         # 返答の生成

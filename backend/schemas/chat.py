@@ -131,11 +131,17 @@ class ChatId(EndpointModel):
     chat_id: str | None = Field(None, description="チャットIDの指定")
 
 
+class ChatOptions(EndpointModel):
+    """チャットのオプション設定のBaseModel"""
+
+    is_rag_enabled: bool = Field(..., description="RAGが有効かどうかのフラグ")
+
+
 class GenerateChatRequest(EndpointModel):
     """assistantの応答生成のRequestModel"""
 
     user_message: ChatMessage = Field(..., description="ユーザーからのメッセージ")
-    is_rag_enabled: bool = Field(..., description="RAGが有効かどうかのフラグ")
+    options: ChatOptions = Field(..., description="チャットのオプション設定")
 
 
 class GenerateChatResponse(EndpointModel):

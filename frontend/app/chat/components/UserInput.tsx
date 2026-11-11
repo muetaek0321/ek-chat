@@ -53,7 +53,9 @@ export default function UserInput({
     // backendと通信して返答生成
     const submitData = {
       userMessage: userInput,
-      isRagEnabled: isRAGEnabled,
+      options: {
+        isRagEnabled: isRAGEnabled,
+      },
     }
     await postRequest<GeneratedChatMessage>('/chat/generate', submitData)
       .then((res: ApiResponse<GeneratedChatMessage>) => {

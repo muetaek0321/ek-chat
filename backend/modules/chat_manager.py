@@ -23,6 +23,7 @@ from schemas.chat import (
     ChatModel,
     ChatModelInfo,
     ChatModelParameter,
+    ChatOptions,
     GenerateChatResponse,
     Role,
     SystemPromptText,
@@ -235,11 +236,12 @@ class ChatManager:
         # モデルの初期化
         self.chat_model.setup()
 
-    def generate(self, user_message: ChatMessage) -> GenerateChatResponse:
+    def generate(self, user_message: ChatMessage, options: ChatOptions) -> GenerateChatResponse:
         """ユーザーからの入力に対してアシスタントの応答を生成する
 
         Args:
             user_message (ChatMessage): ユーザーからの入力メッセージ
+            options (ChatOptions): チャットのオプション設定
 
         Returns:
             GenerateChatResponse: アシスタントからの応答メッセージと新しいチャット情報
@@ -252,7 +254,7 @@ class ChatManager:
             input_messages.insert(0, self.system_prompt.model_dump())
 
         # LLMを使用して応答を生成
-        response, metadata = self.chat_model(input_messages, user_message)
+        response, metadata = self.chat_model(input_messages, user_message, options)
 
         # 生成された応答をChatMessage形式で返す
         assistant_message = ChatMessage(role=Role.ASSISTANT, content=response, metadata=metadata)

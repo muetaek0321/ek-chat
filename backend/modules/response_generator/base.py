@@ -7,7 +7,14 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
 from modules.extractor.songs_extractor import SongsExtractor
 from modules.vectorstore.get_database_context import SearchVectorDB
-from schemas.chat import ChatModel, ChatModelParameter, ResponseMetadata, Role
+from schemas.chat import (
+    ChatMessage,
+    ChatModel,
+    ChatModelParameter,
+    ChatOptions,
+    ResponseMetadata,
+    Role,
+)
 
 
 class ResponseGenerator(ABC):
@@ -72,26 +79,35 @@ class ResponseGenerator(ABC):
         raise NotImplementedError("update_parametersメソッドは継承先で実装されていません")
 
     @abstractmethod
-    def __call__(self, messages: list[dict[str, str]]) -> str:
+    def __call__(
+        self, input_messages: list[dict[str, str]], user_message: ChatMessage, options: ChatOptions
+    ) -> tuple[str, ResponseMetadata]:
         """
         返答を生成する
 
         Args:
-            messages (list[dict[str, str]]): チャットメッセージのリスト
+            input_messages (list[dict[str, str]]): 辞書型のメッセージデータ
+            user_message (ChatMessage): ユーザーからの入力メッセージ
+            options (ChatOptions): チャットのオプション設定
 
         Returns:
-            str: 生成された返答
+            tuple[str, ResponseMetadata]: 生成された返答とメタデータ
         """
         raise NotImplementedError("__call__メソッドは継承先で実装されていません")
 
     def convert_input_messages(
-        self, input_messages: list[dict[str, str]], user_input: str, num_ctx: int = 5
+        self,
+        input_messages: list[dict[str, str]],
+        user_input: str,
+        options: ChatOptions,
+        num_ctx: int = 5,
     ) -> list[SystemMessage, HumanMessage, AIMessage]:
         """LLMに入力するメッセージのデータを変換
 
         Args:
             input_message (list[dict[str, str]]): 辞書型のメッセージデータ
             user_input (str): ユーザの入力文
+            options (ChatOptions): チャットのオプション設定
             num_ctx (int): 検索で取得するコンテキスト数
 
         Returns:
@@ -108,12 +124,8 @@ class ResponseGenerator(ABC):
             elif msg["role"] == Role.ASSISTANT:
                 converted_messages.append(AIMessage(content=msg["content"]))
 
-        if self.vectordb is None:
-            self.logger.warning(
-                "ベクトルDBが定義されていません。コンテキストの取得はスキップします。"
-            )
-            converted_messages.append(HumanMessage(content=user_input))
-        else:
+        if options.is_rag_enabled and self.vectordb is not None:
+            self.logger.info("ベクトルDBからコンテキストを取得します。")
             # 楽曲IDの抽出
             song_ids = self.extractor.extract_songs(user_input)
 
@@ -121,6 +133,9 @@ class ResponseGenerator(ABC):
             converted_messages.append(
                 HumanMessage(content=self.vectordb.get_context(user_input, ids=song_ids, k=num_ctx))
             )
+        else:
+            self.logger.debug("チャットのオプションはすべて無効です。")
+            converted_messages.append(HumanMessage(content=user_input))
 
         return converted_messages
 

@@ -264,9 +264,11 @@ async def generate_chat_response(
     - **422 Unprocessable Entity**: リクエストボディのバリデーションエラー
     - **500 Internal Server Error**: モデル生成エラーまたはファイル保存エラー
     """
-    api_logger.debug(f"{payload.user_message.model_dump()}, RAG: {payload.is_rag_enabled}")
+    user_message = payload.user_message
+    options = payload.options
+    api_logger.debug(f"{user_message.model_dump()}, RAG: {options.is_rag_enabled}")
 
     # 返答を生成
-    response = chat_manager.generate(user_message=payload.user_message)
+    response = chat_manager.generate(user_message=user_message, options=options)
 
     return response
