@@ -3,7 +3,7 @@ import shutil
 from unittest.mock import MagicMock, patch
 
 from modules.response_generator.ollama_cloud import OllamaCloudResponseGenerator
-from schemas.chat import ChatMessage, ChatModel, ChatModelParameter
+from schemas.chat import ChatMessage, ChatModel, ChatModelParameter, ChatOptions
 
 
 class TestOllamaCloudResponseGenerator:
@@ -112,12 +112,13 @@ class TestOllamaCloudResponseGenerator:
 
         # 入力メッセージを作成
         user_message = ChatMessage(role="user", content="Hello")
+        options = ChatOptions(is_rag_enabled=False)
         self.ollama_cloud_response_generator.convert_input_messages = MagicMock(
             return_value=[{"role": "user", "content": "Hello"}]
         )
 
         # __call__メソッドを呼び出す
-        response, metadata = self.ollama_cloud_response_generator([], user_message)
+        response, metadata = self.ollama_cloud_response_generator([], user_message, options)
 
         # 結果を検証
         assert response == "Hello, how can I help you?"

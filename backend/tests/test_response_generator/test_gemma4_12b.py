@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 import torch
 
 from modules.response_generator.gemma4_12b import Gemma4LlmmaCppResponseGenerator
-from schemas.chat import ChatMessage, ChatModel, ChatModelParameter
+from schemas.chat import ChatMessage, ChatModel, ChatModelParameter, ChatOptions
 
 
 class TestGemma4LlmmaCppResponseGenerator:
@@ -118,12 +118,13 @@ class TestGemma4LlmmaCppResponseGenerator:
 
         # 入力メッセージを作成
         user_message = ChatMessage(role="user", content="Hello")
+        options = ChatOptions(is_rag_enabled=False)
         self.gemma4_llamacpp_response_generator.convert_input_messages = MagicMock(
             return_value=[{"role": "user", "content": "Hello"}]
         )
 
         # __call__メソッドを呼び出す
-        response, metadata = self.gemma4_llamacpp_response_generator([], user_message)
+        response, metadata = self.gemma4_llamacpp_response_generator([], user_message, options)
 
         # 結果を検証
         assert response == "Hello, how can I help you?"

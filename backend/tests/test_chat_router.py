@@ -1,20 +1,17 @@
 from types import SimpleNamespace
 
-import pytest
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from main import app
+from routers import chat
 
 
-def test_chat_init_accepts_request_without_body(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(
-        app.state,
-        "chat_manager",
-        SimpleNamespace(load_chat_list=lambda: []),
-        raising=False,
-    )
+def test_chat_init_accepts_request_without_body() -> None:
+    test_app = FastAPI()
+    test_app.include_router(chat.router)
+    test_app.state.chat_manager = SimpleNamespace(load_chat_list=lambda: [])
 
-    response = TestClient(app).get("/chat/init")
+    response = TestClient(test_app).get("/chat/init")
 
     assert response.status_code == 200
     assert response.json() == []

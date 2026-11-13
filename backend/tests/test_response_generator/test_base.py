@@ -4,7 +4,14 @@ from unittest.mock import MagicMock
 import pytest
 
 from modules.response_generator.base import ResponseGenerator
-from schemas.chat import ChatModel, ChatModelParameter
+from schemas.chat import (
+    ChatMessage,
+    ChatModel,
+    ChatModelParameter,
+    ChatOptions,
+    ResponseMetadata,
+    Role,
+)
 
 
 # テスト用のダミーサブクラスを作成
@@ -21,8 +28,10 @@ class DummyResponseGenerator(ResponseGenerator):
     def update_parameters(self, parameters: ChatModelParameter) -> None:
         return super().update_parameters(parameters)
 
-    def __call__(self, messages: list[dict[str, str]]) -> str:
-        return super().__call__(messages)
+    def __call__(
+        self, input_messages: list[dict[str, str]], user_message: ChatMessage, options: ChatOptions
+    ) -> tuple[str, ResponseMetadata]:
+        return super().__call__(input_messages, user_message, options)
 
 
 class TestResponseGenerator:
@@ -65,4 +74,8 @@ class TestResponseGenerator:
             )
 
         with pytest.raises(NotImplementedError):
-            response_generator([{"role": "user", "content": "Hello"}])
+            response_generator(
+                [],
+                ChatMessage(role=Role.USER, content="Hello"),
+                ChatOptions(is_rag_enabled=False),
+            )

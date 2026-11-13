@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 import torch
 
 from modules.response_generator.gemma4_e2b import Gemma4HuggingFaceResponseGenerator
-from schemas.chat import ChatMessage, ChatModel, ChatModelParameter
+from schemas.chat import ChatMessage, ChatModel, ChatModelParameter, ChatOptions
 
 
 class TestGemma4HuggingFaceResponseGenerator:
@@ -150,10 +150,11 @@ class TestGemma4HuggingFaceResponseGenerator:
         mock_target_model.device = "cuda"
 
         # 入力メッセージを作成
-        input_messages = [ChatMessage(role="user", content="Hello")]
+        user_message = ChatMessage(role="user", content="Hello")
+        options = ChatOptions(is_rag_enabled=False)
 
         # __call__メソッドを呼び出す
-        response, metadata = self.gemma4_huggingface_response_generator(input_messages)
+        response, metadata = self.gemma4_huggingface_response_generator([], user_message, options)
 
         # 結果を検証
         assert response == "Hello, how can I help you?"

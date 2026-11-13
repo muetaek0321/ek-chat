@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from modules.response_generator.gemini_api import GeminiResponseGenerator
-from schemas.chat import ChatMessage, ChatModel, ChatModelParameter
+from schemas.chat import ChatMessage, ChatModel, ChatModelParameter, ChatOptions
 
 
 class TestGeminiResponseGenerator:
@@ -94,7 +94,9 @@ class TestGeminiResponseGenerator:
         )
 
         response, metadata = self.gemini_response_generator(
-            [], ChatMessage(role="user", content="Hello")
+            [],
+            ChatMessage(role="user", content="Hello"),
+            ChatOptions(is_rag_enabled=False),
         )
 
         assert response == "Hello, how can I help you?"
@@ -116,7 +118,9 @@ class TestGeminiResponseGenerator:
         )
 
         response, metadata = self.gemini_response_generator(
-            [], ChatMessage(role="user", content="Hello")
+            [],
+            ChatMessage(role="user", content="Hello"),
+            ChatOptions(is_rag_enabled=False),
         )
 
         assert response == "Retried response"
@@ -142,7 +146,11 @@ class TestGeminiResponseGenerator:
         self.gemini_response_generator.convert_input_messages = MagicMock(return_value=[])
 
         with pytest.raises(RuntimeError, match="request failed"):
-            self.gemini_response_generator([], ChatMessage(role="user", content="Hello"))
+            self.gemini_response_generator(
+                [],
+                ChatMessage(role="user", content="Hello"),
+                ChatOptions(is_rag_enabled=False),
+            )
 
         assert mock_chat_google_generative_ai.call_count == 2
         assert self.gemini_response_generator.llm is None

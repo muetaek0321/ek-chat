@@ -15,6 +15,7 @@ from schemas.chat import (
     ChatModel,
     ChatModelInfo,
     ChatModelParameter,
+    ChatOptions,
     GenerateChatResponse,
     ResponseMetadata,
     Role,
@@ -284,9 +285,10 @@ class TestChatManager:
 
         # ユーザーメッセージを作成
         user_message = ChatMessage(role=Role.USER, content="Hello")
+        options = ChatOptions(is_rag_enabled=False)
 
         # 応答を生成
-        generate_chat_response = self.chat_manager.generate(user_message)
+        generate_chat_response = self.chat_manager.generate(user_message, options)
 
         # 結果を検証
         assert isinstance(generate_chat_response, GenerateChatResponse)
