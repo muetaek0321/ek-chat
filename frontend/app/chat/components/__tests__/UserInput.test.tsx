@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import UserInput from '../UserInput'
+import UserInput from '../ChatInput/UserInput'
 import { AppThemeProvider } from '@AppThemeProvider'
 import { postRequest } from '@lib/fetchData'
 

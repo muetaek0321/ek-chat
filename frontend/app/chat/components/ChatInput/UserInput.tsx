@@ -12,7 +12,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import ManageSearchIcon from '@mui/icons-material/ManageSearch'
 
 import { ApiResponse, postRequest } from '@lib/fetchData'
-import { ChatMessage, ChatInfo, GeneratedChatMessage } from './chat-types'
+import { ChatMessage, ChatInfo, GeneratedChatMessage } from '../chat-types'
 
 export interface UserInputProps {
   setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>
