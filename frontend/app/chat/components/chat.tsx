@@ -13,7 +13,7 @@ import SettingButton from './SettingButton'
 import ChatList from './ChatList'
 import ChatContentUser from './ChatContentUser'
 import ChatContentAssistant from './ChatContentAssistant'
-import UserInput from './UserInput'
+import UserInput from './ChatInput/UserInput'
 import { ApiResponse, getRequest, putRequest } from '@lib/fetchData'
 import { ChatInfo, ChatMessage } from './chat-types'
 

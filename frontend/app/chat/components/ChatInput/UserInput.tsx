@@ -4,15 +4,16 @@ import React, { useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import SendIcon from '@mui/icons-material/Send'
 import CircularProgress from '@mui/material/CircularProgress'
-import ManageSearchIcon from '@mui/icons-material/ManageSearch'
 
 import { ApiResponse, postRequest } from '@lib/fetchData'
-import { ChatMessage, ChatInfo, GeneratedChatMessage } from './chat-types'
+import { ChatMessage, ChatInfo, GeneratedChatMessage } from '../chat-types'
+import { iconConstants } from './icon-constants'
 
 export interface UserInputProps {
   setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>
@@ -28,6 +29,7 @@ export default function UserInput({
   setIsRunning,
 }: UserInputProps) {
   const [inputText, setInputText] = useState<string>('')
+  const { title: ragTitle, description: ragDescription, icon: RagIcon } = iconConstants.rag
 
   // モード制御
   const [isRAGEnabled, setIsRAGEnabled] = useState<boolean>(true)
@@ -36,6 +38,20 @@ export default function UserInput({
   const generating: ChatMessage = {
     role: 'assistant',
     content: '*考え中...*',
+  }
+
+  // アイコンのToolTipに表示する内容を設定
+  const toolTipElement = (title: string, description: string): React.JSX.Element  => {
+    return(
+      <Box sx={{ p: 0.5 }}>
+        <Typography variant="subtitle2" component="div">
+          <b>{title}</b>
+        </Typography>
+        <Typography variant="body2" component="div" sx={{ color: 'common.white' }}>
+          {description}
+        </Typography>
+      </Box>
+    )
   }
 
   // 入力内容の送信時の処理
@@ -108,12 +124,14 @@ export default function UserInput({
         }}
         role="toolbar"
       >
-        {/* RAGの有効/無効切り替え */}
-        <Tooltip title="RAGの有効化" placement="top">
+        <Tooltip
+          title={toolTipElement(ragTitle, ragDescription)}
+          placement="top"
+        >
           <Button
             size="small"
             disabled={isRunning}
-            aria-label="RAGの有効化"
+            aria-label={ragTitle}
             color="inherit"
             variant="contained"
             onClick={() => setIsRAGEnabled((prev) => !prev)}
@@ -124,7 +142,7 @@ export default function UserInput({
               color: isRAGEnabled ? 'white' : 'black',
             }}
           >
-            <ManageSearchIcon sx={{ fontSize: '1.5rem' }} />
+            <RagIcon sx={{ fontSize: '1.5rem' }} />
           </Button>
         </Tooltip>
       </Box>
