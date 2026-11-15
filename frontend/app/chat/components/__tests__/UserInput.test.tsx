@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import UserInput from '../ChatInput/UserInput'
+import { iconConstants } from '../ChatInput/icon-constants'
 import { AppThemeProvider } from '@AppThemeProvider'
 import { postRequest } from '@lib/fetchData'
 
@@ -22,7 +23,7 @@ describe('UserInput', () => {
           isRunning={false}
           setIsRunning={() => {}}
         />
-      </AppThemeProvider>
+      </AppThemeProvider>,
     )
     expect(screen.getByRole('textbox')).toBeInTheDocument()
     const sendButton = screen.getByRole('button', { name: '送信' })
@@ -129,5 +130,29 @@ describe('UserInput', () => {
       'false',
     )
     expect(screen.queryByRole('button', { name: 'モード設定' })).not.toBeInTheDocument()
+  })
+
+  it('renders tooltip with bold title and description for RAG button on hover', async () => {
+    render(
+      <AppThemeProvider initialTheme="light">
+        <UserInput
+          setChatHistory={() => {}}
+          setChatInfoList={() => {}}
+          isRunning={false}
+          setIsRunning={() => {}}
+        />
+      </AppThemeProvider>,
+    )
+    const ragButton = screen.getByRole('button', { name: iconConstants.rag.title })
+    fireEvent.mouseOver(ragButton)
+
+    await waitFor(() => {
+      const titleElement = screen.getByText(iconConstants.rag.title)
+      expect(titleElement).toBeInTheDocument()
+      expect(titleElement.tagName).toBe('B')
+      const descriptionElement = screen.getByText(iconConstants.rag.description)
+      expect(descriptionElement).toBeInTheDocument()
+      expect(descriptionElement).toHaveStyle({ color: 'rgb(255, 255, 255)' })
+    })
   })
 })
