@@ -1,0 +1,545 @@
+/* ==========================================================================
+   ek-chat 操作マニュアル動画プレイヤー スタイルシート
+   ========================================================================== */
+
+:root {
+  --bg-dark: #090d16;
+  --bg-surface: #111827;
+  --bg-control: rgba(17, 24, 39, 0.85);
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --text-main: #f9fafb;
+  --text-sub: #9ca3af;
+  --border-color: rgba(255, 255, 255, 0.12);
+  --accent-cyan: #06b6d4;
+  --accent-green: #10b981;
+  --accent-amber: #f59e0b;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Hiragino Sans", "Noto Sans JP", sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   Header Bar
+   ========================================================================== */
+.player-header {
+  padding: 14px 28px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-logo {
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+}
+
+.header-title h1 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.header-title p {
+  font-size: 0.78rem;
+  color: var(--text-sub);
+}
+
+.header-right a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.header-right a:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: var(--primary);
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   Player Main Wrapper (16:9 Theater)
+   ========================================================================== */
+.player-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 24px 28px;
+  width: 100%;
+}
+
+.player-wrapper {
+  width: 100%;
+  max-width: 1280px;
+  background: #000000;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border-color);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Fullscreen Mode */
+.player-wrapper:fullscreen {
+  max-width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+}
+
+/* Viewport (16:9 Container) */
+.player-viewport {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  position: relative;
+  overflow: hidden;
+  background: #0b0f19;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  cursor: pointer;
+}
+
+/* 1920x1080 Virtual Canvas */
+.video-screen {
+  width: 1920px;
+  height: 1080px;
+  position: absolute;
+  transform-origin: center center;
+  top: 50%;
+  left: 50%;
+  margin-top: -540px;
+  margin-left: -960px;
+  pointer-events: none;
+}
+
+.video-stage {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background gradient */
+.stage-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0b0f19 100%);
+  z-index: 1;
+}
+
+/* ==========================================================================
+   App Window Frame in Stage
+   ========================================================================== */
+.app-window-frame {
+  position: absolute;
+  width: 1536px;
+  height: 960px;
+  top: 40px;
+  left: 192px;
+  background: #1e293b;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+.window-title-bar {
+  height: 38px;
+  background: #1e293b;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 8px;
+}
+
+.window-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.dot-red { background: #ef4444; }
+.dot-yellow { background: #f59e0b; }
+.dot-green { background: #10b981; }
+
+.window-title-text {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-left: 8px;
+  font-family: monospace;
+}
+
+.window-content-area {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #000;
+}
+
+.stage-screenshot {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  display: block;
+}
+
+/* ==========================================================================
+   Overlay Layer (Highlights, Cursor, Callouts)
+   ========================================================================== */
+.stage-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Highlight Box */
+.anim-highlight {
+  position: absolute;
+  border: 4px solid #3b82f6;
+  border-radius: 8px;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  animation: pulse-border 2s infinite ease-in-out;
+}
+
+.anim-highlight.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6), inset 0 0 15px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(59, 130, 246, 0.9), inset 0 0 25px rgba(59, 130, 246, 0.5);
+  }
+}
+
+.highlight-label {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  background: #2563eb;
+  color: #ffffff;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Animated Cursor */
+.anim-cursor-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  pointer-events: none;
+  z-index: 50;
+  transition: transform 0.05s linear;
+}
+
+.anim-cursor-svg {
+  width: 32px;
+  height: 32px;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.6));
+}
+
+.cursor-clicked .anim-cursor-svg {
+  transform: scale(0.85);
+  transition: transform 0.1s ease;
+}
+
+/* Click Ripple Effect */
+.cursor-ripple {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 3px solid rgba(59, 130, 246, 0.9);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cursor-ripple.animate-click {
+  animation: ripple-effect 0.6s ease-out forwards;
+}
+
+@keyframes ripple-effect {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(5);
+    opacity: 0;
+  }
+}
+
+/* Callout Card */
+.anim-callout {
+  position: absolute;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 18px 24px;
+  color: #ffffff;
+  max-width: 480px;
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 40;
+}
+
+.anim-callout.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.callout-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.callout-icon {
+  font-size: 20px;
+}
+
+.callout-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.callout-body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #e2e8f0;
+}
+
+/* ==========================================================================
+   Caption Subtitle Layer
+   ========================================================================== */
+.caption-container {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 28px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 85%;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 100;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.caption-container.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.caption-badge {
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.caption-text {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Player Control Bar
+   ========================================================================== */
+.player-controls {
+  background: var(--bg-control);
+  backdrop-filter: blur(12px);
+  padding: 12px 20px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 20;
+}
+
+/* Progress Bar */
+.progress-container {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+  transition: height 0.15s ease;
+}
+
+.progress-container:hover {
+  height: 12px;
+}
+
+.progress-filled {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+  border-radius: 4px;
+  position: relative;
+}
+
+.progress-hover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* Controls Buttons Row */
+.controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.controls-left, .controls-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ctrl-btn {
+  background: none;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #38bdf8;
+}
+
+.ctrl-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.time-display {
+  font-size: 0.85rem;
+  font-family: monospace;
+  color: var(--text-sub);
+  margin-left: 6px;
+}
+
+.scene-indicator {
+  font-size: 0.85rem;
+  color: #38bdf8;
+  font-weight: 600;
+  margin-left: 12px;
+}
+
+.scene-select {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
+  color: #e2e8f0;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.scene-select option {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+.speed-btn {
+  font-size: 0.8rem;
+  font-weight: bold;
+  font-family: monospace;
+  width: 44px;
+}
