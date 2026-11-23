@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ek-chat 操作解説動画</title>
+  <link rel="stylesheet" href="css/player.css">
+</head>
+<body>
+
+  <!-- Header Bar -->
+  <header class="player-header">
+    <div class="header-left">
+      <div class="header-logo">ek</div>
+      <div class="header-title">
+        <h1>ek-chat 操作解説動画</h1>
+        <p>ブラウザで見るチャットボット操作ガイド (約1分20秒)</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <a href="../index.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        テキストマニュアルへ戻る
+      </a>
+    </div>
+  </header>
+
+  <!-- Player Main Container -->
+  <main class="player-main">
+    <div class="player-wrapper" id="playerWrapper">
+
+      <!-- Viewport (16:9 Aspect Ratio Container) -->
+      <div class="player-viewport" id="videoViewport">
+        <!-- 1920x1080 Virtual Canvas Screen -->
+        <div class="video-screen" id="videoScreen">
+          <!-- SceneRenderer will inject DOM contents here -->
+        </div>
+      </div>
+
+      <!-- Video Control Bar -->
+      <div class="player-controls">
+        <!-- Progress Bar (SeekBar) -->
+        <div class="progress-container" id="progressBar">
+          <div class="progress-hover" id="progressHover"></div>
+          <div class="progress-filled" id="progressFilled"></div>
+        </div>
+
+        <!-- Controls Buttons Row -->
+        <div class="controls-row">
+          <div class="controls-left">
+            <!-- Play / Pause Toggle Button -->
+            <button class="ctrl-btn" id="playBtn" title="再生 / 一時停止 (Space)">
+              <!-- Play Icon -->
+              <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <!-- Pause Icon -->
+              <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                <rect x="6" y="4" width="4" height="16"></rect>
+                <rect x="14" y="4" width="4" height="16"></rect>
+              </svg>
+            </button>
+
+            <!-- Restart Button -->
+            <button class="ctrl-btn" id="restartBtn" title="最初から再生 (Home)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 4v6h6"></path>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+            </button>
+
+            <!-- Previous Scene Button -->
+            <button class="ctrl-btn" id="prevBtn" title="前のシーン (←)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                <line x1="5" y1="19" x2="5" y2="5"></line>
+              </svg>
+            </button>
+
+            <!-- Next Scene Button -->
+            <button class="ctrl-btn" id="nextBtn" title="次のシーン (→)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                <line x1="19" y1="5" x2="19" y2="19"></line>
+              </svg>
+            </button>
+
+            <!-- Time Display -->
+            <div class="time-display">
+              <span id="timeCurrent">00:00</span> / <span id="timeTotal">00:00</span>
+            </div>
+
+            <!-- Scene Indicator -->
+            <div class="scene-indicator" id="sceneIndicator">
+              Scene 1/11: はじめに
+            </div>
+          </div>
+
+          <div class="controls-right">
+            <!-- Scene Select Dropdown -->
+            <select class="scene-select" id="sceneSelect" title="シーンジャンプ"></select>
+
+            <!-- Speed Button -->
+            <button class="ctrl-btn speed-btn" id="speedBtn" title="再生速度">1x</button>
+
+            <!-- Fullscreen Button -->
+            <button class="ctrl-btn" id="fullscreenBtn" title="全画面表示 (F)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <!-- 1. Fallback Scenario Data for direct file:/// access -->
+  <script src="data/scenario.js"></script>
+  <!-- 2. Timeline Engine (requestAnimationFrame) -->
+  <script src="js/timeline.js"></script>
+  <!-- 3. Scene Renderer (DOM / SVG Animation) -->
+  <script src="js/scene-renderer.js"></script>
+  <!-- 4. Player UI Controller -->
+  <script src="js/player.js"></script>
+</body>
+</html>
